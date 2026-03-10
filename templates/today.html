@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ Мистика | Сегодня</title>
+    <title>✨ {{ get_text('app_name') }} | {{ get_text('today') }}</title>
     <style>
         * {
             margin: 0;
@@ -35,6 +35,39 @@
             padding-bottom: 40px;
             background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
             min-height: 100vh;
+        }
+
+        /* Селектор языка */
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            color: var(--bg-dark);
+            font-weight: bold;
+        }
+
+        .lang-btn:hover {
+            background: rgba(212, 175, 55, 0.3);
         }
 
         /* Шапка */
@@ -254,6 +287,8 @@
             padding: 30px;
             border-radius: 20px;
             max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
             border: 2px solid var(--accent);
             position: relative;
         }
@@ -265,6 +300,46 @@
             font-size: 1.5em;
             cursor: pointer;
             color: var(--text-muted);
+        }
+
+        /* Список рекомендаций */
+        .recommendations-list {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        .recommendations-list li {
+            margin: 10px 0;
+            color: var(--text);
+        }
+
+        /* Поле ввода */
+        .compatibility-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: var(--bg-dark);
+            border: 1px solid var(--accent);
+            color: var(--text);
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .compatibility-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Результат совместимости */
+        .compatibility-result {
+            background: var(--accent);
+            color: var(--bg-dark);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
         }
 
         /* Анимации */
@@ -281,6 +356,13 @@
 </head>
 <body>
     <div class="container">
+        <!-- Селектор языка -->
+        <div class="language-selector">
+            <button class="lang-btn {% if lang == 'ru' %}active{% endif %}" onclick="setLanguage('ru')">🇷🇺 Русский</button>
+            <button class="lang-btn {% if lang == 'en' %}active{% endif %}" onclick="setLanguage('en')">🇬🇧 English</button>
+            <button class="lang-btn {% if lang == 'es' %}active{% endif %}" onclick="setLanguage('es')">🇪🇸 Español</button>
+        </div>
+
         <!-- Шапка с монетами -->
         <div class="header">
             <div class="coins">
@@ -293,13 +375,13 @@
         <!-- Бонус за вход -->
         {% if daily_bonus %}
         <div class="bonus" id="dailyBonus">
-            ✨ +10 монет за вход! ✨
+            {{ get_text('daily_bonus') }}
         </div>
         {% endif %}
 
         <!-- Приветствие -->
         <div class="greeting">
-            <h1>✨ Сегодня для тебя</h1>
+            <h1>✨ {{ get_text('greeting') }}</h1>
             <p>{{ now.strftime('%d %B %Y') }}</p>
         </div>
 
@@ -308,11 +390,11 @@
             <!-- Карта дня -->
             <div class="card" onclick="window.location.href='#card'">
                 <span class="card-icon">🔮</span>
-                <div class="card-title">Карта дня</div>
+                <div class="card-title">{{ get_text('card_of_day') }}</div>
                 {% if card_of_day %}
                 <div class="card-value">{{ card_of_day.name }}</div>
                 {% else %}
-                <div class="card-value">Не открыта</div>
+                <div class="card-value">{{ get_text('not_opened') }}</div>
                 {% endif %}
                 <span class="reward">+5</span>
             </div>
@@ -320,41 +402,41 @@
             <!-- Энергия дня -->
             <div class="card" onclick="showEnergy()">
                 <span class="card-icon">🌙</span>
-                <div class="card-title">Энергия дня</div>
+                <div class="card-title">{{ get_text('energy_of_day') }}</div>
                 <div class="card-value">{{ energy }}</div>
             </div>
 
             <!-- Гороскоп дня -->
             <div class="card" onclick="showHoroscope()">
                 <span class="card-icon">♈</span>
-                <div class="card-title">Гороскоп дня</div>
-                <div class="card-value">Нажми для просмотра</div>
+                <div class="card-title">{{ get_text('horoscope') }}</div>
+                <div class="card-value">{{ get_text('tap_to_see') }}</div>
             </div>
 
             <!-- Быстрая совместимость -->
             <div class="card" onclick="showCompatibility()">
                 <span class="card-icon">❤️</span>
-                <div class="card-title">Совместимость</div>
-                <div class="card-value">Быстрый расклад</div>
+                <div class="card-title">{{ get_text('quick_compatibility') }}</div>
+                <div class="card-value">{{ get_text('quick_spread') }}</div>
             </div>
         </div>
 
         <!-- Блок карты дня -->
         <div id="card">
-            <h2 style="color: var(--accent); margin: 20px 0;">🔮 Карта дня</h2>
+            <h2 style="color: var(--accent); margin: 20px 0;">{{ get_text('card_of_day') }}</h2>
             
             {% if card_of_day %}
             <div class="card-of-day">
-                <h3>Твоя карта дня</h3>
+                <h3>{{ get_text('your_card') }}</h3>
                 <div class="card-name">{{ card_of_day.name }}</div>
                 <div class="card-meaning">{{ card_of_day.meaning }}</div>
             </div>
-            <button class="draw-button" onclick="drawNewCard()">
-                🔄 Вытянуть новую карту (+5 монет)
+            <button class="draw-button" onclick="drawNewCard()" id="drawBtn">
+                {{ get_text('draw_new_card') }}
             </button>
             {% else %}
             <button class="draw-button" onclick="drawNewCard()" id="drawBtn">
-                🎴 Вытянуть карту дня (+5 монет)
+                {{ get_text('draw_card') }}
             </button>
             {% endif %}
         </div>
@@ -362,7 +444,7 @@
         <!-- Прогресс коллекции -->
         <div class="progress">
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <span>📚 Коллекция карт</span>
+                <span>{{ get_text('card_collection') }}</span>
                 <span>{{ collected }}/{{ total_cards }}</span>
             </div>
             <div class="progress-bar">
@@ -375,13 +457,13 @@
     <div class="modal" id="energyModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('energyModal')">&times;</span>
-            <h2 style="color: var(--accent); margin-bottom: 20px;">🌙 Энергия дня</h2>
+            <h2 style="color: var(--accent); margin-bottom: 20px;">{{ get_text('energy_title') }}</h2>
             <p style="font-size: 1.2em; margin-bottom: 20px;">{{ energy }}</p>
-            <p>Сегодня твоя энергия располагает к:</p>
-            <ul style="margin: 20px 0; padding-left: 20px;">
-                <li>Медитации и спокойствию</li>
-                <li>Творческим начинаниям</li>
-                <li>Общению с близкими</li>
+            <p>{{ get_text('energy_recommendations') }}</p>
+            <ul class="recommendations-list">
+                <li>{{ get_text('rec1') }}</li>
+                <li>{{ get_text('rec2') }}</li>
+                <li>{{ get_text('rec3') }}</li>
             </ul>
         </div>
     </div>
@@ -390,7 +472,7 @@
     <div class="modal" id="horoscopeModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('horoscopeModal')">&times;</span>
-            <h2 style="color: var(--accent); margin-bottom: 20px;">♈ Гороскоп дня</h2>
+            <h2 style="color: var(--accent); margin-bottom: 20px;">{{ get_text('horoscope_title') }}</h2>
             <p style="font-size: 1.1em; line-height: 1.6;">{{ horoscope }}</p>
         </div>
     </div>
@@ -399,10 +481,10 @@
     <div class="modal" id="compatibilityModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('compatibilityModal')">&times;</span>
-            <h2 style="color: var(--accent); margin-bottom: 20px;">❤️ Быстрая совместимость</h2>
-            <p>Введи имя или знак зодиака:</p>
-            <input type="text" id="compatibilityName" placeholder="Например: Иван" style="width: 100%; padding: 10px; margin: 10px 0; background: var(--bg-dark); border: 1px solid var(--accent); color: var(--text); border-radius: 10px;">
-            <button class="draw-button" style="margin: 10px 0;" onclick="checkCompatibility()">Узнать</button>
+            <h2 style="color: var(--accent); margin-bottom: 20px;">{{ get_text('compatibility_title') }}</h2>
+            <p>{{ get_text('enter_name') }}</p>
+            <input type="text" class="compatibility-input" id="compatibilityName" placeholder="{{ get_text('enter_name') }}">
+            <button class="draw-button" style="margin: 10px 0;" onclick="checkCompatibility()">{{ get_text('check') }}</button>
             <div id="compatibilityResult" style="margin-top: 20px;"></div>
         </div>
     </div>
@@ -412,6 +494,23 @@
         const now = new Date();
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         document.getElementById('currentDate').textContent = now.toLocaleDateString('ru-RU', options);
+
+        // Функция смены языка
+        async function setLanguage(lang) {
+            try {
+                const response = await fetch('/set-language', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({language: lang})
+                });
+                const data = await response.json();
+                if (data.success) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error setting language:', error);
+            }
+        }
 
         // Функции для модальных окон
         function showEnergy() {
@@ -432,9 +531,10 @@
 
         // Вытягивание карты
         async function drawNewCard() {
-            const btn = document.getElementById('drawBtn') || event.target;
+            const btn = document.getElementById('drawBtn');
+            const originalText = btn.textContent;
             btn.disabled = true;
-            btn.textContent = '🎴 Вытягиваем...';
+            btn.textContent = '🎴 ...';
 
             try {
                 const response = await fetch('/draw-card', {
@@ -447,16 +547,16 @@
                     document.getElementById('coinCount').textContent = data.coins;
                     
                     // Показываем карту
-                    alert(`✨ Твоя карта дня: ${data.card.name}\n\n${data.card.meaning}\n\n+5 монет получено! 🪙`);
+                    alert(`✨ ${data.card.name}\n\n${data.card.meaning}\n\n+5 🪙`);
                     
                     // Перезагружаем страницу для обновления
                     location.reload();
                 }
             } catch (error) {
-                alert('Ошибка: ' + error);
+                alert('Error: ' + error);
             } finally {
                 btn.disabled = false;
-                btn.textContent = '🎴 Вытянуть карту дня (+5 монет)';
+                btn.textContent = originalText;
             }
         }
 
@@ -464,22 +564,42 @@
         function checkCompatibility() {
             const name = document.getElementById('compatibilityName').value;
             if (!name) {
-                alert('Введите имя');
+                alert('{{ get_text("enter_name") }}');
                 return;
             }
 
-            const results = [
-                "✨ Отличная совместимость! Вы дополняете друг друга.",
-                "💫 Хорошая совместимость, есть над чем работать.",
-                "🌟 Гармоничный союз, много общего.",
-                "💔 Сложная совместимость, но возможна.",
-                "💝 Идеальная совместимость! Вы созданы друг для друга."
-            ];
+            // Результаты на разных языках
+            const results = {
+                'ru': [
+                    '✨ Отличная совместимость! Вы дополняете друг друга.',
+                    '💫 Хорошая совместимость, есть над чем работать.',
+                    '🌟 Гармоничный союз, много общего.',
+                    '💔 Сложная совместимость, но возможна.',
+                    '💝 Идеальная совместимость! Вы созданы друг для друга.'
+                ],
+                'en': [
+                    '✨ Perfect match! You complement each other.',
+                    '💫 Good compatibility, room for growth.',
+                    '🌟 Harmonious union, much in common.',
+                    '💔 Complex compatibility, but possible.',
+                    '💝 Ideal compatibility! Made for each other.'
+                ],
+                'es': [
+                    '✨ ¡Compatibilidad perfecta! Se complementan.',
+                    '💫 Buena compatibilidad, hay potencial.',
+                    '🌟 Unión armónica, mucho en común.',
+                    '💔 Compatibilidad compleja, pero posible.',
+                    '💝 ¡Compatibilidad ideal! Hechos el uno para el otro.'
+                ]
+            };
 
-            const random = Math.floor(Math.random() * results.length);
+            const lang = '{{ lang }}';
+            const langResults = results[lang] || results['ru'];
+            const random = Math.floor(Math.random() * langResults.length);
+            
             document.getElementById('compatibilityResult').innerHTML = `
-                <div style="background: var(--accent); color: var(--bg-dark); padding: 15px; border-radius: 10px; text-align: center;">
-                    ${results[random]}
+                <div class="compatibility-result">
+                    ${langResults[random]}
                 </div>
             `;
         }
@@ -492,7 +612,16 @@
                 setTimeout(() => bonus.remove(), 300);
             }, 3000);
         }
+
+        // Закрытие модальных окон по клику вне области
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let modal of modals) {
+                if (event.target == modal) {
+                    modal.classList.remove('active');
+                }
+            }
+        }
     </script>
 </body>
 </html>
-
