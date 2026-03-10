@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Сегодня{% endblock %}
+
+{% block content %}
+<div class="today-screen">
+    <!-- Приветствие -->
+    <div class="greeting">
+        <h2>✨ Сегодня для тебя</h2>
+        {% if daily_bonus %}
+        <div class="bonus-message">
+            +10 монет за вход! 🪙
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Основные карточки -->
+    <div class="card-grid">
+        <!-- Карта дня -->
+        <div class="card" onclick="window.location.href='/card-of-day'">
+            <span class="card-icon">🔮</span>
+            <div class="card-title">Карта дня</div>
+            {% if card_of_day %}
+            <div class="card-subtitle">{{ card_of_day.name }}</div>
+            {% else %}
+            <div class="card-subtitle">Нажми, чтобы узнать</div>
+            {% endif %}
+            <span class="reward-badge">+5</span>
+        </div>
+
+        <!-- Энергия дня -->
+        <div class="card" onclick="showEnergy()">
+            <span class="card-icon">🌙</span>
+            <div class="card-title">Энергия дня</div>
+            <div class="card-subtitle">{{ energy }}</div>
+        </div>
+
+        <!-- Гороскоп дня -->
+        <div class="card" onclick="showHoroscope()">
+            <span class="card-icon">♈</span>
+            <div class="card-title">Гороскоп дня</div>
+            <div class="card-subtitle">Нажми для подробностей</div>
+        </div>
+
+        <!-- Быстрая совместимость -->
+        <div class="card" onclick="window.location.href='/quick-spreads'">
+            <span class="card-icon">❤️</span>
+            <div class="card-title">Совместимость</div>
+            <div class="card-subtitle">Быстрый расклад</div>
+        </div>
+    </div>
+
+    <!-- Активные предложения -->
+    <div class="offers-section">
+        <h3>🔥 Актуальное</h3>
+        <div class="offer-card">
+            <span>Глубокий расклад "Отношения"</span>
+            <span class="price">50 🪙</span>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для энергий -->
+<div class="modal" id="energyModal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('energyModal')">&times;</span>
+        <h3>🌙 Энергия дня</h3>
+        <p>Сегодня твоя энергия: <strong>{{ energy }}</strong></p>
+        <p>Рекомендации на основе энергии...</p>
+    </div>
+</div>
+
+<script>
+function showEnergy() {
+    document.getElementById('energyModal').classList.add('active');
+}
+
+function showHoroscope() {
+    alert('Гороскоп на сегодня:\n{{ horoscope }}');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+</script>
+{% endblock %}
