@@ -3,9 +3,9 @@ import logging
 import sys
 from flask import Flask
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, ContextTypes
 import threading
-import time
+import asyncio
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -21,20 +21,17 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "✅ Бот работает на Render (Python 3.14)!"
+    return "✅ Бот работает на Python 3.14!"
 
 @app.route('/health')
 def health():
-    return {
-        "status": "ok",
-        "python": sys.version.split()[0]
-    }
+    return {"status": "ok", "python": sys.version.split()[0]}
 
-# Обработчик команды /start
-def start(update: Update, context: CallbackContext):
+# Асинхронный обработчик для новой версии
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     logger.info(f"✅ Команда START от {user.first_name}")
-    update.message.reply_text(
+    await update.message.reply_text(
         f"👋 Привет, {user.first_name}!\n\n"
         f"✅ Бот работает на Python 3.14!\n"
         f"🆔 Твой ID: {user.id}"
@@ -45,32 +42,17 @@ def run_bot():
     try:
         logger.info("🟡 Запускаем бота...")
         
-        # Создаем Updater с дополнительными параметрами
-        updater = Updater(
-            token=BOT_TOKEN,
-            use_context=True,
-            request_kwargs={'read_timeout': 10, 'connect_timeout': 10}
-        )
-        
-        dispatcher = updater.dispatcher
-        dispatcher.add_handler(CommandHandler("start", start))
+        # Создаем приложение для новой версии
+        application = Application.builder().token(BOT_TOKEN).build()
+        application.add_handler(CommandHandler("start", start))
         
         logger.info("✅ Бот создан, запускаем polling...")
-        updater.start_polling(
-            poll_interval=1.0,
-            timeout=10,
-            clean=True
-        )
-        logger.info("✅ Бот успешно запущен!")
         
-        # Держим поток живым
-        while True:
-            time.sleep(10)
-            logger.debug("Бот работает...")
-            
+        # Запускаем
+        application.run_polling()
+        
     except Exception as e:
         logger.error(f"❌ Ошибка бота: {e}")
-        logger.exception("Детали ошибки:")
 
 # Запускаем бота в фоне
 logger.info("🟡 Создаем поток для бота...")
