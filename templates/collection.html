@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Коллекция{% endblock %}
+
+{% block content %}
+<div class="collection">
+    <h2>🎴 Коллекция карт</h2>
+    
+    <!-- Прогресс -->
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ (progress/total)*100 }}%">
+            {{ progress }}/{{ total }}
+        </div>
+    </div>
+    
+    <!-- Сетка коллекции -->
+    <div class="collection-grid">
+        {% for i in range(1, 79) %}
+            {% if i in collected %}
+            <!-- Открытая карта -->
+            <div class="collection-item" onclick="showCard({{ i }})">
+                <div class="card-number">#{{ i }}</div>
+                <div class="card-name">Карта {{ i }}</div>
+                <div class="card-meaning" style="font-size: 0.8em;">Открыта</div>
+            </div>
+            {% else %}
+            <!-- Закрытая карта -->
+            <div class="collection-item locked">
+                <div class="card-number">#{{ i }}</div>
+                <div class="card-name">???</div>
+                <div class="card-meaning">🔒 Закрыто</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно карты -->
+<div class="modal" id="cardModal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('cardModal')">&times;</span>
+        <div id="cardDetails"></div>
+    </div>
+</div>
+
+<script>
+function showCard(cardId) {
+    // Здесь можно загрузить информацию о конкретной карте
+    document.getElementById('cardDetails').innerHTML = `
+        <div class="tarot-card-rect">
+            <div class="card-header">
+                <span class="card-number">#${cardId}</span>
+                <span class="card-name">Карта ${cardId}</span>
+            </div>
+            <div class="card-meaning">
+                Значение этой карты появится здесь
+            </div>
+        </div>
+    `;
+    document.getElementById('cardModal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+</script>
+{% endblock %}
