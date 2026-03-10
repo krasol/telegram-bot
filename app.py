@@ -1,7 +1,7 @@
 import os
 import logging
 import sys
-import time  # 👈 ЭТО БЫЛО ПРОПУЩЕНО!
+import time
 import threading
 import asyncio
 from flask import Flask
@@ -71,3 +71,4 @@ if __name__ == "__main__":
     port = int(os.environ.get('PORT', 10000))
     logger.info(f"🚀 Запуск Flask на порту {port}")
     app.run(host='0.0.0.0', port=port)
+
