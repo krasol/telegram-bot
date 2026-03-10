@@ -1,86 +1,497 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Мистика | Сегодня</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block title %}Сегодня{% endblock %}
+        :root {
+            --primary: #6b4e71;
+            --accent: #d4af37;
+            --bg-dark: #1a0f1a;
+            --bg-light: #2a1a2a;
+            --text: #f0e6f0;
+            --text-muted: #b8a7b8;
+        }
 
-{% block content %}
-<div class="today-screen">
-    <!-- Приветствие -->
-    <div class="greeting">
-        <h2>✨ Сегодня для тебя</h2>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 40px;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-light) 100%);
+            min-height: 100vh;
+        }
+
+        /* Шапка */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .coins {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .date {
+            color: var(--text-muted);
+            font-size: 1em;
+        }
+
+        /* Приветствие */
+        .greeting {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .greeting h1 {
+            font-size: 2em;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .greeting p {
+            color: var(--text-muted);
+        }
+
+        /* Бонус */
+        .bonus {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--accent);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+
+        /* Сетка карточек */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .card:active {
+            transform: scale(0.95);
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card-value {
+            color: var(--accent);
+            font-size: 0.9em;
+        }
+
+        .reward {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        /* Карта дня */
+        .card-of-day {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(107, 78, 113, 0.1) 100%);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .card-of-day h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .card-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .card-meaning {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .draw-button {
+            background: var(--accent);
+            color: var(--bg-dark);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            margin: 20px 0;
+        }
+
+        .draw-button:active {
+            opacity: 0.8;
+        }
+
+        .draw-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Прогресс коллекции */
+        .progress {
+            margin: 30px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-light);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 90%;
+            border: 2px solid var(--accent);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        /* Анимации */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка с монетами -->
+        <div class="header">
+            <div class="coins">
+                <span>🪙</span>
+                <span id="coinCount">{{ coins }}</span>
+            </div>
+            <div class="date" id="currentDate"></div>
+        </div>
+
+        <!-- Бонус за вход -->
         {% if daily_bonus %}
-        <div class="bonus-message">
-            +10 монет за вход! 🪙
+        <div class="bonus" id="dailyBonus">
+            ✨ +10 монет за вход! ✨
         </div>
         {% endif %}
-    </div>
 
-    <!-- Основные карточки -->
-    <div class="card-grid">
-        <!-- Карта дня -->
-        <div class="card" onclick="window.location.href='/card-of-day'">
-            <span class="card-icon">🔮</span>
-            <div class="card-title">Карта дня</div>
+        <!-- Приветствие -->
+        <div class="greeting">
+            <h1>✨ Сегодня для тебя</h1>
+            <p>{{ datetime.now().strftime('%d %B %Y') }}</p>
+        </div>
+
+        <!-- Основные карточки -->
+        <div class="grid">
+            <!-- Карта дня -->
+            <div class="card" onclick="window.location.href='#card'">
+                <span class="card-icon">🔮</span>
+                <div class="card-title">Карта дня</div>
+                {% if card_of_day %}
+                <div class="card-value">{{ card_of_day.name }}</div>
+                {% else %}
+                <div class="card-value">Не открыта</div>
+                {% endif %}
+                <span class="reward">+5</span>
+            </div>
+
+            <!-- Энергия дня -->
+            <div class="card" onclick="showEnergy()">
+                <span class="card-icon">🌙</span>
+                <div class="card-title">Энергия дня</div>
+                <div class="card-value">{{ energy }}</div>
+            </div>
+
+            <!-- Гороскоп дня -->
+            <div class="card" onclick="showHoroscope()">
+                <span class="card-icon">♈</span>
+                <div class="card-title">Гороскоп дня</div>
+                <div class="card-value">Нажми для просмотра</div>
+            </div>
+
+            <!-- Быстрая совместимость -->
+            <div class="card" onclick="showCompatibility()">
+                <span class="card-icon">❤️</span>
+                <div class="card-title">Совместимость</div>
+                <div class="card-value">Быстрый расклад</div>
+            </div>
+        </div>
+
+        <!-- Блок карты дня -->
+        <div id="card">
+            <h2 style="color: var(--accent); margin: 20px 0;">🔮 Карта дня</h2>
+            
             {% if card_of_day %}
-            <div class="card-subtitle">{{ card_of_day.name }}</div>
+            <div class="card-of-day">
+                <h3>Твоя карта дня</h3>
+                <div class="card-name">{{ card_of_day.name }}</div>
+                <div class="card-meaning">{{ card_of_day.meaning }}</div>
+            </div>
+            <button class="draw-button" onclick="drawNewCard()">
+                🔄 Вытянуть новую карту (+5 монет)
+            </button>
             {% else %}
-            <div class="card-subtitle">Нажми, чтобы узнать</div>
+            <button class="draw-button" onclick="drawNewCard()" id="drawBtn">
+                🎴 Вытянуть карту дня (+5 монет)
+            </button>
             {% endif %}
-            <span class="reward-badge">+5</span>
         </div>
 
-        <!-- Энергия дня -->
-        <div class="card" onclick="showEnergy()">
-            <span class="card-icon">🌙</span>
-            <div class="card-title">Энергия дня</div>
-            <div class="card-subtitle">{{ energy }}</div>
-        </div>
-
-        <!-- Гороскоп дня -->
-        <div class="card" onclick="showHoroscope()">
-            <span class="card-icon">♈</span>
-            <div class="card-title">Гороскоп дня</div>
-            <div class="card-subtitle">Нажми для подробностей</div>
-        </div>
-
-        <!-- Быстрая совместимость -->
-        <div class="card" onclick="window.location.href='/quick-spreads'">
-            <span class="card-icon">❤️</span>
-            <div class="card-title">Совместимость</div>
-            <div class="card-subtitle">Быстрый расклад</div>
+        <!-- Прогресс коллекции -->
+        <div class="progress">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>📚 Коллекция карт</span>
+                <span>{{ collected }}/{{ total_cards }}</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ (collected / total_cards * 100) if total_cards > 0 else 0 }}%"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Активные предложения -->
-    <div class="offers-section">
-        <h3>🔥 Актуальное</h3>
-        <div class="offer-card">
-            <span>Глубокий расклад "Отношения"</span>
-            <span class="price">50 🪙</span>
+    <!-- Модальное окно энергии -->
+    <div class="modal" id="energyModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('energyModal')">&times;</span>
+            <h2 style="color: var(--accent); margin-bottom: 20px;">🌙 Энергия дня</h2>
+            <p style="font-size: 1.2em; margin-bottom: 20px;">{{ energy }}</p>
+            <p>Сегодня твоя энергия располагает к:</p>
+            <ul style="margin: 20px 0; padding-left: 20px;">
+                <li>Медитации и спокойствию</li>
+                <li>Творческим начинаниям</li>
+                <li>Общению с близкими</li>
+            </ul>
         </div>
     </div>
-</div>
 
-<!-- Модальное окно для энергий -->
-<div class="modal" id="energyModal">
-    <div class="modal-content">
-        <span class="close-button" onclick="closeModal('energyModal')">&times;</span>
-        <h3>🌙 Энергия дня</h3>
-        <p>Сегодня твоя энергия: <strong>{{ energy }}</strong></p>
-        <p>Рекомендации на основе энергии...</p>
+    <!-- Модальное окно гороскопа -->
+    <div class="modal" id="horoscopeModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('horoscopeModal')">&times;</span>
+            <h2 style="color: var(--accent); margin-bottom: 20px;">♈ Гороскоп дня</h2>
+            <p style="font-size: 1.1em; line-height: 1.6;">{{ horoscope }}</p>
+        </div>
     </div>
-</div>
 
-<script>
-function showEnergy() {
-    document.getElementById('energyModal').classList.add('active');
-}
+    <!-- Модальное окно совместимости -->
+    <div class="modal" id="compatibilityModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('compatibilityModal')">&times;</span>
+            <h2 style="color: var(--accent); margin-bottom: 20px;">❤️ Быстрая совместимость</h2>
+            <p>Введи имя или знак зодиака:</p>
+            <input type="text" id="compatibilityName" placeholder="Например: Иван" style="width: 100%; padding: 10px; margin: 10px 0; background: var(--bg-dark); border: 1px solid var(--accent); color: var(--text); border-radius: 10px;">
+            <button class="draw-button" style="margin: 10px 0;" onclick="checkCompatibility()">Узнать</button>
+            <div id="compatibilityResult" style="margin-top: 20px;"></div>
+        </div>
+    </div>
 
-function showHoroscope() {
-    alert('Гороскоп на сегодня:\n{{ horoscope }}');
-}
+    <script>
+        // Установка текущей даты
+        const now = new Date();
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('ru-RU', options);
 
-function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
-}
-</script>
-{% endblock %}
+        // Функции для модальных окон
+        function showEnergy() {
+            document.getElementById('energyModal').classList.add('active');
+        }
+
+        function showHoroscope() {
+            document.getElementById('horoscopeModal').classList.add('active');
+        }
+
+        function showCompatibility() {
+            document.getElementById('compatibilityModal').classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Вытягивание карты
+        async function drawNewCard() {
+            const btn = document.getElementById('drawBtn') || event.target;
+            btn.disabled = true;
+            btn.textContent = '🎴 Вытягиваем...';
+
+            try {
+                const response = await fetch('/draw-card', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Обновляем монеты
+                    document.getElementById('coinCount').textContent = data.coins;
+                    
+                    // Показываем карту
+                    alert(`✨ Твоя карта дня: ${data.card.name}\n\n${data.card.meaning}\n\n+5 монет получено! 🪙`);
+                    
+                    // Перезагружаем страницу для обновления
+                    location.reload();
+                }
+            } catch (error) {
+                alert('Ошибка: ' + error);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🎴 Вытянуть карту дня (+5 монет)';
+            }
+        }
+
+        // Проверка совместимости
+        function checkCompatibility() {
+            const name = document.getElementById('compatibilityName').value;
+            if (!name) {
+                alert('Введите имя');
+                return;
+            }
+
+            const results = [
+                "✨ Отличная совместимость! Вы дополняете друг друга.",
+                "💫 Хорошая совместимость, есть над чем работать.",
+                "🌟 Гармоничный союз, много общего.",
+                "💔 Сложная совместимость, но возможна.",
+                "💝 Идеальная совместимость! Вы созданы друг для друга."
+            ];
+
+            const random = Math.floor(Math.random() * results.length);
+            document.getElementById('compatibilityResult').innerHTML = `
+                <div style="background: var(--accent); color: var(--bg-dark); padding: 15px; border-radius: 10px; text-align: center;">
+                    ${results[random]}
+                </div>
+            `;
+        }
+
+        // Убираем бонус через 3 секунды
+        const bonus = document.getElementById('dailyBonus');
+        if (bonus) {
+            setTimeout(() => {
+                bonus.style.opacity = '0';
+                setTimeout(() => bonus.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
