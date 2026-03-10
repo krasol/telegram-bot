@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Токен из переменных окружения (НЕ ВСТАВЛЯЙТЕ СЮДА ТОКЕН!)
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
+BOT_TOKEN = os.environ.get('8617082336:AAGnOPuLaL6HBclu16ZnW-9UYcNTh1NdeBo')
 logger.info(f"Токен загружен: {'✅' if BOT_TOKEN else '❌'}")
 
 # Если нет токена - пишем ошибку но продолжаем
@@ -66,3 +66,4 @@ else:
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
