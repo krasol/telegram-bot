@@ -10,78 +10,51 @@ import time
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Токен из переменных окружения
-BOT_TOKEN = os.environ.get('8617082336:AAGnOPuLaL6HBclu16ZnW-9UYcNTh1NdeBo')
-logger.info(f"Токен загружен: {'✅' if BOT_TOKEN else '❌'}")
+# ⚠️ ТОКЕН ПРЯМО В КОДЕ (НЕБЕЗОПАСНО!)
+BOT_TOKEN = "8617082336:AAGnOPuLaL6HBclu16ZnW-9UYcNTh1NdeBo"
+logger.info(f"Токен загружен из кода: ✅")
 
 # Flask приложение
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "✅ Бот работает! Статус: OK"
+    return "✅ Бот работает! Токен в коде"
 
 @app.route('/health')
 def health():
     return {
-        "status": "ok",
-        "bot_token_set": bool(BOT_TOKEN),
-        "time": str(time.time())
+        "status": "ok", 
+        "bot_token_set": True,
+        "token_source": "hardcoded_in_code"
     }
 
 # Простейший обработчик
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    logger.info(f"✅ ПОЛУЧЕНА КОМАНДА START от пользователя {user.id} (@{user.username})")
+    logger.info(f"✅ ПОЛУЧЕНА КОМАНДА START от пользователя {user.id}")
     await update.message.reply_text(
         f"👋 Привет, {user.first_name}!\n\n"
-        f"✅ Бот работает правильно!\n"
+        f"✅ Бот работает с токеном в коде!\n"
         f"🆔 Твой ID: {user.id}"
     )
 
 def run_bot():
     """Запуск бота в отдельном потоке"""
-    if not BOT_TOKEN:
-        logger.error("❌ НЕТ ТОКЕНА!")
-        return
-    
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            logger.info(f"🟡 Попытка {attempt + 1}/{max_retries} запустить бота...")
-            
-            # Создаем приложение с правильными параметрами
-            app_bot = Application.builder().token(BOT_TOKEN).build()
-            app_bot.add_handler(CommandHandler("start", start))
-            
-            logger.info("✅ Бот создан, запускаем polling...")
-            
-            # Запускаем бота (этот метод блокирующий)
-            app_bot.run_polling(allowed_updates=['message'], drop_pending_updates=True)
-            
-            # Если дошли сюда - бот работает
-            break
-            
-        except Exception as e:
-            logger.error(f"❌ Ошибка при запуске бота (попытка {attempt + 1}): {e}")
-            if attempt < max_retries - 1:
-                logger.info("Ждем 5 секунд перед следующей попыткой...")
-                time.sleep(5)
-            else:
-                logger.error("❌ Все попытки запустить бота провалились")
+    try:
+        logger.info("🟡 Запускаем бота...")
+        app_bot = Application.builder().token(BOT_TOKEN).build()
+        app_bot.add_handler(CommandHandler("start", start))
+        logger.info("✅ Бот запущен и готов к работе!")
+        app_bot.run_polling()
+    except Exception as e:
+        logger.error(f"❌ Ошибка бота: {e}")
 
-# Запускаем бота в отдельном потоке
-if BOT_TOKEN:
-    logger.info("🟡 Создаем поток для бота...")
-    bot_thread = threading.Thread(target=run_bot, daemon=True)
-    bot_thread.start()
-    logger.info("✅ Поток для бота создан и запущен")
-    
-    # Даем боту время на запуск
-    time.sleep(2)
-    logger.info("🟢 Бот должен быть запущен")
-else:
-    logger.error("❌ Токен не найден - бот не запущен!")
+# Запускаем бота в фоне
+logger.info("🟡 Создаем поток для бота...")
+bot_thread = threading.Thread(target=run_bot, daemon=True)
+bot_thread.start()
+logger.info("✅ Поток для бота создан и запущен")
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 10000))
