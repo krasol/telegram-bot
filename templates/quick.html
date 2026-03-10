@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Быстрые расклады{% endblock %}
+
+{% block content %}
+<div class="quick-spreads">
+    <h2>⚡ Быстрые расклады</h2>
+    
+    <!-- Счетчик бесплатных раскладов -->
+    <div class="free-spreads">
+        <p>Бесплатных раскладов на этой неделе: 
+            <strong>{{ free_spreads|default(1) }}/1</strong>
+        </p>
+    </div>
+    
+    <!-- Темы раскладов -->
+    <div class="topics-grid">
+        <div class="topic-button" onclick="makeQuickSpread('love')">
+            <div class="topic-icon">❤️</div>
+            <div class="topic-name">Отношения</div>
+            <div class="topic-price">10 🪙</div>
+        </div>
+        
+        <div class="topic-button" onclick="makeQuickSpread('money')">
+            <div class="topic-icon">💰</div>
+            <div class="topic-name">Деньги</div>
+            <div class="topic-price">10 🪙</div>
+        </div>
+        
+        <div class="topic-button" onclick="makeQuickSpread('future')">
+            <div class="topic-icon">🔮</div>
+            <div class="topic-name">Ближайшее будущее</div>
+            <div class="topic-price">10 🪙</div>
+        </div>
+        
+        <div class="topic-button" onclick="makeQuickSpread('thoughts')">
+            <div class="topic-icon">💭</div>
+            <div class="topic-name">Что он думает</div>
+            <div class="topic-price">15 🪙</div>
+        </div>
+        
+        <div class="topic-button" onclick="makeQuickSpread('yesno')">
+            <div class="topic-icon">❓</div>
+            <div class="topic-name">Да / Нет</div>
+            <div class="topic-price">5 🪙</div>
+        </div>
+    </div>
+    
+    <!-- Результат расклада -->
+    <div id="spreadResult" style="margin-top: 20px;"></div>
+</div>
+
+<!-- Модальное окно результата -->
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('resultModal')">&times;</span>
+        <div id="resultContent"></div>
+    </div>
+</div>
+
+<script>
+async function makeQuickSpread(topic) {
+    try {
+        const response = await fetch('/api/quick-spread', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({topic: topic})
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            // Показываем результат
+            const resultHtml = `
+                <div class="tarot-card-rect">
+                    <div class="card-header">
+                        <span class="card-name">${data.card.name}</span>
+                    </div>
+                    <div class="card-meaning">
+                        <strong>Ответ на тему "${data.topic}":</strong><br>
+                        ${data.interpretation}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('resultContent').innerHTML = resultHtml;
+            document.getElementById('resultModal').classList.add('active');
+            document.getElementById('coinCount').textContent = data.coins;
+        } else {
+            alert(data.error || 'Недостаточно монет!');
+        }
+    } catch (error) {
+        alert('Ошибка: ' + error);
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+</script>
+{% endblock %}
