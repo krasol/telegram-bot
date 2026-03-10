@@ -1,0 +1,156 @@
+/* Добавьте эти стили в конец файла */
+
+/* Стили для карт-прямоугольников */
+.tarot-card-rect {
+    background: linear-gradient(135deg, #2a1a2a 0%, #3d2a3d 100%);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 15px;
+    margin: 10px 0;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.tarot-card-rect:active {
+    transform: scale(0.98);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--accent);
+}
+
+.card-number {
+    font-size: 0.9em;
+    color: var(--accent);
+    font-family: monospace;
+}
+
+.card-name {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.card-meaning {
+    font-size: 1em;
+    color: var(--text);
+    line-height: 1.5;
+    margin: 10px 0;
+    font-style: italic;
+}
+
+.card-footer {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* Сетка для коллекции */
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.collection-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.collection-item .card-number {
+    font-size: 0.8em;
+}
+
+.collection-item .card-name {
+    font-size: 1em;
+    margin: 5px 0;
+}
+
+.collection-item.locked {
+    opacity: 0.5;
+    filter: grayscale(70%);
+    border-color: var(--text-muted);
+}
+
+/* Прогресс бар */
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s;
+    text-align: right;
+    padding-right: 10px;
+    line-height: 20px;
+    color: var(--bg-dark);
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* Анимация вытягивания карты */
+.draw-animation {
+    animation: drawCard 0.5s ease-out;
+}
+
+@keyframes drawCard {
+    0% { transform: translateY(-100px) rotate(-10deg); opacity: 0; }
+    100% { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+/* Кнопки тематик */
+.topics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.topic-button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.topic-button:active {
+    background: rgba(212, 175, 55, 0.2);
+}
+
+.topic-icon {
+    font-size: 2em;
+    margin-bottom: 5px;
+}
+
+.topic-name {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.topic-price {
+    font-size: 0.8em;
+    color: var(--accent);
+    margin-top: 5px;
+}
