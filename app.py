@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Токен
+# Токен (лучше использовать переменные окружения на Render)
 BOT_TOKEN = "8617082336:AAGnOPuLaL6HBclu16ZnW-9UYcNTh1NdeBo"
 logger.info(f"Токен загружен: ✅")
 
@@ -25,7 +25,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "✅ Бот работает локально!"
+    return "✅ Бот работает на Render!"
 
 
 @app.route('/health')
@@ -39,85 +39,46 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f"✅ Команда START от {user.first_name} (ID: {user.id})")
     await update.message.reply_text(
         f"👋 Привет, {user.first_name}!\n\n"
-        f"✅ Бот работает локально!\n"
-        f"🆔 Твой ID: {user.id}\n"
-        f"📅 Время: {time.strftime('%H:%M:%S')}"
+        f"✅ Бот работает на Render!\n"
+        f"🆔 Твой ID: {user.id}"
     )
 
 
-def run_bot():
-    """Запуск бота в отдельном потоке с asyncio"""
+async def run_bot_async():
+    """Асинхронный запуск бота"""
     try:
-        logger.info("🟡 Запускаем бота...")
-        
-        # Создаем и настраиваем приложение
+        # Создаем приложение
         application = Application.builder().token(BOT_TOKEN).build()
         application.add_handler(CommandHandler("start", start))
         
         logger.info("✅ Бот настроен, запускаем polling...")
         
-        # Создаем новый цикл событий для потока
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        
-        # Запускаем бота через asyncio
-        loop.run_until_complete(initialize_and_start(application))
+        # Запускаем бота (этот метод сам управляет циклом событий)
+        await application.run_polling(drop_pending_updates=True)
         
     except Exception as e:
         logger.error(f"❌ Ошибка бота: {e}")
-        if "Conflict" in str(e):
-            logger.error("❌ Конфликт! Возможно бот уже запущен в другом окне")
-            logger.info("💡 Закройте все другие терминалы с ботом и запустите снова")
+        import traceback
+        traceback.print_exc()
 
 
-async def initialize_and_start(application):
-    """Инициализация и запуск бота"""
+def run_bot():
+    """Запуск бота в отдельном потоке"""
     try:
-        await application.initialize()
-        await application.start()
-        
-        logger.info("✅ Бот запущен и готов к работе!")
-        
-        # Запускаем polling
-        await application.updater.start_polling(drop_pending_updates=True)
-        
-        # Держим бота запущенным
-        while True:
-            await asyncio.sleep(1)
-            
-    except asyncio.CancelledError:
-        logger.info("🟡 Получен сигнал остановки...")
-    finally:
-        # Останавливаем бота корректно
-        await application.updater.stop()
-        await application.stop()
-        await application.shutdown()
+        logger.info("🟡 Запускаем бота в потоке...")
+        asyncio.run(run_bot_async())
+    except Exception as e:
+        logger.error(f"❌ Ошибка в потоке бота: {e}")
 
 
-# Функция для запуска Flask
-def run_flask():
-    app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
+# !!! ВАЖНО: Запускаем бота ПРИ ИМПОРТЕ модуля (когда gunicorn загружает app)
+logger.info("🟡 Инициализация приложения - запускаем бота...")
+bot_thread = threading.Thread(target=run_bot, daemon=True)
+bot_thread.start()
+logger.info("✅ Бот запущен в фоновом потоке!")
 
 
+# Этот блок выполняется только при локальном запуске
 if __name__ == "__main__":
-    logger.info("🟡 Создаем поток для бота...")
-    bot_thread = threading.Thread(target=run_bot, daemon=True)
-    bot_thread.start()
-    
-    # Даем боту время запуститься
-    time.sleep(3)
-    logger.info("✅ Бот запущен! Отправь /start в Telegram")
-    
-    # Запускаем Flask в отдельном потоке (опционально)
-    flask_thread = threading.Thread(target=run_flask, daemon=True)
-    flask_thread.start()
-    
-    logger.info("🚀 Запуск Flask на http://127.0.0.1:5000")
-    
-    # Держим главный поток активным
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        logger.info("🟡 Получен сигнал прерывания, останавливаем бота...")
-        sys.exit(0)
+    logger.info("🚀 Локальный запуск Flask...")
+    app.run(host='127.0.0.1', port=5000, debug=True)
