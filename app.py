@@ -25,31 +25,36 @@ def home():
 
 @app.route('/health')
 def health():
-    return {"status": "ok", "python": sys.version.split()[0]}
+    return {
+        "status": "ok",
+        "python": sys.version.split()[0],
+        "bot_token": "✅"
+    }
 
 # Асинхронный обработчик для новой версии
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    logger.info(f"✅ Команда START от {user.first_name}")
+    logger.info(f"✅ Команда START от {user.first_name} (ID: {user.id})")
     await update.message.reply_text(
         f"👋 Привет, {user.first_name}!\n\n"
         f"✅ Бот работает на Python 3.14!\n"
-        f"🆔 Твой ID: {user.id}"
+        f"🆔 Твой ID: {user.id}\n"
+        f"📦 Версия: python-telegram-bot 20.7"
     )
 
 def run_bot():
     """Запуск бота"""
     try:
-        logger.info("🟡 Запускаем бота...")
+        logger.info("🟡 Запускаем бота (версия 20.7)...")
         
-        # Создаем приложение для новой версии
+        # Создаем приложение
         application = Application.builder().token(BOT_TOKEN).build()
         application.add_handler(CommandHandler("start", start))
         
         logger.info("✅ Бот создан, запускаем polling...")
         
         # Запускаем
-        application.run_polling()
+        application.run_polling(drop_pending_updates=True)
         
     except Exception as e:
         logger.error(f"❌ Ошибка бота: {e}")
