@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Карта дня{% endblock %}
+
+{% block content %}
+<div class="card-of-day">
+    <h2>🔮 Карта дня</h2>
+    
+    {% if card %}
+    <!-- Отображаем уже вытянутую карту -->
+    <div class="tarot-card-rect draw-animation">
+        <div class="card-header">
+            <span class="card-number">#{{ card.id }}</span>
+            <span class="card-name">{{ card.name }}</span>
+        </div>
+        <div class="card-meaning">
+            {{ card.meaning }}
+        </div>
+        <div class="card-footer">
+            <span>Краткое значение</span>
+        </div>
+    </div>
+    
+    <!-- Кнопка для глубокой интерпретации -->
+    <button class="button" onclick="getDeepReading({{ card.id }})">
+        Получить глубокую интерпретацию (50 🪙)
+    </button>
+    
+    {% else %}
+    <!-- Предложение вытянуть карту -->
+    <p>Нажми кнопку, чтобы вытянуть карту дня и получить +5 монет!</p>
+    
+    <div id="cardContainer"></div>
+    
+    <button class="button" onclick="drawCardOfDay()">
+        🎴 Вытянуть карту
+    </button>
+    {% endif %}
+    
+    <!-- Информация о коллекции -->
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ progress }}%">
+            {{ progress }}%
+        </div>
+    </div>
+    <p class="collection-info">
+        В коллекции: {{ collected }}/78 карт
+    </p>
+</div>
+
+<!-- Модальное окно для глубокой интерпретации -->
+<div class="modal" id="deepModal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('deepModal')">&times;</span>
+        <h3>🔮 Глубокая интерпретация</h3>
+        <div id="deepMeaning"></div>
+    </div>
+</div>
+
+<script>
+async function drawCardOfDay() {
+    try {
+        const response = await fetch('/api/draw-card', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            // Показываем карту
+            const cardHtml = `
+                <div class="tarot-card-rect draw-animation">
+                    <div class="card-header">
+                        <span class="card-number">#${data.card.id}</span>
+                        <span class="card-name">${data.card.name}</span>
+                    </div>
+                    <div class="card-meaning">
+                        ${data.card.meaning}
+                    </div>
+                    <div class="card-footer">
+                        +5 🪙 получено!
+                    </div>
+                </div>
+                <button class="button" onclick="getDeepReading(${data.card.id})">
+                    Получить глубокую интерпретацию (50 🪙)
+                </button>
+            `;
+            
+            document.getElementById('cardContainer').innerHTML = cardHtml;
+            document.querySelector('button').style.display = 'none';
+            
+            // Обновляем счетчик монет
+            document.getElementById('coinCount').textContent = data.coins;
+            
+            // Показываем уведомление
+            showNotification('+5 монет за карту дня! 🪙');
+        }
+    } catch (error) {
+        alert('Ошибка: ' + error);
+    }
+}
+
+async function getDeepReading(cardId) {
+    try {
+        const response = await fetch('/api/get-deep-reading', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({card_id: cardId})
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('deepMeaning').innerHTML = `
+                <p>${data.meaning}</p>
+                <p>Остаток монет: ${data.coins} 🪙</p>
+            `;
+            document.getElementById('deepModal').classList.add('active');
+            document.getElementById('coinCount').textContent = data.coins;
+        } else {
+            alert(data.error || 'Недостаточно монет!');
+        }
+    } catch (error) {
+        alert('Ошибка: ' + error);
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+function showNotification(message) {
+    // Простое уведомление
+    alert(message);
+}
+</script>
+{% endblock %}
