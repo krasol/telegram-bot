@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Таро{% endblock %}
+
+{% block content %}
+<div class="tarot-menu">
+    <h2>🎴 Таро</h2>
+    
+    <div class="card-grid">
+        <div class="card" onclick="window.location.href='/card-of-day'">
+            <span class="card-icon">🔮</span>
+            <div class="card-title">Карта дня</div>
+            <div class="card-subtitle">Ежедневная карта</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='/quick-spreads'">
+            <span class="card-icon">⚡</span>
+            <div class="card-title">Быстрые расклады</div>
+            <div class="card-subtitle">1 карта = ответ</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='/deep-spreads'">
+            <span class="card-icon">📜</span>
+            <div class="card-title">Глубокие расклады</div>
+            <div class="card-subtitle">Подробный анализ</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='/collection'">
+            <span class="card-icon">📚</span>
+            <div class="card-title">Коллекция</div>
+            <div class="card-subtitle">Собери все карты</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
