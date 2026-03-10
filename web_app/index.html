@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Telegram Mini App</h1>
+        
+        <div class="card user-card">
+            <h2>👤 Информация о пользователе</h2>
+            <div id="userData" class="user-data">
+                <p>Загрузка...</p>
+            </div>
+        </div>
+
+        <div class="card counter-card">
+            <h2>🔢 Счетчик</h2>
+            <div class="counter-display" id="counter">0</div>
+            <div class="button-group">
+                <button class="btn" id="incrementBtn">➕ Увеличить</button>
+                <button class="btn reset" id="resetBtn">🔄 Сбросить</button>
+            </div>
+        </div>
+
+        <div class="card color-card">
+            <h2>🎨 Тема Telegram</h2>
+            <div class="theme-info" id="themeInfo">
+                <p>Текущая тема: <span id="themeName">светлая</span></p>
+                <button class="btn" id="checkTheme">Проверить тему</button>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn send" id="sendDataBtn">📤 Отправить данные</button>
+            <button class="btn close" id="closeBtn">❌ Закрыть</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
