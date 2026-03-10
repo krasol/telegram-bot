@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mini App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        button { background: #0088cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Mini App</h1>
+        <p>Это приложение работает на Render.com</p>
+        <p>Бот обрабатывает команды на ПК</p>
+        <button onclick="alert('Привет!')">Нажми меня</button>
+    </div>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        // Показываем данные пользователя
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.querySelector('h1').innerHTML = `👋 Привет, ${user.first_name}!`;
+        }
+    </script>
+</body>
+</html>
