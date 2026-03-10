@@ -1,111 +1,68 @@
 import os
 import logging
-import asyncio
-from flask import Flask, send_from_directory
-from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-from dotenv import load_dotenv
-
-# Загружаем переменные окружения
-load_dotenv()
+from flask import Flask
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes
+from threading import Thread
 
 # Настройка логирования
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Конфигурация
-TOKEN = os.environ.get('8617082336:AAGnOPuLaL6HBclu16ZnW-9UYcNTh1NdeBo')
-# URL вашего приложения на Render (будет доступен после деплоя)
-# Формат: https://название-приложения.onrender.com
-APP_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://telegram-mini-app.onrender.com')
+# Токен из переменных окружения (НЕ ВСТАВЛЯЙТЕ СЮДА ТОКЕН!)
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
+logger.info(f"Токен загружен: {'✅' if BOT_TOKEN else '❌'}")
 
-# Создаем Flask приложение для хостинга веб-приложения
-app = Flask(__name__, static_folder='web_app')
+# Если нет токена - пишем ошибку но продолжаем
+if not BOT_TOKEN:
+    logger.error("❌ ТОКЕН НЕ НАЙДЕН! Добавьте BOT_TOKEN в переменные окружения на Render!")
+
+# Flask приложение
+app = Flask(__name__)
 
 @app.route('/')
-def serve_index():
-    """Главная страница веб-приложения"""
-    return send_from_directory('web_app', 'index.html')
-
-@app.route('/<path:path>')
-def serve_static(path):
-    """Статические файлы (CSS, JS)"""
-    return send_from_directory('web_app', path)
+def home():
+    token_status = "✅" if BOT_TOKEN else "❌"
+    return f"Бот работает! Статус токена: {token_status}"
 
 @app.route('/health')
 def health():
-    """Проверка здоровья для Render"""
-    return {"status": "ok"}, 200
+    return {
+        "status": "ok",
+        "bot_token_set": bool(BOT_TOKEN)
+    }
 
-# Функции для Telegram бота
+# Простейший обработчик
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик команды /start"""
     user = update.effective_user
-    
-    # Создаем клавиатуру с кнопкой для открытия Mini App
-    keyboard = [[
-        InlineKeyboardButton(
-            "🚀 Открыть мини-приложение", 
-            web_app=WebAppInfo(url=APP_URL)
-        )
-    ]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    welcome_text = (
-        f"👋 Привет, {user.first_name}!\n\n"
-        f"🎮 Это демонстрационное Telegram Mini App\n"
-        f"✅ Работает на Render.com\n\n"
-        f"Нажми кнопку ниже, чтобы открыть приложение:"
-    )
-    
-    await update.message.reply_text(welcome_text, reply_markup=reply_markup)
+    logger.info(f"❗ ПОЛУЧЕНА КОМАНДА START от пользователя {user.id}")
+    await update.message.reply_text(f"Привет, {user.first_name}! Я работаю!")
 
-async def web_app_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка данных от Web App"""
-    if update.message and update.message.web_app_data:
-        data = update.message.web_app_data.data
-        logger.info(f"Получены данные: {data}")
-        
-        await update.message.reply_text(
-            f"✅ Данные получены!\n"
-            f"Вы отправили: {data}"
-        )
-
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Простой эхо-обработчик"""
-    await update.message.reply_text(f"Вы написали: {update.message.text}")
-
-async def run_bot():
-    """Запуск Telegram бота"""
-    if not TOKEN:
-        logger.error("Токен бота не найден!")
+def run_bot():
+    """Запуск бота"""
+    if not BOT_TOKEN:
+        logger.error("❌ НЕТ ТОКЕНА - бот не запущен!")
         return
     
-    # Создаем приложение бота
-    application = Application.builder().token(TOKEN).build()
-    
-    # Добавляем обработчики
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, web_app_data))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-    
-    # Запускаем бота
-    logger.info("Бот запущен...")
-    await application.run_polling()
+    try:
+        logger.info("🟡 Запускаем бота...")
+        app_bot = Application.builder().token(BOT_TOKEN).build()
+        app_bot.add_handler(CommandHandler("start", start))
+        logger.info("✅ Бот запущен и готов к работе!")
+        app_bot.run_polling()
+    except Exception as e:
+        logger.error(f"❌ Ошибка бота: {e}")
 
-if __name__ == '__main__':
-    # Запускаем Flask сервер для веб-приложения
-    port = int(os.environ.get('PORT', 10000))
-    
-    # В отдельном потоке запускаем бота
-    import threading
-    bot_thread = threading.Thread(target=lambda: asyncio.run(run_bot()))
+# Запускаем бота в фоне
+if BOT_TOKEN:
+    logger.info("🟡 Создаем поток для бота...")
+    bot_thread = Thread(target=run_bot)
     bot_thread.daemon = True
     bot_thread.start()
-    
-    # Запускаем Flask
-    logger.info(f"Flask сервер запущен на порту {port}")
+    logger.info("✅ Поток создан")
+else:
+    logger.error("❌ Бот НЕ запущен - нет токена!")
+
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
