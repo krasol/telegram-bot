@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="profile">
+    <h2>👤 Профиль</h2>
+
+    <div class="stats-card">
+        <h3>Статистика</h3>
+        <p>🪙 Монет: <strong>{{ coins }}</strong></p>
+        <p>🎴 Карт в коллекции: <strong>{{ collected|length }}/78</strong></p>
+        <p>📅 Дней в приложении: <strong>7</strong></p>
+    </div>
+
+    <div class="settings-card">
+        <h3>Настройки</h3>
+        <button class="button" onclick="changeZodiac()">♈ Сменить знак зодиака</button>
+        <button class="button secondary" onclick="buySubscription()">⭐ Купить подписку</button>
+    </div>
+</div>
+
+<script>
+function changeZodiac() {
+    alert('Функция смены знака зодиака будет доступна позже');
+}
+
+function buySubscription() {
+    alert('Подписка будет доступна через Telegram Stars');
+}
+</script>
+{% endblock %}
