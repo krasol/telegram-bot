@@ -1,11 +1,12 @@
 import os
 import logging
 import sys
+import time  # 👈 ЭТО БЫЛО ПРОПУЩЕНО!
+import threading
+import asyncio
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
-import threading
-import asyncio
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -63,7 +64,7 @@ def run_bot():
 logger.info("🟡 Создаем поток для бота...")
 bot_thread = threading.Thread(target=run_bot, daemon=True)
 bot_thread.start()
-time.sleep(3)
+time.sleep(3)  # 👈 ТЕПЕРЬ time ИМПОРТИРОВАН!
 logger.info("✅ Поток для бота создан")
 
 if __name__ == "__main__":
