@@ -15,7 +15,18 @@
 .tarot-card-rect:active {
     transform: scale(0.98);
 }
+.user-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
 .card-header {
     display: flex;
     justify-content: space-between;
