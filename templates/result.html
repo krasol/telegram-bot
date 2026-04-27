@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Совместимость</title>
+
+<style>
+@font-face{
+  font-family:'Manrope';
+  src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');
+  font-weight:400;
+}
+@font-face{
+  font-family:'Manrope';
+  src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');
+  font-weight:700;
+}
+@font-face{
+  font-family:'Manrope';
+  src:url("{{ url_for('static', filename='fonts/Manrope-ExtraBold.woff2') }}") format('woff2');
+  font-weight:800;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:#000;
+  display:flex;
+  justify-content:center;
+  color:#fff;
+  font-family:'Manrope',sans-serif;
+}
+
+.page{
+  width:390px;
+  min-height:1401px;
+  position:relative;
+  background:linear-gradient(180deg,#3A1A15 0%,#23170F 45%,#1A0F0A 100%);
+}
+
+/* HEADER */
+.header{position:absolute;width:100%;height:80px;}
+.back{
+  position:absolute;left:16px;top:16px;
+  font-size:28px;text-decoration:none;color:#fff;
+}
+.title{
+  position:absolute;left:64px;top:28px;width:262px;
+  text-align:center;font-weight:700;
+}
+.share{
+  position:absolute;right:16px;top:16px;
+}
+.share img{width:20px}
+
+/* AVATARS */
+.avatars{
+  position:absolute;top:96px;left:78px;
+  display:flex;gap:16px;align-items:center;
+}
+.avatar{
+  width:80px;height:80px;border-radius:50%;
+  border:2px solid #5847BA;
+  overflow:hidden;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+
+.heart img{width:25px}
+
+/* SCORE */
+.score-card{
+  position:absolute;top:200px;left:16px;
+  width:358px;height:153px;
+  border-radius:16px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+}
+.percent{
+  position:absolute;top:23px;width:100%;
+  text-align:center;font-size:60px;
+  font-weight:700;
+}
+.score-label{
+  position:absolute;top:98px;width:100%;
+  text-align:center;font-size:14px;
+}
+
+/* QUOTE */
+.quote{
+  position:absolute;top:377px;width:100%;
+  text-align:center;font-size:16px;
+  line-height:24px;
+}
+
+/* METRICS */
+.metrics{
+  position:absolute;top:487px;left:16px;
+  width:358px;display:flex;
+  flex-direction:column;gap:16px;
+}
+
+.metric{
+  padding:16px;border-radius:20px;
+  background:rgba(255,255,255,.05);
+}
+
+.metric-top{
+  display:flex;justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.progress{
+  height:8px;border-radius:999px;
+  background:#111;overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:#5847BA;
+}
+
+.w92{width:92%}
+.w85{width:85%}
+.w78{width:78%}
+.w81{width:81%}
+
+/* CARDS */
+.links{
+  position:absolute;top:895px;left:16px;
+  width:358px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.link-card{
+  height:112px;border-radius:24px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:10px;text-decoration:none;
+  font-size:12px;text-align:center;
+}
+
+.purple{background:#A413EC;color:#fff;}
+.light{background:#EBE0FF;color:#28274B;}
+
+.link-icon{width:24px;height:24px}
+
+/* VIP */
+.vip{
+  position:absolute;top:1155px;left:17px;
+  width:356px;height:236px;
+  border-radius:16px;
+  background:#A413EC;
+  text-align:center;
+  padding-top:30px;
+}
+
+.vip-btn{
+  display:inline-block;margin-top:15px;
+  padding:12px 30px;
+  background:#fff;color:#A413EC;
+  border-radius:30px;
+  text-decoration:none;
+  font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+<header class="header">
+  <a href="/match" class="back">←</a>
+  <div class="title">Совместимость</div>
+  <a href="#" class="share">
+    <img src="{{ url_for('static', filename='img/share.png') }}">
+  </a>
+</header>
+
+<section class="avatars">
+  <div class="avatar">
+    <img src="{{ url_for('static', filename='img/profile.png') }}">
+  </div>
+
+  <div class="heart">
+    <img src="{{ url_for('static', filename='img/heart.png') }}">
+  </div>
+
+  <div class="avatar">
+    <img src="{{ url_for('static', filename='img/profile.png') }}">
+  </div>
+</section>
+
+<section class="score-card">
+  <div class="percent">92%</div>
+  <div class="score-label">Очень высокая совместимость</div>
+</section>
+
+<div class="quote">
+  “Ваш союз строится на глубокой<br>
+  эмоциональной связи и сильном<br>
+  взаимном притяжении.”
+</div>
+
+<section class="metrics">
+
+<div class="metric">
+  <div class="metric-top">
+    <div>❤️ Эмоциональная</div>
+    <div>92%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w92"></div></div>
+</div>
+
+<div class="metric">
+  <div class="metric-top">
+    <div>🧠 Интеллектуальная</div>
+    <div>85%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w85"></div></div>
+</div>
+
+<div class="metric">
+  <div class="metric-top">
+    <div>⚡ Физическая</div>
+    <div>78%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w78"></div></div>
+</div>
+
+<div class="metric">
+  <div class="metric-top">
+    <div>⭐ Потенциал союза</div>
+    <div>81%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w81"></div></div>
+</div>
+
+</section>
+
+<section class="links">
+
+<a href="#" class="link-card purple">
+  <img class="link-icon" src="{{ url_for('static', filename='img/strong.png') }}">
+  <div>Сильные стороны союза</div>
+</a>
+
+<a href="#" class="link-card light">
+  <img class="link-icon" src="{{ url_for('static', filename='img/brain.png') }}">
+  <div>Зоны роста</div>
+</a>
+
+<a href="#" class="link-card light">
+  <img class="link-icon" src="{{ url_for('static', filename='img/tips.png') }}">
+  <div>Советы для пары</div>
+</a>
+
+<a href="#" class="link-card purple">
+  <img class="link-icon" src="{{ url_for('static', filename='img/karma.png') }}">
+  <div>Кармический разбор</div>
+</a>
+
+</section>
+
+<section class="vip">
+  <div>Полный разбор совместимости</div>
+  <div>Откройте тайны ваших отношений</div>
+  <a href="/vip" class="vip-btn">Получить VIP прогноз</a>
+</section>
+
+</div>
+
+</body>
+</html>

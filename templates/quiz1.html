@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вопрос 1</title>
+
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-ExtraBold.woff2') }}") format('woff2');font-weight:800}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  min-height:100vh;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  color:#fff;
+  font-family:'Manrope','Liberation Sans',Arial,sans-serif;
+}
+
+.page{
+  width:390px;
+  height:804px;
+  position:relative;
+  overflow:hidden;
+  background:#131020;
+}
+
+.bg{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+}
+
+.blur-purple{
+  position:absolute;
+  width:289px;
+  height:393px;
+  left:-57px;
+  top:49px;
+  background:rgba(144,0,255,.10);
+  border-radius:9999px;
+  filter:blur(74px);
+}
+
+.blur-orange{
+  position:absolute;
+  width:234px;
+  height:354px;
+  left:195px;
+  top:354px;
+  background:rgba(255,106,0,.05);
+  border-radius:9999px;
+  filter:blur(60px);
+}
+
+.back{
+  position:absolute;
+  left:16px;
+  top:16px;
+  width:48px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  z-index:5;
+}
+
+.back svg{
+  width:16px;
+  height:16px;
+}
+
+.step{
+  position:absolute;
+  left:118px;
+  top:26px;
+  width:153px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#F1F5F9;
+  font-size:18px;
+  font-weight:700;
+  line-height:22.5px;
+  z-index:5;
+}
+
+.title{
+  position:absolute;
+  left:28px;
+  top:146px;
+  width:335px;
+  text-align:center;
+  color:#F1F5F9;
+  font-size:22px;
+  font-weight:700;
+  line-height:25px;
+  z-index:2;
+}
+
+.subtitle{
+  position:absolute;
+  left:55px;
+  top:236px;
+  width:280px;
+  text-align:center;
+  color:#E1D6F7;
+  font-size:16px;
+  font-weight:400;
+  line-height:20px;
+  z-index:2;
+}
+
+.options{
+  position:absolute;
+  left:24px;
+  top:306px;
+  width:342px;
+  z-index:3;
+}
+
+.option{
+  width:342px;
+  min-height:56px;
+  margin-bottom:12px;
+  padding:15px 16px;
+  border-radius:24px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+  backdrop-filter:blur(2px);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+}
+
+.option input{
+  display:none;
+}
+
+.radio{
+  width:20px;
+  height:20px;
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,.30);
+  flex-shrink:0;
+  position:relative;
+}
+
+.option-text{
+  flex:1;
+  color:#fff;
+  font-size:15px;
+  font-weight:400;
+  line-height:22px;
+  word-break:normal;
+  overflow-wrap:break-word;
+}
+
+.option:has(input:checked){
+  background:rgba(88,68,191,.10);
+  border-color:#5844BF;
+  box-shadow:0 0 15px -3px #5844BF;
+}
+
+.option input:checked + .radio{
+  width:24px;
+  height:24px;
+  border:0;
+  background:#5847BA;
+}
+
+.option input:checked + .radio:after{
+  content:'';
+  position:absolute;
+  left:6px;
+  top:6px;
+  width:12px;
+  height:12px;
+  border-radius:999px;
+  background:#fff;
+}
+
+.next{
+  position:absolute;
+  left:24px;
+  top:718px;
+  width:342px;
+  height:56px;
+  border-radius:999px;
+  background:#5545B8;
+  box-shadow:0 8px 30px rgba(64,0,255,.28);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  color:#fff;
+  text-decoration:none;
+  font-size:16px;
+  font-weight:800;
+  line-height:24px;
+  z-index:5;
+}
+
+.next svg{
+  width:16px;
+  height:16px;
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <div class="bg">
+    <div class="blur-purple"></div>
+    <div class="blur-orange"></div>
+  </div>
+
+  <a href="/match2" class="back" aria-label="Назад">
+    <svg viewBox="0 0 16 16" fill="none">
+      <path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="#F1F5F9"/>
+    </svg>
+  </a>
+
+  <div class="step">3 из 7</div>
+
+  <div class="title">
+    Есть ли у вас чувство, что необходимо серьезное выяснение отношений?
+  </div>
+
+  <div class="subtitle">
+    Поможет понять уровень<br>
+    напряжения между вами
+  </div>
+
+  <form class="options">
+    <label class="option">
+      <input type="radio" name="q1" checked>
+      <span class="radio"></span>
+      <span class="option-text">💔 Да, но это бесполезно…</span>
+    </label>
+
+    <label class="option">
+      <input type="radio" name="q1">
+      <span class="radio"></span>
+      <span class="option-text">⚠️ Да, это необходимо</span>
+    </label>
+
+    <label class="option">
+      <input type="radio" name="q1">
+      <span class="radio"></span>
+      <span class="option-text">🤔 Иногда чувствую необходимость</span>
+    </label>
+
+    <label class="option">
+      <input type="radio" name="q1">
+      <span class="radio"></span>
+      <span class="option-text">❤️ Такой необходимости нет</span>
+    </label>
+  </form>
+
+  <a href="/quiz2" class="next">
+    Далее
+    <svg viewBox="0 0 16 16" fill="none">
+      <path d="M12.175 9H0V7H12.175L6.575 1.4L8 0L16 8L8 16L6.575 14.6L12.175 9Z" fill="white"/>
+    </svg>
+  </a>
+
+</div>
+</body>
+</html>

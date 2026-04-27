@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дата рождения</title>
+
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-ExtraBold.woff2') }}") format('woff2');font-weight:800}
+@font-face{font-family:'Public Sans';src:url("{{ url_for('static', filename='fonts/PublicSans-Regular.woff2') }}") format('woff2');font-weight:400}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  min-height:100vh;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  color:#fff;
+  font-family:'Manrope',Arial,sans-serif;
+}
+
+.page{
+  width:390px;
+  height:884px;
+  position:relative;
+  overflow:hidden;
+  background:#1D141F;
+}
+
+.bg{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+}
+
+.blur-purple{
+  position:absolute;
+  width:289px;
+  height:393px;
+  left:-57px;
+  top:49px;
+  background:rgba(144,0,255,.10);
+  border-radius:9999px;
+  filter:blur(74px);
+}
+
+.back{
+  position:absolute;
+  left:16px;
+  top:16px;
+  width:48px;
+  height:48px;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  z-index:5;
+}
+
+.back svg{width:16px;height:16px}
+
+.step{
+  position:absolute;
+  left:119px;
+  top:26px;
+  width:153px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#F1F5F9;
+  font-family:'Liberation Sans','Manrope',Arial,sans-serif;
+  font-size:18px;
+  font-weight:700;
+  line-height:22.5px;
+  z-index:5;
+}
+
+.header{
+  position:absolute;
+  left:24px;
+  top:144px;
+  width:342px;
+  z-index:2;
+}
+
+.title{
+  width:380px;
+  height:45px;
+  margin-left:-19px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#fff;
+  font-size:30px;
+  font-weight:700;
+  line-height:30px;
+}
+
+.subtitle-wrap{
+  position:relative;
+  width:342px;
+  height:60px;
+  margin-top:16px;
+}
+
+.subtitle{
+  position:absolute;
+  left:-5px;
+  top:0;
+  width:353px;
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#E1D6F7;
+  font-size:16px;
+  font-weight:400;
+  line-height:20px;
+}
+
+.picker{
+  position:absolute;
+  left:24px;
+  top:340px;
+  width:342px;
+  height:256px;
+  z-index:3;
+  overflow:hidden;
+  touch-action:none;
+  user-select:none;
+}
+
+.selection-border{
+  position:absolute;
+  left:0;
+  top:112px;
+  width:342px;
+  height:56px;
+  background:rgba(0,0,0,.05);
+  border-top:1px solid rgba(255,255,255,.24);
+  border-bottom:1px solid rgba(255,255,255,.24);
+  z-index:1;
+}
+
+.mask{
+  pointer-events:none;
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,#1D141F 0%,rgba(29,20,31,0) 18%,rgba(29,20,31,0) 82%,#1D141F 100%);
+  z-index:5;
+}
+
+.columns{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  z-index:2;
+}
+
+.wheel{
+  height:256px;
+  overflow:hidden;
+  position:relative;
+  flex-shrink:0;
+  touch-action:none;
+  cursor:grab;
+}
+
+.wheel:active{cursor:grabbing}
+.days{width:85.5px;font-family:'Public Sans','Manrope',Arial,sans-serif}
+.months{width:171px;font-family:'Manrope',Arial,sans-serif}
+.years{width:85.5px;font-family:'Manrope',Arial,sans-serif}
+
+.wheel-track{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  will-change:transform;
+}
+
+.item{
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:16px;
+  font-weight:400;
+  line-height:24px;
+  white-space:nowrap;
+  transition:color .15s ease,font-size .15s ease,font-weight .15s ease;
+}
+
+.item.active{
+  color:#7261DA;
+  font-family:'Manrope',Arial,sans-serif;
+  font-size:22px;
+  font-weight:700;
+  line-height:32px;
+}
+
+.secure{
+  position:absolute;
+  left:24px;
+  top:657px;
+  width:342px;
+  height:16px;
+  z-index:5;
+}
+
+.secure-icon{
+  position:absolute;
+  left:88.29px;
+  top:1.57px;
+  width:11px;
+  height:13px;
+}
+
+.secure-text{
+  position:absolute;
+  left:106.79px;
+  top:0;
+  width:180px;
+  height:16px;
+  display:flex;
+  align-items:center;
+  color:#fff;
+  font-size:12px;
+  font-weight:400;
+  line-height:16px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+.next-wrap{
+  position:absolute;
+  left:0;
+  top:796px;
+  width:390px;
+  padding:0 24px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:5;
+}
+
+.next{
+  width:342px;
+  height:56px;
+  max-width:448px;
+  position:relative;
+  border:0;
+  border-radius:9999px;
+  background:linear-gradient(90deg,#5545B8 0%,#7565DE 100%);
+  box-shadow:0 8px 30px rgba(64,0,255,.28);
+  color:#fff;
+  text-decoration:none;
+  display:block;
+  cursor:pointer;
+}
+
+.next span{
+  position:absolute;
+  left:133.9px;
+  top:16px;
+  width:50.2px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  line-height:24px;
+}
+
+.next svg{
+  position:absolute;
+  left:192.1px;
+  top:20px;
+  width:16px;
+  height:16px;
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+  <div class="bg">
+    <div class="blur-purple"></div>
+  </div>
+
+  <a href="/quiz0" class="back" aria-label="Назад">
+    <svg viewBox="0 0 16 16" fill="none">
+      <path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="#F1F5F9"/>
+    </svg>
+  </a>
+
+  <div class="step">1 из 5</div>
+
+  <header class="header">
+    <h1 class="title">Когда вы родились?</h1>
+    <div class="subtitle-wrap">
+      <p class="subtitle">Пожалуйста, укажите точную дату.<br>Это необходимо для построения точного персонального прогноза.</p>
+    </div>
+  </header>
+
+  <section class="picker" aria-label="Выбор даты рождения">
+    <div class="selection-border"></div>
+
+    <div class="columns">
+      <div class="wheel days" data-name="day" data-selected="14"></div>
+      <div class="wheel months" data-name="month" data-selected="Ноябрь"></div>
+      <div class="wheel years" data-name="year" data-selected="1995"></div>
+    </div>
+
+    <div class="mask"></div>
+  </section>
+
+  <div class="secure">
+    <svg class="secure-icon" viewBox="0 0 11 13" fill="none">
+      <path d="M4.07422 9.35156L8.75 4.67578L7.92969 3.85547L4.07422 7.68359L2.57031 6.17969L1.75 7L4.07422 9.35156ZM5.25 0L10.5 2.35156V5.85156C10.5 7.47396 9.9987 8.95508 8.99609 10.2949C7.99349 11.6348 6.74479 12.487 5.25 12.8516C3.75521 12.487 2.50651 11.6348 1.50391 10.2949C0.501302 8.95508 0 7.47396 0 5.85156V2.35156L5.25 0Z" fill="white"/>
+    </svg>
+    <div class="secure-text">Данные защищены</div>
+  </div>
+
+  <div class="next-wrap">
+    <a href="/birthplace" class="next">
+      <span>Далее</span>
+      <svg viewBox="0 0 16 16" fill="none">
+        <path d="M12.175 9H0V7H12.175L6.575 1.4L8 0L16 8L8 16L6.575 14.6L12.175 9Z" fill="white"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<script>
+const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const wheelsData = {
+  day: Array.from({length:31}, (_,i)=>String(i+1)),
+  month: monthNames,
+  year: Array.from({length:90}, (_,i)=>String(2024-i))
+};
+const ITEM_H = 56;
+const CENTER_OFFSET = 112;
+const selectedDate = { day: '14', month: '11', year: '1995' };
+
+function makeWheel(wheel){
+  const name = wheel.dataset.name;
+  const data = wheelsData[name];
+  const selected = wheel.dataset.selected;
+  let index = Math.max(0, data.indexOf(selected));
+  let startY = 0;
+  let startIndex = index;
+
+  const track = document.createElement('div');
+  track.className = 'wheel-track';
+
+  data.forEach((value, i) => {
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.textContent = value;
+    item.dataset.index = i;
+    track.appendChild(item);
+  });
+
+  wheel.appendChild(track);
+
+  function render(){
+    track.style.transform = `translateY(${CENTER_OFFSET - index * ITEM_H}px)`;
+    [...track.children].forEach((item, i) => item.classList.toggle('active', i === index));
+
+    if(name === 'month') selectedDate.month = String(index + 1).padStart(2, '0');
+    else selectedDate[name] = data[index];
+  }
+
+  function setByDelta(deltaY){
+    const next = Math.round(startIndex - deltaY / ITEM_H);
+    index = Math.max(0, Math.min(data.length - 1, next));
+    render();
+  }
+
+  wheel.addEventListener('pointerdown', e => {
+    wheel.setPointerCapture(e.pointerId);
+    startY = e.clientY;
+    startIndex = index;
+  });
+
+  wheel.addEventListener('pointermove', e => {
+    if(!wheel.hasPointerCapture(e.pointerId)) return;
+    setByDelta(e.clientY - startY);
+  });
+
+  wheel.addEventListener('pointerup', e => {
+    if(wheel.hasPointerCapture(e.pointerId)) wheel.releasePointerCapture(e.pointerId);
+  });
+
+  wheel.addEventListener('wheel', e => {
+    e.preventDefault();
+    index = Math.max(0, Math.min(data.length - 1, index + Math.sign(e.deltaY)));
+    render();
+  }, {passive:false});
+
+  track.addEventListener('click', e => {
+    const item = e.target.closest('.item');
+    if(!item) return;
+    index = Number(item.dataset.index);
+    render();
+  });
+
+  render();
+}
+
+document.querySelectorAll('.wheel').forEach(makeWheel);
+
+document.querySelector('.next').addEventListener('click', () => {
+  sessionStorage.setItem('birthdate', `${selectedDate.year}-${selectedDate.month}-${String(selectedDate.day).padStart(2,'0')}`);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Где вы родились?</title>
+
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Liberation Sans';src:url("{{ url_for('static', filename='fonts/LiberationSans-Regular.woff2') }}") format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Liberation Sans';src:url("{{ url_for('static', filename='fonts/LiberationSans-Bold.woff2') }}") format('woff2');font-weight:700;font-style:normal;font-display:swap}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:#000}
+body{display:flex;justify-content:center;color:#fff;font-family:'Manrope',Arial,sans-serif}
+button,input,a{font:inherit;color:inherit}
+a{text-decoration:none}
+
+.page{
+  width:390px;
+  height:1076px;
+  position:relative;
+  overflow:hidden;
+  background:#1D141F;
+}
+
+.overlay-blur{
+  position:absolute;
+  width:289px;
+  height:393px;
+  left:-57px;
+  top:49px;
+  background:rgba(145,0,255,.10);
+  box-shadow:148px 148px 148px rgba(145,0,255,.10);
+  border-radius:9999px;
+  filter:blur(74px);
+  pointer-events:none;
+}
+
+.back{
+  position:absolute;
+  width:48px;
+  height:48px;
+  left:16px;
+  top:16px;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:5;
+}
+
+.step{
+  position:absolute;
+  width:153px;
+  height:28px;
+  left:119px;
+  top:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#F1F5F9;
+  font-family:'Liberation Sans','Manrope',Arial,sans-serif;
+  font-size:18px;
+  font-weight:700;
+  line-height:22.5px;
+  z-index:4;
+}
+
+.progress-space{
+  position:absolute;
+  width:56px;
+  height:48px;
+  left:167px;
+  top:96px;
+}
+
+.header{
+  position:absolute;
+  width:342px;
+  left:24px;
+  top:144px;
+  padding-bottom:40px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  align-items:flex-start;
+  z-index:2;
+}
+
+.title{
+  width:342px;
+  height:45px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#fff;
+  font-size:30px;
+  font-weight:700;
+  line-height:30px;
+}
+
+.subtitle-wrap{
+  width:342px;
+  height:96px;
+  position:relative;
+}
+
+.subtitle{
+  position:absolute;
+  width:353px;
+  height:60px;
+  left:-5px;
+  top:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#E1D6F7;
+  font-size:16px;
+  font-weight:400;
+  line-height:20px;
+}
+
+.search-area{
+  position:absolute;
+  width:390px;
+  height:88px;
+  left:0;
+  top:317px;
+  z-index:3;
+}
+
+.search-label{
+  position:absolute;
+  width:342px;
+  height:56px;
+  left:24px;
+  top:16px;
+  background:#23132A;
+  border-radius:12px;
+  outline:1px solid #745DFF;
+  outline-offset:-1px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
+}
+
+.search-icon{
+  position:absolute;
+  height:54px;
+  left:1px;
+  top:1px;
+  padding-left:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.search-input{
+  position:absolute;
+  width:287px;
+  height:24px;
+  left:41px;
+  top:16px;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  text-align:center;
+  font-size:16px;
+  font-weight:400;
+  line-height:24px;
+}
+.search-input::placeholder{color:#fff;opacity:1}
+
+.popular-wrap{
+  position:absolute;
+  width:390px;
+  height:310px;
+  left:0;
+  top:402px;
+  z-index:2;
+}
+
+.popular-box{
+  position:absolute;
+  width:390px;
+  height:294px;
+  left:0;
+  top:16px;
+}
+
+.popular-head{
+  position:absolute;
+  width:342px;
+  height:28px;
+  left:24px;
+  top:0;
+}
+
+.popular-title{
+  position:absolute;
+  width:210px;
+  left:0;
+  top:0;
+  display:flex;
+  align-items:center;
+  color:#fff;
+  font-size:18px;
+  font-weight:700;
+  line-height:28px;
+}
+
+.sparkle{
+  position:absolute;
+  left:320px;
+  top:3px;
+  width:22px;
+  height:22px;
+}
+
+.city-list{
+  position:absolute;
+  width:342px;
+  left:24px;
+  top:44px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.city-btn{
+  width:342px;
+  min-height:76px;
+  padding:16px;
+  background:#23132A;
+  border:0;
+  border-radius:12px;
+  outline:1px solid rgba(0,0,0,0);
+  outline-offset:-1px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:16px;
+  cursor:pointer;
+}
+
+.city-btn:active{transform:scale(.995)}
+
+.city-icon-box{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(188,167,158,.10);
+  border-radius:8px;
+}
+
+.city-text{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  overflow:hidden;
+}
+
+.city-name{
+  width:100%;
+  display:flex;
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  line-height:24px;
+  white-space:nowrap;
+}
+
+.country{
+  width:100%;
+  color:rgba(255,255,255,.40);
+  font-family:'Liberation Sans','Manrope',Arial,sans-serif;
+  font-size:12px;
+  font-weight:400;
+  line-height:16px;
+  text-align:left;
+}
+
+.city-btn:first-child .country{color:#fff;font-family:'Manrope',Arial,sans-serif;font-size:16px;font-weight:700;line-height:24px}
+.city-arrow{width:8px;height:12px;flex:0 0 8px}
+
+.location-btn{
+  position:absolute;
+  width:342px;
+  height:50px;
+  left:24px;
+  top:737px;
+  background:#24142B;
+  border:0;
+  border-radius:12px;
+  outline:1px solid #745DFF;
+  outline-offset:-1px;
+  z-index:4;
+  cursor:pointer;
+}
+
+.location-icon{position:absolute;left:18px;top:16px;width:19px;height:19px}
+.location-text{
+  position:absolute;
+  width:287px;
+  height:24px;
+  left:41px;
+  top:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#fff;
+  font-size:16px;
+  font-weight:400;
+  line-height:24px;
+}
+
+.info-card{
+  position:absolute;
+  width:342px;
+  height:110px;
+  left:24px;
+  top:829px;
+  background:#fff;
+  overflow:hidden;
+  border-radius:16px;
+  outline:1px solid rgba(236,91,19,.10);
+  outline-offset:-1px;
+  z-index:2;
+}
+
+.info-bg-icon{
+  position:absolute;
+  left:269px;
+  top:45px;
+  opacity:.10;
+}
+.info-content{
+  position:absolute;
+  width:292px;
+  height:60px;
+  left:25px;
+  top:25px;
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+}
+.info-text{
+  width:237px;
+  height:60px;
+  display:flex;
+  align-items:center;
+  color:#475569;
+  font-size:14px;
+  font-weight:400;
+  line-height:20px;
+}
+
+.bottom-nav{
+  position:absolute;
+  width:390px;
+  left:0;
+  top:988px;
+  padding-left:24px;
+  padding-right:24px;
+  padding-bottom:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:5;
+}
+
+.next-btn{
+  position:relative;
+  width:342px;
+  height:56px;
+  border:0;
+  display:block;
+  background:linear-gradient(90deg,#5545B8 0%,#7565DE 100%);
+  box-shadow:0 8px 30px rgba(64,0,255,.28);
+  border-radius:9999px;
+}
+.next-label{
+  position:absolute;
+  left:133.9px;
+  top:16px;
+  width:50.2px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  line-height:24px;
+}
+.next-arrow{position:absolute;left:192.1px;top:20px;width:16px;height:16px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="overlay-blur"></div>
+
+  <a href="/birthdate" class="back" aria-label="Назад">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="#F1F5F9"/></svg>
+  </a>
+
+  <div class="step">2 из 5</div>
+  <div class="progress-space"></div>
+
+  <section class="header">
+    <h1 class="title">Где вы родились?</h1>
+    <div class="subtitle-wrap">
+      <p class="subtitle">Место рождения необходимо для максимально точного расчета натальной карты и положения звезд.</p>
+    </div>
+  </section>
+
+  <div class="search-area">
+    <label class="search-label">
+      <span class="search-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.6 18L10.3 11.7C9.8 12.1 9.225 12.4167 8.575 12.65C7.925 12.8833 7.23333 13 6.5 13C4.68333 13 3.14583 12.3708 1.8875 11.1125C0.629167 9.85417 0 8.31667 0 6.5C0 4.68333 0.629167 3.14583 1.8875 1.8875C3.14583 0.629167 4.68333 0 6.5 0C8.31667 0 9.85417 0.629167 11.1125 1.8875C12.3708 3.14583 13 4.68333 13 6.5C13 7.23333 12.8833 7.925 12.65 8.575C12.4167 9.225 12.1 9.8 11.7 10.3L18 16.6L16.6 18ZM6.5 11C7.75 11 8.8125 10.5625 9.6875 9.6875C10.5625 8.8125 11 7.75 11 6.5C11 5.25 10.5625 4.1875 9.6875 3.3125C8.8125 2.4375 7.75 2 6.5 2C5.25 2 4.1875 2.4375 3.3125 3.3125C2.4375 4.1875 2 5.25 2 6.5C2 7.75 2.4375 8.8125 3.3125 9.6875C4.1875 10.5625 5.25 11 6.5 11Z" fill="#BCA79E" fill-opacity="0.6"/></svg>
+      </span>
+      <input class="search-input" type="text" placeholder="Введите город или регион" autocomplete="off">
+    </label>
+  </div>
+
+  <section class="popular-wrap">
+    <div class="popular-box">
+      <div class="popular-head">
+        <h2 class="popular-title">Популярные города</h2>
+        <svg class="sparkle" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 8L16.75 5.25L14 4L16.75 2.75L18 0L19.25 2.75L22 4L19.25 5.25L18 8ZM18 22L16.75 19.25L14 18L16.75 16.75L18 14L19.25 16.75L22 18L19.25 19.25L18 22ZM8 19L5.5 13.5L0 11L5.5 8.5L8 3L10.5 8.5L16 11L10.5 13.5L8 19ZM8 14.15L9 12L11.15 11L9 10L8 7.85L7 10L4.85 11L7 12L8 14.15Z" fill="white"/></svg>
+      </div>
+
+      <div class="city-list">
+        <button class="city-btn" type="button" data-city="Москва">
+          <span class="city-icon-box"><svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10C8.55 10 9.02083 9.80417 9.4125 9.4125C9.80417 9.02083 10 8.55 10 8C10 7.45 9.80417 6.97917 9.4125 6.5875C9.02083 6.19583 8.55 6 8 6C7.45 6 6.97917 6.19583 6.5875 6.5875C6.19583 6.97917 6 7.45 6 8C6 8.55 6.19583 9.02083 6.5875 9.4125C6.97917 9.80417 7.45 10 8 10ZM8 17.35C10.0333 15.4833 11.5417 13.7875 12.525 12.2625C13.5083 10.7375 14 9.38333 14 8.2C14 6.38333 13.4208 4.89583 12.2625 3.7375C11.1042 2.57917 9.68333 2 8 2C6.31667 2 4.89583 2.57917 3.7375 3.7375C2.57917 4.89583 2 6.38333 2 8.2C2 9.38333 2.49167 10.7375 3.475 12.2625C4.45833 13.7875 5.96667 15.4833 8 17.35ZM8 20C5.31667 17.7167 3.3125 15.5958 1.9875 13.6375C0.6625 11.6792 0 9.86667 0 8.2C0 5.7 0.804167 3.70833 2.4125 2.225C4.02083 0.741667 5.88333 0 8 0C10.1167 0 11.9792 0.741667 13.5875 2.225C15.1958 3.70833 16 5.7 16 8.2C16 9.86667 15.3375 11.6792 14.0125 13.6375C12.6875 15.5958 10.6833 17.7167 8 20Z" fill="white" fill-opacity="0.6"/></svg></span>
+          <span class="city-text"><span class="city-name">Москва</span><span class="country">Россия</span></span>
+          <svg class="city-arrow" width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z" fill="#745DFF"/></svg>
+        </button>
+
+        <button class="city-btn" type="button" data-city="Санкт-Петербург">
+          <span class="city-icon-box"><svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10C8.55 10 9.02083 9.80417 9.4125 9.4125C9.80417 9.02083 10 8.55 10 8C10 7.45 9.80417 6.97917 9.4125 6.5875C9.02083 6.19583 8.55 6 8 6C7.45 6 6.97917 6.19583 6.5875 6.5875C6.19583 6.97917 6 7.45 6 8C6 8.55 6.19583 9.02083 6.5875 9.4125C6.97917 9.80417 7.45 10 8 10ZM8 17.35C10.0333 15.4833 11.5417 13.7875 12.525 12.2625C13.5083 10.7375 14 9.38333 14 8.2C14 6.38333 13.4208 4.89583 12.2625 3.7375C11.1042 2.57917 9.68333 2 8 2C6.31667 2 4.89583 2.57917 3.7375 3.7375C2.57917 4.89583 2 6.38333 2 8.2C2 9.38333 2.49167 10.7375 3.475 12.2625C4.45833 13.7875 5.96667 15.4833 8 17.35ZM8 20C5.31667 17.7167 3.3125 15.5958 1.9875 13.6375C0.6625 11.6792 0 9.86667 0 8.2C0 5.7 0.804167 3.70833 2.4125 2.225C4.02083 0.741667 5.88333 0 8 0C10.1167 0 11.9792 0.741667 13.5875 2.225C15.1958 3.70833 16 5.7 16 8.2C16 9.86667 15.3375 11.6792 14.0125 13.6375C12.6875 15.5958 10.6833 17.7167 8 20Z" fill="white" fill-opacity="0.4"/></svg></span>
+          <span class="city-text"><span class="city-name">Санкт-Петербург</span><span class="country">Россия</span></span>
+          <svg class="city-arrow" width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z" fill="#745DFF"/></svg>
+        </button>
+
+        <button class="city-btn" type="button" data-city="Новосибирск">
+          <span class="city-icon-box"><svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10C8.55 10 9.02083 9.80417 9.4125 9.4125C9.80417 9.02083 10 8.55 10 8C10 7.45 9.80417 6.97917 9.4125 6.5875C9.02083 6.19583 8.55 6 8 6C7.45 6 6.97917 6.19583 6.5875 6.5875C6.19583 6.97917 6 7.45 6 8C6 8.55 6.19583 9.02083 6.5875 9.4125C6.97917 9.80417 7.45 10 8 10ZM8 17.35C10.0333 15.4833 11.5417 13.7875 12.525 12.2625C13.5083 10.7375 14 9.38333 14 8.2C14 6.38333 13.4208 4.89583 12.2625 3.7375C11.1042 2.57917 9.68333 2 8 2C6.31667 2 4.89583 2.57917 3.7375 3.7375C2.57917 4.89583 2 6.38333 2 8.2C2 9.38333 2.49167 10.7375 3.475 12.2625C4.45833 13.7875 5.96667 15.4833 8 17.35ZM8 20C5.31667 17.7167 3.3125 15.5958 1.9875 13.6375C0.6625 11.6792 0 9.86667 0 8.2C0 5.7 0.804167 3.70833 2.4125 2.225C4.02083 0.741667 5.88333 0 8 0C10.1167 0 11.9792 0.741667 13.5875 2.225C15.1958 3.70833 16 5.7 16 8.2C16 9.86667 15.3375 11.6792 14.0125 13.6375C12.6875 15.5958 10.6833 17.7167 8 20Z" fill="white" fill-opacity="0.4"/></svg></span>
+          <span class="city-text"><span class="city-name">Новосибирск</span><span class="country">Россия</span></span>
+          <svg class="city-arrow" width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.6 6L0 1.4L1.4 0L7.4 6L1.4 12L0 10.6L4.6 6Z" fill="#745DFF"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <button class="location-btn" type="button" id="locationBtn">
+    <svg class="location-icon" width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.29167 18.25V16.5833C6.55556 16.3889 5.06597 15.6701 3.82292 14.4271C2.57986 13.184 1.86111 11.6944 1.66667 9.95833H0V8.29167H1.66667C1.86111 6.55556 2.57986 5.06597 3.82292 3.82292C5.06597 2.57986 6.55556 1.86111 8.29167 1.66667V0H9.95833V1.66667C11.6944 1.86111 13.184 2.57986 14.4271 3.82292C15.6701 5.06597 16.3889 6.55556 16.5833 8.29167H18.25V9.95833H16.5833C16.3889 11.6944 15.6701 13.184 14.4271 14.4271C13.184 15.6701 11.6944 16.3889 9.95833 16.5833V18.25H8.29167ZM9.125 14.9583C10.7361 14.9583 12.1111 14.3889 13.25 13.25C14.3889 12.1111 14.9583 10.7361 14.9583 9.125C14.9583 7.51389 14.3889 6.13889 13.25 5C12.1111 3.86111 10.7361 3.29167 9.125 3.29167C7.51389 3.29167 6.13889 3.86111 5 5C3.86111 6.13889 3.29167 7.51389 3.29167 9.125C3.29167 10.7361 3.86111 12.1111 5 13.25C6.13889 14.3889 7.51389 14.9583 9.125 14.9583ZM9.125 12.4583C8.20833 12.4583 7.42361 12.1319 6.77083 11.4792C6.11806 10.8264 5.79167 10.0417 5.79167 9.125C5.79167 8.20833 6.11806 7.42361 6.77083 6.77083C7.42361 6.11806 8.20833 5.79167 9.125 5.79167C10.0417 5.79167 10.8264 6.11806 11.4792 6.77083C12.1319 7.42361 12.4583 8.20833 12.4583 9.125C12.4583 10.0417 12.1319 10.8264 11.4792 11.4792C10.8264 12.1319 10.0417 12.4583 9.125 12.4583ZM9.125 10.7917C9.58333 10.7917 9.97569 10.6285 10.3021 10.3021C10.6285 9.97569 10.7917 9.58333 10.7917 9.125C10.7917 8.66667 10.6285 8.27431 10.3021 7.94792C9.97569 7.62153 9.58333 7.45833 9.125 7.45833C8.66667 7.45833 8.27431 7.62153 7.94792 7.94792C7.62153 8.27431 7.45833 8.66667 7.45833 9.125C7.45833 9.58333 7.62153 9.97569 7.94792 10.3021C8.27431 10.6285 8.66667 10.7917 9.125 10.7917Z" fill="white"/></svg>
+    <span class="location-text">Использовать моё местоположение</span>
+  </button>
+
+  <aside class="info-card">
+    <div class="info-bg-icon"><svg width="73" height="65" viewBox="0 0 73 65" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M48.4 80H38C38 80 38.6667 79.5833 40 78.75C41.3333 77.9167 42.7833 76.9833 44.35 75.95C45.9167 74.9167 47.3667 73.9833 48.7 73.15C50.0333 72.3167 50.7 71.9 50.7 71.9C56.1 71.5 61.0833 69.8667 65.65 67C70.2167 64.1333 73.8333 60.3 76.5 55.5C70.7667 54.9667 65.3333 53.5167 60.2 51.15C55.0667 48.7833 50.4667 45.5667 46.4 41.5C42.3333 37.4333 39.1 32.8333 36.7 27.7C34.3 22.5667 32.8667 17.1333 32.4 11.4C27.2667 14.2667 23.25 18.2167 20.35 23.25C17.45 28.2833 16 33.7333 16 39.6C16 39.7333 16 39.9333 16 40.2C16 40.4667 16 40.6667 16 40.8C16 40.8 15.6 40.9833 14.8 41.35C14 41.7167 13.1167 42.1 12.15 42.5C11.1833 42.9 10.3 43.2833 9.5 43.65C8.7 44.0167 8.3 44.2 8.3 44.2C8.16667 43.4667 8.08333 42.7 8.05 41.9C8.01667 41.1 8 40.3333 8 39.6C8 29.8667 11.1 21.2833 17.3 13.85C23.5 6.41667 31.4 1.8 41 0C39.8 6.6 40.1667 13.05 42.1 19.35C44.0333 25.65 47.3667 31.1667 52.1 35.9C56.8333 40.6333 62.35 43.9667 68.65 45.9C74.95 47.8333 81.4 48.2 88 47C86.2667 56.6 81.6667 64.5 74.2 70.7C66.7333 76.9 58.1333 80 48.4 80ZM20 72H38C39.6667 72 41.0833 71.4167 42.25 70.25C43.4167 69.0833 44 67.6667 44 66C44 64.3333 43.4333 62.9167 42.3 61.75C41.1667 60.5833 39.8 60 38.2 60H33L31 55.2C30.0667 53 28.6 51.25 26.6 49.95C24.6 48.65 22.4 48 20 48C16.6667 48 13.8333 49.15 11.5 51.45C9.16667 53.75 8 56.6 8 60C8 63.3333 9.16667 66.1667 11.5 68.5C13.8333 70.8333 16.6667 72 20 72ZM20 80C14.4667 80 9.75 78.05 5.85 74.15C1.95 70.25 0 65.5333 0 60C0 54.4667 1.95 49.75 5.85 45.85C9.75 41.95 14.4667 40 20 40C24 40 27.65 41.0833 30.95 43.25C34.25 45.4167 36.7 48.3333 38.3 52C42.1 52.1333 45.3333 53.55 48 56.25C50.6667 58.95 52 62.2 52 66C52 69.8667 50.6333 73.1667 47.9 75.9C45.1667 78.6333 41.8667 80 38 80H20Z" fill="#6613EC"/></svg></div>
+    <div class="info-content"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 15H11V9H9V15ZM10 7C10.2833 7 10.5208 6.90417 10.7125 6.7125C10.9042 6.52083 11 6.28333 11 6C11 5.71667 10.9042 5.47917 10.7125 5.2875C10.5208 5.09583 10.2833 5 10 5C9.71667 5 9.47917 5.09583 9.2875 5.2875C9.09583 5.47917 9 5.71667 9 6C9 6.28333 9.09583 6.52083 9.2875 6.7125C9.47917 6.90417 9.71667 7 10 7ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z" fill="#745DFF"/></svg><p class="info-text">Знание места рождения позволяет<br>определить ваш Асцендент —<br>важнейшую точку в гороскопе.</p></div>
+  </aside>
+
+  <div class="bottom-nav">
+    <a class="next-btn" href="/birthtime" aria-label="Далее"><span class="next-label">Далее</span><svg class="next-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.175 9H0V7H12.175L6.575 1.4L8 0L16 8L8 16L6.575 14.6L12.175 9Z" fill="white"/></svg></a>
+  </div>
+</div>
+
+<script>
+const input = document.querySelector('.search-input');
+document.querySelectorAll('.city-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{ input.value = btn.dataset.city || ''; });
+});
+document.getElementById('locationBtn').addEventListener('click',()=>{
+  if(!navigator.geolocation){ input.value = 'Геолокация недоступна'; return; }
+  input.value = 'Определяем местоположение...';
+  navigator.geolocation.getCurrentPosition(
+    ()=>{ input.value = 'Моё местоположение'; },
+    ()=>{ input.value = 'Не удалось определить'; },
+    {enableHighAccuracy:true, timeout:6000}
+  );
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Онбординг 3</title>
+
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  background:#000;
+  display:flex;
+  justify-content:center;
+  color:#fff;
+  font-family:'Manrope',Arial,sans-serif;
+}
+
+.onboarding{
+  width:390px;
+  min-height:939px;
+  position:relative;
+  overflow:hidden;
+  background:#1E1420;
+}
+
+/* HEADER */
+.header{
+  height:72px;
+  background:rgba(26,15,10,.8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.back{
+  position:absolute;
+  left:16px;
+  top:16px;
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  color:#fff;
+  font-size:24px;
+}
+
+.header-title{
+  font-size:18px;
+  font-weight:700;
+}
+
+/* PROGRESS (теперь сверху) */
+.progress{
+  width:342px;
+  height:22px;
+  margin:12px auto 0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+}
+
+.progress span{
+  height:6px;
+  border-radius:999px;
+  background:rgba(85,69,184,.2);
+}
+
+.progress .small{
+  width:32px;
+}
+
+.progress .active{
+  width:64px;
+  height:22px;
+  background:transparent;
+  position:relative;
+}
+
+.progress .active::before{
+  content:"";
+  position:absolute;
+  left:8px;
+  top:8px;
+  width:48px;
+  height:6px;
+  border-radius:999px;
+  background:#5545B8;
+  box-shadow:0 0 8px rgba(236,91,19,.5);
+}
+
+/* IMAGE */
+.hero{
+  width:342px;
+  height:342px;
+  margin:24px auto 0;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 0 50px rgba(85,69,184,.2);
+  background:rgba(85,69,184,.08);
+}
+
+.hero img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* TEXT */
+.content{
+  margin:38px auto 0;
+  width:342px;
+  text-align:center;
+}
+
+.title{
+  font-size:30px;
+  font-weight:700;
+  line-height:37.5px;
+  color:#F1F5F9;
+  margin-bottom:18px;
+}
+
+.desc{
+  font-size:18px;
+  line-height:29px;
+  color:#E1D6F7;
+}
+
+/* FEATURES */
+.features{
+  width:342px;
+  margin:26px auto 0;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.feature{
+  height:78px;
+  border-radius:12px;
+  border:1px solid rgba(85,69,184,.1);
+  background:rgba(85,69,184,.05);
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:0 16px;
+}
+
+.feature-icon{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:rgba(85,69,184,.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
+.feature-icon img{
+  width:22px;
+  height:22px;
+}
+
+.feature-title{
+  color:#F1F5F9;
+  font-size:14px;
+  font-weight:700;
+}
+
+.feature-sub{
+  color:#64748B;
+  font-size:12px;
+  margin-top:4px;
+}
+
+/* BUTTON */
+.start-button{
+  width:342px;
+  height:56px;
+  margin:32px auto 0;
+  border-radius:999px;
+  background:#5545B8;
+  color:#fff;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-size:18px;
+  font-weight:700;
+  box-shadow:0 4px 6px -4px rgba(85,69,184,.3),0 10px 15px -3px rgba(85,69,184,.3);
+}
+
+.start-button img{
+  width:21px;
+  height:21px;
+}
+
+.terms{
+  width:342px;
+  margin:12px auto 28px;
+  text-align:center;
+  color:#64748B;
+  font-size:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="onboarding">
+
+  <header class="header">
+    <a href="/onboarding/2" class="back">‹</a>
+    <div class="header-title">Озарение</div>
+  </header>
+
+  <!-- ПОЛОСКА ТЕПЕРЬ ТУТ -->
+  <div class="progress">
+    <span class="small"></span>
+    <span class="small"></span>
+    <span class="active"></span>
+  </div>
+
+  <section class="hero">
+    <img src="{{ url_for('static', filename='img/onboarding3.png') }}" alt="">
+  </section>
+
+  <section class="content">
+    <div class="title">Глубокие инсайты</div>
+    <div class="desc">
+      Узнай свою совместимость с партнером<br>
+      и раскрой тайны своей судьбы через<br>
+      персональную натальную карту.
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="feature">
+      <div class="feature-icon">
+        <img src="{{ url_for('static', filename='img/compatibility.png') }}">
+      </div>
+      <div>
+        <div class="feature-title">Совместимость</div>
+        <div class="feature-sub">Пойми динамику отношений глубже</div>
+      </div>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">
+        <img src="{{ url_for('static', filename='img/natal.png') }}">
+      </div>
+      <div>
+        <div class="feature-title">Натальная карта</div>
+        <div class="feature-sub">Персональный взгляд на твой путь</div>
+      </div>
+    </div>
+  </section>
+
+  <a href="/onboarding/finish" class="start-button">
+    Начать путь
+    <img src="{{ url_for('static', filename='img/magic.png') }}">
+  </a>
+
+  <div class="terms">
+    Нажимая на кнопку, вы соглашаетесь<br>
+    с условиями использования
+  </div>
+
+</div>
+</body>
+</html>

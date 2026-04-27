@@ -1,32 +1,837 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
 
-{% block title %}Профиль{% endblock %}
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Профиль</title>
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-ExtraBold.woff2') }}") format('woff2');font-weight:800;font-display:swap}
 
-{% block content %}
-<div class="profile">
-    <h2>👤 Профиль</h2>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    <div class="stats-card">
-        <h3>Статистика</h3>
-        <p>🪙 Монет: <strong>{{ coins }}</strong></p>
-        <p>🎴 Карт в коллекции: <strong>{{ collected|length }}/78</strong></p>
-        <p>📅 Дней в приложении: <strong>7</strong></p>
-    </div>
+button,
+a {
+  font: inherit;
+  color: inherit;
+}
 
-    <div class="settings-card">
-        <h3>Настройки</h3>
-        <button class="button" onclick="changeZodiac()">♈ Сменить знак зодиака</button>
-        <button class="button secondary" onclick="buySubscription()">⭐ Купить подписку</button>
-    </div>
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  font-family: 'Manrope', 'Liberation Sans', Arial, sans-serif;
+}
+
+.phone {
+  width: 390px;
+  min-height: 1519px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse 123.87% 54.65% at 50% 50%, #241610 0%, #160C07 100%);
+}
+
+.header {
+  position: absolute;
+  left: 1px;
+  top: 0;
+  width: 388px;
+  height: 96px;
+}
+
+.user-box {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  width: 172px;
+  height: 64px;
+}
+
+.avatar-shell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  outline: 2px solid #5545B8;
+  outline-offset: -2px;
+  box-shadow: 0 0 15px rgba(255, 191, 0, .15);
+  overflow: hidden;
+}
+
+.avatar {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #463078, #d49b72);
+}
+
+.pro-pill {
+  position: absolute;
+  left: 34px;
+  top: 49px;
+  width: 34px;
+  height: 19px;
+  background: #5545B8;
+  border-radius: 999px;
+  text-align: center;
+  font: 700 10px/19px 'Public Sans', 'Manrope', sans-serif;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.user-name {
+  position: absolute;
+  left: 80px;
+  top: 8px;
+  color: #F1F5F9;
+  font-family: 'Liberation Sans', 'Manrope', Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.user-sub {
+  position: absolute;
+  left: 80px;
+  top: 36px;
+  color: rgba(85, 69, 184, .8);
+  font-family: 'Liberation Sans', 'Manrope', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.settings-btn {
+  position: absolute;
+  left: 324px;
+  top: 36px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #2D1B2D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-icon {
+  width: 21px;
+  height: 20px;
+  display: block;
+  object-fit: contain;
+}
+
+.main {
+  position: absolute;
+  left: 1px;
+  top: 96px;
+  width: 388px;
+  height: 1408px;
+}
+
+.premium-card {
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  width: 360px;
+  height: 154px;
+  border-radius: 20px;
+  background: linear-gradient(169deg, rgba(85, 69, 184, .20) 0%, #2D1B2D 100%);
+  outline: 1px solid rgba(85, 69, 184, .20);
+  outline-offset: -1px;
+  overflow: hidden;
+}
+
+.premium-title {
+  position: absolute;
+  left: 21px;
+  top: 21px;
+  width: 205px;
+  height: 28px;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.premium-title b {
+  font-weight: 800;
+}
+
+.premium-title span {
+  font-weight: 700;
+}
+
+.premium-sub {
+  position: absolute;
+  left: 21px;
+  top: 53px;
+  color: #5545B8;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.sparkle {
+  position: absolute;
+  left: 291px;
+  top: 21px;
+  width: 28px;
+  height: 28px;
+  display: block;
+  object-fit: contain;
+}
+
+.decor {
+  position: absolute;
+  left: 259px;
+  top: 73px;
+  width: 96px;
+  height: 96px;
+  border-radius: 999px;
+  background: rgba(85, 69, 184, .10);
+  filter: blur(20px);
+  box-shadow: 40px 40px 40px rgba(0, 0, 0, .25);
+}
+
+.manage {
+  position: absolute;
+  left: 21px;
+  top: 89px;
+  width: 298px;
+  height: 44px;
+  border-radius: 12px;
+  background: #5545B8;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 24px;
+  box-shadow: 0 4px 6px -4px rgba(85, 69, 184, .20), 0 10px 15px -3px rgba(85, 69, 184, .20);
+}
+
+.wallet {
+  position: absolute;
+  left: 14px;
+  top: 194px;
+  width: 360px;
+  height: 90px;
+  border-radius: 20px;
+  background: rgba(85, 69, 184, .50);
+  outline: 1px solid rgba(255, 255, 255, .05);
+  outline-offset: -1px;
+}
+
+.wallet-icon {
+  position: absolute;
+  left: 20px;
+  top: 21px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(85, 69, 184, .10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallet-icon-img {
+  width: 36px;
+  height: 36px;
+  display: block;
+  object-fit: contain;
+}
+
+.wallet-title {
+  position: absolute;
+  left: 78px;
+  top: 23px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.wallet-sub {
+  position: absolute;
+  left: 78px;
+  top: 51px;
+  color: #5545B8;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.topup {
+  position: absolute;
+  left: 234px;
+  top: 27px;
+  width: 109px;
+  height: 36px;
+  background: #F1F5F9;
+  border-radius: 8px;
+  color: #5545B8;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.shortcuts {
+  position: absolute;
+  left: 0;
+  top: 292px;
+  width: 388px;
+  height: 238px;
+}
+
+.shortcut {
+  position: absolute;
+  width: 76px;
+  height: 89px;
+  text-align: center;
+  color: #5545B8;
+  font-size: 10px;
+  line-height: 12.5px;
+  font-weight: 500;
+}
+
+.shortcut .box {
+  position: absolute;
+  left: 10px;
+  top: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 20px;
+  background: rgba(85, 69, 184, .10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shortcut-icon {
+  max-width: 24px;
+  max-height: 24px;
+  display: block;
+  object-fit: contain;
+}
+
+.shortcut .label {
+  position: absolute;
+  left: 0;
+  top: 62px;
+  width: 76px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s1 { left: 42px; top: 24px; }
+.s2 { left: 156px; top: 24px; }
+.s3 { left: 270px; top: 24px; }
+.s4 { left: 42px; top: 125px; }
+.s5 { left: 156px; top: 125px; }
+.s6 { left: 270px; top: 125px; }
+
+.journey {
+  position: absolute;
+  left: 9px;
+  top: 538px;
+  width: 370px;
+  height: 227px;
+  background: #FDF8F4;
+  border-radius: 32px;
+  color: #1A0F1A;
+}
+
+.journey-kicker {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  color: #5545B8;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  line-height: 16px;
+  text-transform: uppercase;
+}
+
+.journey-title {
+  position: absolute;
+  left: 24px;
+  top: 40px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 28px;
+}
+
+.journey-percent {
+  position: absolute;
+  left: 262px;
+  top: 36px;
+  width: 54px;
+  color: #5545B8;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  text-align: right;
+}
+
+.progress {
+  position: absolute;
+  left: 24px;
+  top: 84px;
+  width: 292px;
+  height: 10px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress span {
+  display: block;
+  width: 219px;
+  height: 10px;
+  background: #5545B8;
+  border-radius: 999px;
+}
+
+.journey-next {
+  position: absolute;
+  left: 24px;
+  top: 110px;
+  color: #1A0F1A;
+  font-size: 14px;
+  line-height: 20px;
+  opacity: .7;
+}
+
+.journey-line {
+  position: absolute;
+  left: 24px;
+  top: 146px;
+  width: 292px;
+  height: 1px;
+  background: #E2E8F0;
+}
+
+.stat {
+  position: absolute;
+  top: 155px;
+  width: 138px;
+}
+
+.stat.one { left: 24px; }
+.stat.two { left: 178px; }
+
+.stat b {
+  display: block;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.stat span {
+  font-size: 12px;
+  line-height: 16px;
+  opacity: .6;
+}
+
+.summary {
+  position: absolute;
+  left: 0;
+  top: 789px;
+  width: 388px;
+  height: 519px;
+}
+
+.natal {
+  position: absolute;
+  left: 9px;
+  top: 0;
+  width: 370px;
+  height: 179px;
+  border-radius: 20px;
+  background: rgba(85, 69, 184, .50);
+  outline: 1px solid rgba(255, 255, 255, .05);
+  outline-offset: -1px;
+}
+
+.card-head {
+  position: absolute;
+  left: 17px;
+  top: 17px;
+  width: 306px;
+  height: 24px;
+}
+
+.card-head-icon {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  display: block;
+  object-fit: contain;
+}
+
+.card-title {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  width: 140px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+/* FIXED */
+.status {
+  position: absolute;
+  right: 0;
+  top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.status:before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  flex: 0 0 auto;
+}
+
+.zodiac-row {
+  position: absolute;
+  left: 32px;
+  top: 51px;
+  width: 306px;
+  height: 59px;
+}
+
+.zodiac {
+  position: absolute;
+  top: 0;
+  width: 91.33px;
+  height: 55px;
+  border-radius: 12px;
+  background: #252545;
+  text-align: center;
+}
+
+.zodiac:nth-child(1) { left: 0; }
+.zodiac:nth-child(2) { left: 107.33px; }
+.zodiac:nth-child(3) { left: 214.67px; }
+
+.zodiac span {
+  display: block;
+  margin-top: 8px;
+  color: rgba(85, 69, 184, .5);
+  font-family: 'Liberation Sans', Arial, sans-serif;
+  font-size: 10px;
+  line-height: 15px;
+  text-transform: uppercase;
+}
+
+.zodiac b {
+  display: block;
+  color: #fff;
+  font-family: 'Liberation Sans', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.insights {
+  position: absolute;
+  left: 32px;
+  top: 124px;
+  width: 306px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(85, 69, 184, .10);
+  outline: 1px solid rgba(255, 255, 255, .20);
+  outline-offset: -1px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tarot {
+  position: absolute;
+  left: 9px;
+  top: 203px;
+  width: 370px;
+  height: 82px;
+  border-radius: 20px;
+  background: rgba(85, 69, 184, .50);
+  outline: 1px solid rgba(255, 255, 255, .05);
+  outline-offset: -1px;
+}
+
+.tarot-img {
+  position: absolute;
+  left: 17px;
+  top: 17px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fdf8f4, #5545B8);
+  outline: 1px solid rgba(255, 255, 255, .10);
+  outline-offset: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tarot-card-icon {
+  width: 30px;
+  height: 30px;
+  display: block;
+  object-fit: contain;
+}
+
+.tarot-sub {
+  position: absolute;
+  left: 81px;
+  top: 21px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.tarot-title {
+  position: absolute;
+  left: 81px;
+  top: 37px;
+  color: #F1F5F9;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.archive {
+  position: absolute;
+  left: 301px;
+  top: 18px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.small-card {
+  position: absolute;
+  top: 309px;
+  width: 177px;
+  height: 110px;
+  border-radius: 20px;
+  background: rgba(85, 69, 184, .50);
+  outline: 1px solid rgba(255, 255, 255, .05);
+  outline-offset: -1px;
+}
+
+.small-card.left { left: 9px; }
+.small-card.right { left: 202px; }
+
+.small-card .small-sub {
+  position: absolute;
+  left: 17px;
+  top: 17px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.small-card .small-title {
+  position: absolute;
+  left: 17px;
+  top: 37px;
+  color: #F1F5F9;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.small-card .small-link {
+  position: absolute;
+  left: 17px;
+  top: 69px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.activity {
+  position: absolute;
+  left: 9px;
+  top: 435px;
+  width: 370px;
+  height: 84px;
+  border-radius: 20px;
+  background: rgba(85, 69, 184, .50);
+  overflow: hidden;
+}
+
+.activity:after {
+  content: '';
+  position: absolute;
+  left: 252px;
+  top: -40px;
+  width: 128px;
+  height: 128px;
+  border-radius: 999px;
+  background: rgba(255, 0, 0, .10);
+  filter: blur(12px);
+  box-shadow: 24px 24px 24px rgba(0, 0, 0, .25);
+}
+
+.activity-sub {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  color: rgba(255, 255, 255, .80);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  line-height: 16px;
+}
+
+.activity-title {
+  position: absolute;
+  left: 20px;
+  top: 36px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.play {
+  position: absolute;
+  left: 295px;
+  top: 30px;
+  z-index: 2;
+  width: 25px;
+  height: 25px;
+  display: block;
+  object-fit: contain;
+}
+
+.nav {
+  position: absolute;
+  left: 9px;
+  top: 1338px;
+  width: 370px;
+  height: 67px;
+  border-radius: 999px;
+  background: #161225;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .40);
+  outline: 1px solid rgba(255, 255, 255, .10);
+  outline-offset: -1px;
+  backdrop-filter: blur(12px);
+}
+
+.nav a {
+  position: absolute;
+  top: 14px;
+  height: 41px;
+  text-align: center;
+  color: rgba(255, 255, 255, .40);
+  font-family: 'Liberation Sans', Arial, sans-serif;
+  font-size: 10px;
+  line-height: 15px;
+}
+
+.nav-icon {
+  display: block;
+  margin: 0 auto 5px;
+  width: 22px;
+  height: 20px;
+  object-fit: contain;
+  opacity: .4;
+}
+
+.nav a:nth-child(4) .nav-icon {
+  opacity: 1;
+}
+
+.nav a:nth-child(1) { left: 22px; width: 40px; }
+.nav a:nth-child(2) { left: 95px; width: 48px; }
+.nav a:nth-child(3) { left: 176px; width: 36px; }
+.nav a:nth-child(4) { left: 246px; width: 38px; color: #9C8DFF; }
+.nav a:nth-child(5) { left: 302px; width: 48px; font-weight: 700; }
+
+.nav .active-heart {
+  position: absolute;
+  left: 246px;
+  top: 14px;
+}
+
+.bottom-pad {
+  position: absolute;
+  left: 0;
+  top: 1504px;
+  width: 1px;
+  height: 1px;
+}
+
+</style>
+</head>
+<body>
+<div class="phone">
+<header class="header">
+<div class="user-box">
+<div class="avatar-shell"><img class="avatar" onerror="this.style.display='none'" src="{{ url_for('static', filename='img/avatar.png') }}"/></div>
+<div class="pro-pill">PRO</div>
+<div class="user-name">Елена</div><div class="user-sub">Искатель пути</div>
 </div>
-
-<script>
-function changeZodiac() {
-    alert('Функция смены знака зодиака будет доступна позже');
-}
-
-function buySubscription() {
-    alert('Подписка будет доступна через Telegram Stars');
-}
-</script>
-{% endblock %}
+<a aria-label="Настройки" class="settings-btn" href="/settings"><img alt="Настройки" class="settings-icon" draggable="false" src="{{ url_for('static', filename='img/settings.png') }}"/></a>
+</header>
+<main class="main">
+<section class="premium-card"><div class="premium-title"><b>Premium</b><span> Активен</span></div><div class="premium-sub">15 дней осталось до продления</div><img alt="Premium" class="sparkle" draggable="false" src="{{ url_for('static', filename='img/sparkles2.png') }}"/><div class="decor"></div><button class="manage">Управлять подпиской</button></section>
+<section class="wallet"><div class="wallet-icon"><img alt="Кристаллы" class="wallet-icon-img" draggable="false" src="{{ url_for('static', filename='img/crystal2.png') }}"/></div><div class="wallet-title">150 Кристаллов</div><div class="wallet-sub">Ваш баланс</div><button class="topup">Пополнить</button></section>
+<section class="shortcuts">
+<a class="shortcut s1" href="#"><span class="box"><img alt="Натальная карта" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/natal2.png') }}"/></span><span class="label">Натальная<br/>карта</span></a>
+<a class="shortcut s2" href="/"><span class="box"><img alt="Архив карт дня" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/archive2.png') }}"/></span><span class="label">Архив карт дня</span></a>
+<a class="shortcut s3" href="/match"><span class="box"><img alt="Мэтч" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/match3.png') }}"/></span><span class="label">Мэтч</span></a>
+<a class="shortcut s4" href="#"><span class="box"><img alt="Расклады" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/spreads3.png') }}"/></span><span class="label">Расклады</span></a>
+<a class="shortcut s5" href="#"><span class="box"><img alt="Премиум" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/premium.png') }}"/></span><span class="label">Премиум</span></a>
+<a class="shortcut s6" href="#"><span class="box"><img alt="Кошелек" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/wallet.png') }}"/></span><span class="label">Кошелек</span></a>
+</section>
+<section class="journey"><div class="journey-kicker">Духовный путь</div><div class="journey-title">Вы в потоке 12 дней</div><div class="journey-percent">75%</div><div class="progress"><span></span></div><div class="journey-next">Следующий этап: Пробуждение</div><div class="journey-line"></div><div class="stat one"><b>48</b><span>Раскладов</span></div><div class="stat two"><b>124</b><span>Инсайта</span></div></section>
+<section class="summary">
+<div class="natal"><div class="card-head"><img alt="Натальная карта" class="card-head-icon" draggable="false" src="{{ url_for('static', filename='img/compass.png') }}"/><div class="card-title">Натальная карта</div><div class="status">Заполнена</div></div><div class="zodiac-row"><div class="zodiac"><span>Солнце</span><b>Лев</b></div><div class="zodiac"><span>Луна</span><b>Рак</b></div><div class="zodiac"><span>Асц</span><b>Весы</b></div></div><button class="insights">Открыть инсайты</button></div>
+<div class="tarot"><div class="tarot-img"><img alt="Карта таро" class="tarot-card-icon" draggable="false" src="{{ url_for('static', filename='img/tarot-card.png') }}"/></div><div class="tarot-sub">Последняя карта дня</div><div class="tarot-title">VIII. Сила</div><a class="archive" href="/">Архив</a></div>
+<div class="small-card left"><div class="small-sub">Совместимость</div><div class="small-title">8 проверок</div><a class="small-link" href="/match">История ›</a></div><div class="small-card right"><div class="small-sub">Избранное</div><div class="small-title">15 раскладов</div><a class="small-link" href="#">Открыть ›</a></div>
+<div class="activity"><div class="activity-sub">Продолжить</div><div class="activity-title">Расклад на любовь</div><img alt="Продолжить" class="play" draggable="false" src="{{ url_for('static', filename='img/play.png') }}"/></div>
+</section>
+<nav class="nav"><a href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/home.png') }}"/>Главная</a><a href="#"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/taro4.png') }}"/>Расклады</a><a href="#"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/stars.png') }}"/>Звезды</a><a href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/match.png') }}"/>Мэтч</a><a href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/profile.png') }}"/>Профиль</a></nav>
+</main><div class="bottom-pad"></div></div>
+</body>
+</html>

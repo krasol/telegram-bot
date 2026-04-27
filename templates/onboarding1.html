@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Онбординг 1</title>
+
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  min-height:100vh;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  color:#fff;
+  font-family:'Manrope','Liberation Sans',Arial,sans-serif;
+}
+
+.onboarding{
+  width:390px;
+  height:851px;
+  position:relative;
+  overflow:hidden;
+  background:#1D141F;
+}
+
+.skip{
+  position:absolute;
+  left:278px;
+  top:16px;
+  width:96px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  text-decoration:none;
+  font-size:16px;
+  font-weight:700;
+  line-height:24px;
+  letter-spacing:.24px;
+  z-index:10;
+}
+
+.blur-left,.blur-right{
+  position:absolute;
+  width:289px;
+  height:393px;
+  background:rgba(144,0,255,.10);
+  border-radius:9999px;
+  filter:blur(74px);
+  pointer-events:none;
+}
+.blur-left{left:-94px;top:278px}
+.blur-right{left:231px;top:565px}
+
+.hero-image-wrap{
+  position:absolute;
+  left:16px;
+  top:53px;
+  width:358px;
+  height:414px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#221018;
+}
+
+.hero-image{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+}
+
+.title{
+  position:absolute;
+  left:9px;
+  top:467px;
+  width:379px;
+  height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#F1F5F9;
+  font-family:'Liberation Sans','Manrope',Arial,sans-serif;
+  font-size:30px;
+  font-weight:700;
+  line-height:40px;
+}
+
+.description{
+  position:absolute;
+  left:25px;
+  top:604px;
+  width:339px;
+  text-align:center;
+  color:#E1D6F7;
+  font-family:'Liberation Sans','Manrope',Arial,sans-serif;
+  font-size:18px;
+  font-weight:400;
+  line-height:26px;
+}
+
+.progress{
+  position:absolute;
+  left:16px;
+  top:690px;
+  width:358px;
+  height:54px;
+}
+
+.progress-main{
+  position:absolute;
+  left:143px;
+  top:24px;
+  width:32px;
+  height:6px;
+  border-radius:999px;
+  background:#5545B8;
+}
+
+.progress-dot-1,
+.progress-dot-2{
+  position:absolute;
+  top:24px;
+  width:8px;
+  height:6px;
+  border-radius:999px;
+  background:rgba(85,69,184,.10);
+}
+
+.progress-dot-1{left:187px}
+.progress-dot-2{left:207px}
+
+.next-button{
+  position:absolute;
+  left:24px;
+  top:742px;
+  width:342px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#5545B8;
+  border-radius:12px;
+  color:#fff;
+  text-decoration:none;
+  font-family:'Liberation Sans','Manrope',Arial,sans-serif;
+  font-size:16px;
+  font-weight:700;
+  line-height:24px;
+  box-shadow:0 4px 6px -4px rgba(85,69,184,.20),0 10px 15px -3px rgba(85,69,184,.20);
+  z-index:10;
+}
+
+.next-button img{
+  width:21px;
+  height:21px;
+  margin-left:10px;
+  object-fit:contain;
+}
+</style>
+</head>
+
+<body>
+<div class="onboarding">
+
+  <a href="/onboarding/finish" class="skip">Пропустить</a>
+
+  <div class="blur-left"></div>
+  <div class="blur-right"></div>
+
+  <div class="hero-image-wrap">
+    <img
+      class="hero-image"
+      src="{{ url_for('static', filename='img/onboarding1.png') }}"
+      alt=""
+    >
+  </div>
+
+  <div class="title">
+    Твой личный<br>
+    духовный проводник
+  </div>
+
+  <div class="description">
+    Расклады Таро, Натальная карта,<br>
+    Карта Дня и Совместимость — всё,<br>
+    что нужно для гармонии с собой и миром.
+  </div>
+
+  <div class="progress">
+    <div class="progress-main"></div>
+    <div class="progress-dot-1"></div>
+    <div class="progress-dot-2"></div>
+  </div>
+
+  <a href="/onboarding/2" class="next-button">
+    Продолжить
+  </a>
+
+</div>
+</body>
+</html>

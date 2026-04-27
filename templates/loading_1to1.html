@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Загрузка</title>
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:#000;font-family:'Manrope',Arial,sans-serif;color:#fff}
+body{display:flex;justify-content:center}
+.page{width:390px;height:816px;position:relative;overflow:hidden;background:#1D141F}
+.blur{position:absolute;width:289px;height:393px;left:-57px;top:49px;background:rgba(144,0,255,.10);border-radius:9999px;filter:blur(74px);box-shadow:148px 148px 148px rgba(144,0,255,.08)}
+.back{position:absolute;left:16px;top:16px;width:48px;height:48px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;z-index:10;text-decoration:none}
+.step{position:absolute;left:119px;top:26px;width:153px;height:28px;display:flex;align-items:center;justify-content:center;color:#F1F5F9;font-size:18px;font-weight:700;line-height:22.5px;z-index:5}
+.celestial{position:absolute;left:67px;top:164px;width:256px;height:256px}
+.outer-ring{position:absolute;inset:0;border:1px solid #7261DA;border-radius:50%}
+.inner-glow{position:absolute;left:32px;top:32px;width:192px;height:192px;border-radius:50%;opacity:.6;background:linear-gradient(135deg,rgba(114,97,218,.4) 0%,#2D1B4D 100%);filter:blur(12px);box-shadow:24px 24px 24px rgba(46,6,124,.35)}
+.inner-glow:after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:0 0 60px 20px #2E067C}
+.core{position:absolute;left:48px;top:48px;width:160px;height:160px;border-radius:50%;overflow:hidden;background:linear-gradient(45deg,#7261DA 0%,#5B29E5 100%);box-shadow:0 25px 50px -12px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.core:after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.10)}
+.core svg{position:relative;z-index:2;width:55px;height:55px}
+.dot-1{position:absolute;left:122px;top:0;width:32px;height:32px;filter:drop-shadow(0 0 10px #7261DA);animation:float1 3s ease-in-out infinite}
+.dot-1:before{content:'';position:absolute;left:10px;top:10px;width:12px;height:12px;border-radius:50%;background:#7261DA}
+.dot-2{position:absolute;left:248px;top:184px;width:24px;height:24px;filter:drop-shadow(0 0 8px #7261DA);animation:float2 3.4s ease-in-out infinite}
+.dot-2:before{content:'';position:absolute;left:8px;top:8px;width:8px;height:8px;border-radius:50%;background:#7261DA}
+@keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.header{
+  position:absolute;
+  left:24px;
+  top:483px;
+  width:342px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
+.title{
+  position:absolute;
+  top:-10px;
+  left:0;
+  width:342px;
+  text-align:center;
+  font-size:30px;
+  font-weight:700;
+  line-height:34px;
+}
+
+.subtitle{
+  position:absolute;
+  top:82px;
+  left:0;
+  width:342px;
+  text-align:center;
+  color:#E1D6F7;
+  font-size:16px;
+  line-height:25px;
+}
+.progress-section{
+  position:absolute;
+  left:16px;
+  top:650px;
+  width:358px;
+  height:41px;
+}
+.progress-inner{position:absolute;left:24px;top:0;width:310px;height:41px}
+.progress-top{position:absolute;left:0;top:0;width:310px;height:21px}
+.progress-label-wrap{position:absolute;left:0;top:0;width:235px;height:21px}
+.progress-icon{position:absolute;left:0;top:4.96px;width:10px;height:12px}
+.progress-text{position:absolute;left:17.33px;top:0;height:21px;display:flex;align-items:center;color:#fff;font-size:14px;font-weight:400;line-height:21px;white-space:nowrap}
+.percent{position:absolute;left:278.16px;top:0;width:31.84px;height:21px;display:flex;align-items:center;justify-content:flex-start;color:#fff;font-size:14px;font-weight:700;line-height:21px}
+.bar{position:absolute;left:0;top:33px;width:310px;height:8px;background:#E2E8F0;border-radius:9999px;overflow:hidden}
+.fill{position:absolute;left:0;top:0;width:201.5px;height:8px;border-radius:9999px;background:linear-gradient(90deg,#5949BC 0%,#7362DA 100%);animation:progress 2.2s ease-in-out infinite alternate}
+@keyframes progress{from{width:180px}to{width:220px}}
+.bottom-spacer{position:absolute;left:0;top:728px;width:390px;height:88px;padding:0 24px 32px}
+button,a{-webkit-tap-highlight-color:transparent}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="blur"></div>
+  <a href="/birthtime" class="back" aria-label="Назад"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.825 9L9.425 14.6L8 16L0 8L8 0L9.425 1.4L3.825 7H16V9H3.825Z" fill="#F1F5F9"/></svg></a>
+  <div class="step">4 из 5</div>
+  <div class="bottom-spacer"></div>
+  <div class="celestial">
+    <div class="outer-ring"></div>
+    <div class="inner-glow"></div>
+    <div class="core">
+      <svg viewBox="0 0 55 55" fill="none"><path d="M45 20L41.875 13.125L35 10L41.875 6.875L45 0L48.125 6.875L55 10L48.125 13.125L45 20ZM45 55L41.875 48.125L35 45L41.875 41.875L45 35L48.125 41.875L55 45L48.125 48.125L45 55ZM20 47.5L13.75 33.75L0 27.5L13.75 21.25L20 7.5L26.25 21.25L40 27.5L26.25 33.75L20 47.5ZM20 35.375L22.5 30L27.875 27.5L22.5 25L20 19.625L17.5 25L12.125 27.5L17.5 30L20 35.375Z" fill="white"/></svg>
+    </div>
+    <div class="dot-1"></div>
+    <div class="dot-2"></div>
+  </div>
+  <section class="header">
+    <div class="title">Считываем положение звезд</div>
+    <div class="subtitle">Твоя судьба проявляется...</div>
+  </section>
+  <section class="progress-section">
+    <div class="progress-inner">
+      <div class="progress-top">
+        <div class="progress-label-wrap">
+          <svg class="progress-icon" width="10" height="12" viewBox="0 0 10 12" fill="none"><path d="M0.583333 11.0833L0 10.5L4.66667 0L9.33333 10.5L8.75 11.0833L4.66667 9.33333L0.583333 11.0833ZM1.80833 9.275L4.66667 8.05L7.525 9.275L4.66667 2.85833L1.80833 9.275Z" fill="white"/></svg>
+          <div class="progress-text">Расчет расположения планет</div>
+        </div>
+        <div class="percent">65%</div>
+      </div>
+      <div class="bar"><div class="fill"></div></div>
+    </div>
+  </section>
+</div>
+<script>
+  setTimeout(function(){ window.location.href='/quiz1'; }, 3000);
+</script>
+</body>
+</html>
