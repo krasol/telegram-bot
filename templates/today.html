@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>ASTRO</title>
+
 <style>
 @font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400}
 @font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700}
@@ -14,13 +15,108 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:ce
 .app{width:390px;min-height:915px;position:relative;padding:24px 16px 112px}.top{height:48px;display:flex;align-items:center;justify-content:space-between}.user{display:flex;align-items:center;gap:12px}.avatar-wrap{width:48px;height:48px;border-radius:999px;border:2px solid rgba(236,91,19,.5);overflow:hidden;position:relative}.avatar{width:100%;height:100%;object-fit:cover;background:linear-gradient(135deg,#614b7f,#d9a072)}.verified{position:absolute;right:-2px;bottom:-1px;width:16px;height:16px;border-radius:999px;background:#5545B8;border:2px solid #1A0B16;display:flex;align-items:center;justify-content:center}.verified-icon{width:9px;height:9px;display:block}.name{font-size:18px;line-height:22.5px;font-weight:700}.sub{font-size:12px;line-height:16px;color:#94A3B8;margin-top:1px}.coins{width:73px;height:34px;border-radius:999px;border:1px solid rgba(85,69,184,.20);background:rgba(85,69,184,.10);display:flex;align-items:center;justify-content:center;gap:7px;color:#5545B8;font-family:'Public Sans',sans-serif;font-weight:700;font-size:14px;letter-spacing:.35px}.coin-icon{width:12px;height:15px;display:block;object-fit:contain}.streak{position:absolute;left:16px;top:96px;width:358px;height:64px;border-radius:12px;border:1px solid rgba(85,69,184,.20);background:rgba(85,69,184,.10);display:flex;align-items:center;justify-content:space-between;padding:13px 13px}.streak-left{display:flex;align-items:center;gap:12px}.streak-icon{width:38px;height:38px;border-radius:8px;background:rgba(85,69,184,.20);display:flex;align-items:center;justify-content:center}.streak-img{width:22px;height:22px;display:block;object-fit:contain}.streak-label{font-size:12px;line-height:16px;color:#E4BEB4;font-weight:500}.streak-days{font-size:14px;line-height:20px;color:white;font-weight:700}.dots{display:flex;gap:4px;margin-right:15px}.dots span{width:6px;height:6px;border-radius:50%;background:#5545B8}.dots span:nth-child(n+4){opacity:.3}.section-title{position:absolute;left:16px;top:196px;font-size:14px;line-height:20px;letter-spacing:1.4px;text-transform:uppercase;color:#94A3B8;font-weight:700}.practices{position:absolute;left:16px;top:222px;width:358px;display:flex;justify-content:space-between}.practice{width:111.33px;height:82.83px;border-radius:16px;border:1px solid rgba(85,69,184,.10);background:rgba(85,69,184,.50);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}.practice-icon{height:25px;max-width:36px;display:block;object-fit:contain}.practice p{font-size:11px;line-height:16.5px;color:#fff;font-weight:700}.hero{position:absolute;left:16px;top:333px;width:358px;height:447.5px;border-radius:16px;overflow:hidden;border:1px solid rgba(85,69,184,.30);background:linear-gradient(129deg,#16067B 0%,#000006 100%);box-shadow:0 25px 50px -12px rgba(0,0,0,.25)}.corner{position:absolute;width:32px;height:32px;border-color:rgba(85,69,184,.30);border-style:solid}.corner.tl{left:17px;top:17px;border-width:1px 0 0 1px}.corner.br{right:17px;bottom:17px;border-width:0 1px 1px 0}.hero-content{position:absolute;left:57px;top:182.5px;width:244px;height:232px;text-align:center}.circle{position:absolute;left:82px;top:0;width:80px;height:80px;border-radius:999px;border:1px solid rgba(85,69,184,.40);background:rgba(26,11,22,.50);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center}.hero-icon{width:30px;height:30px;display:block;object-fit:contain}.hero-title{position:absolute;left:0;top:96px;width:244px;font-size:24px;line-height:32px;font-weight:800}.hero-desc{position:absolute;left:-1px;top:132px;width:246px;font-size:14px;line-height:20px;color:#E4BEB4;font-weight:300}.btn{position:absolute;left:0;top:188px;width:244px;height:44px;border:0;border-radius:999px;background:#5545B8;color:#fff;font-size:12px;line-height:16px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;box-shadow:0 4px 6px -4px rgba(236,91,19,.20),0 10px 15px -3px rgba(236,91,19,.20)}.nav{position:absolute;left:10px;top:828px;width:370px;height:67px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:#161225;box-shadow:0 20px 40px rgba(0,0,0,.40);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around}.nav-item{width:58px;text-align:center;color:rgba(255,255,255,.40);font-size:10px;line-height:15px;text-decoration:none;font-family:'Liberation Sans',Arial,sans-serif}.nav-icon{height:20px;max-width:22px;display:block;margin:0 auto 6px;object-fit:contain}.nav-item.active{color:#9C8DFF}.nav-item img{opacity:.4}.nav-item.active img{opacity:1}
 </style>
 </head>
+
 <body>
 <div class="phone"><div class="app">
-<header class="top"><div class="user"><div class="avatar-wrap"><img class="avatar" onerror="this.style.display='none'" src="{{ url_for('static', filename='img/avatar.png') }}"/><span class="verified"><img alt="verified" class="verified-icon" draggable="false" src="{{ url_for('static', filename='img/check.png') }}"/></span></div><div><div class="name">Анна</div><div class="sub">Луна в Скорпионе</div></div></div><div class="coins">{{ coins|default(150) }}<img alt="coins" class="coin-icon" draggable="false" src="{{ url_for('static', filename='img/crystal.png') }}"/></div></header>
+
+<header class="top">
+  <div class="user">
+    <div class="avatar-wrap">
+      <img
+        id="tgAvatar"
+        class="avatar"
+        onerror="this.src='{{ url_for('static', filename='img/avatar.png') }}'"
+        src="{{ tg_user.photo_url if tg_user and tg_user.photo_url else url_for('static', filename='img/avatar.png') }}"
+      />
+      <span class="verified">
+        <img alt="verified" class="verified-icon" draggable="false" src="{{ url_for('static', filename='img/check.png') }}"/>
+      </span>
+    </div>
+
+    <div>
+      <div id="tgName" class="name">
+        {% if tg_user and tg_user.first_name %}
+          {{ (tg_user.first_name ~ ' ' ~ tg_user.last_name)|trim }}
+        {% else %}
+          Гость
+        {% endif %}
+      </div>
+
+      <div id="tgUsername" class="sub">
+        {% if tg_user and tg_user.username %}
+          @{{ tg_user.username }}
+        {% else %}
+          Луна в Скорпионе
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="coins">
+    {{ coins|default(150) }}
+    <img alt="coins" class="coin-icon" draggable="false" src="{{ url_for('static', filename='img/crystal.png') }}"/>
+  </div>
+</header>
+
 <section class="streak"><div class="streak-left"><div class="streak-icon"><img alt="sparkles" class="streak-img" draggable="false" src="{{ url_for('static', filename='img/sparkles.png') }}"/></div><div><div class="streak-label">Ваш мистический путь</div><div class="streak-days">{{ streak_days|default(7) }} дней в потоке</div></div></div><div class="dots"><span></span><span></span><span></span><span></span><span></span></div></section>
-<div class="section-title">Практики</div><section class="practices"><div class="practice"><img alt="Таро" class="practice-icon" draggable="false" src="{{ url_for('static', filename='img/tarot.png') }}"/><p>Таро</p></div><div class="practice"><img alt="Звезды" class="practice-icon" draggable="false" src="{{ url_for('static', filename='img/stars.png') }}"/><p>Звезды</p></div><div class="practice"><img alt="Мэтч" class="practice-icon" draggable="false" src="{{ url_for('static', filename='img/match.png') }}"/><p>Мэтч</p></div></section>
-<section class="hero"><div class="corner tl"></div><div class="corner br"></div><div class="hero-content"><div class="circle"><img alt="Карта дня" class="hero-icon" draggable="false" src="{{ url_for('static', filename='img/star.png') }}"/></div><div class="hero-title">Карта дня</div><div class="hero-desc">{% if card_of_day %}{{ card_of_day.name }}{% else %}Ваше мистическое послание готово к расшифровке{% endif %}</div><button class="btn">Открыть послание</button></div></section>
-<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/home.png') }}"/>Главная</a><a class="nav-item" href="/collection"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/spreads2.png') }}"/>Расклады</a><a class="nav-item" href="#"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/stars.png') }}"/>Звезды</a><a class="nav-item active" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/match2.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/profile.png') }}"/>Профиль</a></nav>
+
+<div class="section-title">Практики</div>
+
+<section class="practices">
+  <div class="practice"><img alt="Таро" class="practice-icon" draggable="false" src="{{ url_for('static', filename='img/tarot.png') }}"/><p>Таро</p></div>
+  <div class="practice"><img alt="Звезды" class="practice-icon" draggable="false" src="{{ url_for('static', filename='img/stars.png') }}"/><p>Звезды</p></div>
+  <div class="practice"><img alt="Мэтч" class="practice-icon" draggable="false" src="{{ url_for('static', filename='img/match.png') }}"/><p>Мэтч</p></div>
+</section>
+
+<section class="hero">
+  <div class="corner tl"></div>
+  <div class="corner br"></div>
+  <div class="hero-content">
+    <div class="circle"><img alt="Карта дня" class="hero-icon" draggable="false" src="{{ url_for('static', filename='img/star.png') }}"/></div>
+    <div class="hero-title">Карта дня</div>
+    <div class="hero-desc">{% if card_of_day %}{{ card_of_day.name }}{% else %}Ваше мистическое послание готово к расшифровке{% endif %}</div>
+    <button class="btn">Открыть послание</button>
+  </div>
+</section>
+
+<nav class="nav">
+  <a class="nav-item active" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/home.png') }}"/>Главная</a>
+  <a class="nav-item" href="/collection"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/spreads2.png') }}"/>Расклады</a>
+  <a class="nav-item" href="#"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/stars.png') }}"/>Звезды</a>
+  <a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/match2.png') }}"/>Мэтч</a>
+  <a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/profile.png') }}"/>Профиль</a>
+</nav>
+
 </div></div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+
+tg?.ready();
+tg?.expand();
+
+const tgUser = tg?.initDataUnsafe?.user;
+
+if (tgUser) {
+    const firstName = tgUser.first_name || '';
+    const lastName = tgUser.last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+    const username = tgUser.username ? '@' + tgUser.username : 'Луна в Скорпионе';
+
+    document.getElementById('tgName').textContent = fullName || 'Пользователь';
+    document.getElementById('tgUsername').textContent = username;
+
+    if (tgUser.photo_url) {
+        document.getElementById('tgAvatar').src = tgUser.photo_url;
+    }
+
+    fetch('/save-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tgUser)
+    });
+}
+</script>
+
 </body>
 </html>
