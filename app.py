@@ -99,7 +99,8 @@ def today():
         "today.html",
         coins=session.get("coins", 150),
         streak_days=session.get("streak_days", 7),
-        card_of_day=session.get("card_of_day")
+        card_of_day=session.get("card_of_day"),
+        tg_user=session.get("tg_user", {})
     )
 
 
@@ -211,7 +212,19 @@ def compatibility():
         "compatibility": random.randint(60, 100)
     })
 
+@app.route("/save-user", methods=["POST"])
+def save_user():
+    data = request.get_json(silent=True) or {}
 
+    session["tg_user"] = {
+        "id": data.get("id"),
+        "first_name": data.get("first_name"),
+        "last_name": data.get("last_name"),
+        "username": data.get("username"),
+        "photo_url": data.get("photo_url")
+    }
+
+    return jsonify({"success": True})
 @app.route("/health")
 def health():
     return {"status": "ok"}
