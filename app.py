@@ -44,7 +44,11 @@ def init_session():
     if "streak_days" not in session:
         session["streak_days"] = 7
 
-
+@app.context_processor
+def inject_tg_user():
+    return {
+        "tg_user": session.get("tg_user", {})
+    }
 # ===== ONBOARDING =====
 
 @app.route("/onboarding")
@@ -225,6 +229,8 @@ def save_user():
     }
 
     return jsonify({"success": True})
+
+
 @app.route("/health")
 def health():
     return {"status": "ok"}
