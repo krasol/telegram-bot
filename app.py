@@ -1,307 +1,221 @@
-from flask import Flask, render_template, session, jsonify, request
-from datetime import datetime
-import random
+from flask import Flask, render_template, session, jsonify, request, redirect, url_for
 import os
+import random
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-12345')
+app.secret_key = os.environ.get("SECRET_KEY", "dev-key-12345")
 
-# ============= ПЕРЕВОДЫ =============
 
-TRANSLATIONS = {
-    'ru': {
-        'app_name': '✨ Мистика',
-        'today': 'Сегодня',
-        'greeting': 'Сегодня для тебя',
-        'card_of_day': '🔮 Карта дня',
-        'energy_of_day': '🌙 Энергия дня',
-        'horoscope': '♈ Гороскоп дня',
-        'quick_compatibility': '❤️ Быстрая совместимость',
-        'not_opened': 'Не открыта',
-        'tap_to_see': 'Нажми для просмотра',
-        'quick_spread': 'Быстрый расклад',
-        'your_card': 'Твоя карта дня',
-        'draw_new_card': '🔄 Вытянуть новую карту (+5 монет)',
-        'draw_card': '🎴 Вытянуть карту дня (+5 монет)',
-        'card_collection': '📚 Коллекция карт',
-        'coins': '🪙 Монет',
-        'daily_bonus': '✨ +10 монет за вход! ✨',
-        'energy_title': '🌙 Энергия дня',
-        'energy_recommendations': 'Сегодня твоя энергия располагает к:',
-        'rec1': 'Медитации и спокойствию',
-        'rec2': 'Творческим начинаниям',
-        'rec3': 'Общению с близкими',
-        'horoscope_title': '♈ Гороскоп дня',
-        'compatibility_title': '❤️ Быстрая совместимость',
-        'enter_name': 'Введи имя или знак зодиака:',
-        'check': 'Узнать',
-        'perfect_match': '✨ Отличная совместимость! Вы дополняете друг друга.',
-        'good_match': '💫 Хорошая совместимость, есть над чем работать.',
-        'harmonic': '🌟 Гармоничный союз, много общего.',
-        'complex': '💔 Сложная совместимость, но возможна.',
-        'ideal': '💝 Идеальная совместимость! Вы созданы друг для друга.',
-        'select_language': 'Выберите язык / Choose language / Selecciona idioma'
+# ===== МИНИМАЛЬНЫЕ ДАННЫЕ =====
+
+SIMPLE_CARDS = [
+    {
+        "id": 1,
+        "name": "Шут",
+        "meaning": "новое начало, свобода и доверие пути"
     },
-    'en': {
-        'app_name': '✨ Mystic',
-        'today': 'Today',
-        'greeting': 'Today for you',
-        'card_of_day': '🔮 Card of the Day',
-        'energy_of_day': '🌙 Energy of the Day',
-        'horoscope': '♈ Horoscope',
-        'quick_compatibility': '❤️ Quick Compatibility',
-        'not_opened': 'Not opened',
-        'tap_to_see': 'Tap to see',
-        'quick_spread': 'Quick spread',
-        'your_card': 'Your card of the day',
-        'draw_new_card': '🔄 Draw new card (+5 coins)',
-        'draw_card': '🎴 Draw card of the day (+5 coins)',
-        'card_collection': '📚 Card Collection',
-        'coins': '🪙 Coins',
-        'daily_bonus': '✨ +10 coins for login! ✨',
-        'energy_title': '🌙 Energy of the Day',
-        'energy_recommendations': 'Today your energy is good for:',
-        'rec1': 'Meditation and calm',
-        'rec2': 'Creative endeavors',
-        'rec3': 'Communication with loved ones',
-        'horoscope_title': '♈ Horoscope',
-        'compatibility_title': '❤️ Quick Compatibility',
-        'enter_name': 'Enter name or zodiac sign:',
-        'check': 'Check',
-        'perfect_match': '✨ Perfect match! You complement each other.',
-        'good_match': '💫 Good compatibility, room for growth.',
-        'harmonic': '🌟 Harmonious union, much in common.',
-        'complex': '💔 Complex compatibility, but possible.',
-        'ideal': '💝 Ideal compatibility! Made for each other.',
-        'select_language': 'Select language'
+    {
+        "id": 2,
+        "name": "Маг",
+        "meaning": "сила намерения и способность проявить желаемое"
     },
-    'es': {
-        'app_name': '✨ Mística',
-        'today': 'Hoy',
-        'greeting': 'Hoy para ti',
-        'card_of_day': '🔮 Carta del Día',
-        'energy_of_day': '🌙 Energía del Día',
-        'horoscope': '♈ Horóscopo',
-        'quick_compatibility': '❤️ Compatibilidad Rápida',
-        'not_opened': 'No abierta',
-        'tap_to_see': 'Toca para ver',
-        'quick_spread': 'Tirada rápida',
-        'your_card': 'Tu carta del día',
-        'draw_new_card': '🔄 Nueva carta (+5 monedas)',
-        'draw_card': '🎴 Carta del día (+5 monedas)',
-        'card_collection': '📚 Colección de Cartas',
-        'coins': '🪙 Monedas',
-        'daily_bonus': '✨ ¡+10 monedas por entrar! ✨',
-        'energy_title': '🌙 Energía del Día',
-        'energy_recommendations': 'Hoy tu energía es propicia para:',
-        'rec1': 'Meditación y calma',
-        'rec2': 'Proyectos creativos',
-        'rec3': 'Comunicación con seres queridos',
-        'horoscope_title': '♈ Horóscopo',
-        'compatibility_title': '❤️ Compatibilidad Rápida',
-        'enter_name': 'Ingresa nombre o signo zodiacal:',
-        'check': 'Verificar',
-        'perfect_match': '✨ ¡Compatibilidad perfecta! Se complementan.',
-        'good_match': '💫 Buena compatibilidad, hay potencial.',
-        'harmonic': '🌟 Unión armónica, mucho en común.',
-        'complex': '💔 Compatibilidad compleja, pero posible.',
-        'ideal': '💝 ¡Compatibilidad ideal! Hechos el uno para el otro.',
-        'select_language': 'Seleccionar idioma'
-    }
-}
-
-# Данные (оставляем как есть)
-ENERGIES = {
-    'ru': [
-        "🔥 Высокая энергия",
-        "💧 Спокойная энергия", 
-        "🌪 Нестабильная энергия",
-        "⛰ Устойчивая энергия",
-        "✨ Творческая энергия"
-    ],
-    'en': [
-        "🔥 High Energy",
-        "💧 Calm Energy", 
-        "🌪 Unstable Energy",
-        "⛰ Stable Energy",
-        "✨ Creative Energy"
-    ],
-    'es': [
-        "🔥 Alta Energía",
-        "💧 Energía Calma", 
-        "🌪 Energía Inestable",
-        "⛰ Energía Estable",
-        "✨ Energía Creativa"
-    ]
-}
-
-HOROSCOPES = {
-    'ru': {
-        "aries": "♈ Овен: Сегодня звезды благосклонны к новым начинаниям",
-        "taurus": "♉ Телец: День подходит для финансовых решений",
-        "gemini": "♊ Близнецы: Общение принесет удачу",
-        "cancer": "♋ Рак: Слушайте интуицию",
-        "leo": "♌ Лев: Сегодня ваш день",
-        "virgo": "♍ Дева: Внимание к деталям",
-        "libra": "♎ Весы: Найдите баланс",
-        "scorpio": "♏ Скорпион: Трансформация",
-        "sagittarius": "♐ Стрелец: Приключения ждут",
-        "capricorn": "♑ Козерог: Упорство окупится",
-        "aquarius": "♒ Водолей: Новые идеи",
-        "pisces": "♓ Рыбы: Доверьтесь потоку"
+    {
+        "id": 3,
+        "name": "Жрица",
+        "meaning": "интуиция, внутреннее знание и тишина"
     },
-    'en': {
-        "aries": "♈ Aries: The stars favor new beginnings",
-        "taurus": "♉ Taurus: Good day for financial decisions",
-        "gemini": "♊ Gemini: Communication brings luck",
-        "cancer": "♋ Cancer: Listen to your intuition",
-        "leo": "♌ Leo: Your day to shine",
-        "virgo": "♍ Virgo: Pay attention to details",
-        "libra": "♎ Libra: Find balance",
-        "scorpio": "♏ Scorpio: Transformation",
-        "sagittarius": "♐ Sagittarius: Adventure awaits",
-        "capricorn": "♑ Capricorn: Persistence pays off",
-        "aquarius": "♒ Aquarius: New ideas",
-        "pisces": "♓ Pisces: Go with the flow"
+    {
+        "id": 4,
+        "name": "Сила",
+        "meaning": "мягкая уверенность, терпение и внутренняя опора"
     },
-    'es': {
-        "aries": "♈ Aries: Las estrellas favorecen nuevos comienzos",
-        "taurus": "♉ Tauro: Buen día para decisiones financieras",
-        "gemini": "♊ Géminis: La comunicación trae suerte",
-        "cancer": "♋ Cáncer: Escucha tu intuición",
-        "leo": "♌ Leo: Tu día para brillar",
-        "virgo": "♍ Virgo: Atención a los detalles",
-        "libra": "♎ Libra: Encuentra el equilibrio",
-        "scorpio": "♏ Escorpio: Transformación",
-        "sagittarius": "♐ Sagitario: Aventura espera",
-        "capricorn": "♑ Capricornio: La perseverancia paga",
-        "aquarius": "♒ Acuario: Nuevas ideas",
-        "pisces": "♓ Piscis: Fluye con la corriente"
-    }
-}
-
-CARDS = [
-    {"id": 1, "name": {"ru": "Шут", "en": "Fool", "es": "Loco"}, "meaning": {"ru": "Новое начало, спонтанность", "en": "New beginning, spontaneity", "es": "Nuevo comienzo, espontaneidad"}},
-    {"id": 2, "name": {"ru": "Маг", "en": "Magician", "es": "Mago"}, "meaning": {"ru": "Сила воли, мастерство", "en": "Willpower, mastery", "es": "Fuerza de voluntad, maestría"}},
-    {"id": 3, "name": {"ru": "Верховная Жрица", "en": "High Priestess", "es": "Suma Sacerdotisa"}, "meaning": {"ru": "Интуиция, тайна", "en": "Intuition, mystery", "es": "Intuición, misterio"}},
-    {"id": 4, "name": {"ru": "Императрица", "en": "Empress", "es": "Emperatriz"}, "meaning": {"ru": "Изобилие, плодородие", "en": "Abundance, fertility", "es": "Abundancia, fertilidad"}},
+    {
+        "id": 5,
+        "name": "Звезда",
+        "meaning": "надежда, вдохновение и восстановление"
+    },
 ]
 
-# ============= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =============
 
-def get_text(key, lang=None):
-    """Получить текст на нужном языке"""
-    if lang is None:
-        lang = session.get('language', 'ru')
-    return TRANSLATIONS.get(lang, TRANSLATIONS['ru']).get(key, key)
+def init_session():
+    if "coins" not in session:
+        session["coins"] = 150
 
-def get_energy(lang=None):
-    """Получить энергию на нужном языке"""
-    if lang is None:
-        lang = session.get('language', 'ru')
-    return random.choice(ENERGIES.get(lang, ENERGIES['ru']))
+    if "streak_days" not in session:
+        session["streak_days"] = 7
 
-def get_horoscope(sign='aries', lang=None):
-    """Получить гороскоп на нужном языке"""
-    if lang is None:
-        lang = session.get('language', 'ru')
-    return HOROSCOPES.get(lang, HOROSCOPES['ru']).get(sign, "")
 
-# ============= МАРШРУТЫ =============
+# ===== ONBOARDING =====
 
-@app.route('/')
+@app.route("/onboarding")
+def onboarding():
+    return redirect(url_for("onboarding_1"))
+
+
+@app.route("/onboarding/1")
+def onboarding_1():
+    return render_template("onboarding1.html")
+
+
+@app.route("/onboarding/2")
+def onboarding_2():
+    return render_template("onboarding2.html")
+
+@app.route('/loading')
+def loading():
+    return render_template('loading.html')
+
+@app.route("/vip")
+def vip():
+    return render_template("vip.html")
+
+@app.route("/onboarding/3")
+def onboarding_3():
+    return render_template("onboarding3.html")
+
+
+@app.route("/onboarding/finish")
+def onboarding_finish():
+    session["onboarding_seen"] = True
+    return redirect(url_for("today"))
+
+
+@app.route("/reset-onboarding")
+def reset_onboarding():
+    session.pop("onboarding_seen", None)
+    return redirect(url_for("today"))
+
+
+# ===== MAIN PAGES =====
+
+@app.route("/")
 def today():
-    """Главный экран 'Сегодня'"""
-    
-    # Инициализация сессии
-    if 'coins' not in session:
-        session['coins'] = 50
-    if 'collected_cards' not in session:
-        session['collected_cards'] = []
-    if 'language' not in session:
-        session['language'] = 'ru'
-    
-    # Проверяем, заходил ли сегодня
-    today_str = datetime.now().strftime('%Y-%m-%d')
-    last_visit = session.get('last_visit')
-    
-    daily_bonus = False
-    if last_visit != today_str:
-        session['coins'] = session.get('coins', 0) + 10
-        session['last_visit'] = today_str
-        daily_bonus = True
-    
-    lang = session.get('language', 'ru')
-    
-    # Данные для отображения
-    context = {
-        'daily_bonus': daily_bonus,
-        'coins': session.get('coins', 0),
-        'energy': get_energy(lang),
-        'horoscope': get_horoscope('aries', lang),
-        'card_of_day': session.get('card_of_day'),
-        'collected': len(session.get('collected_cards', [])),
-        'total_cards': 78,
-        'now': datetime.now(),
-        'lang': lang,
-        'get_text': get_text  # Передаем функцию в шаблон
-    }
-    
-    return render_template('today.html', **context)
+    if not session.get("onboarding_seen"):
+        return redirect(url_for("onboarding_1"))
 
-@app.route('/set-language', methods=['POST'])
-def set_language():
-    """Установка языка"""
-    data = request.json
-    lang = data.get('language', 'ru')
-    if lang in ['ru', 'en', 'es']:
-        session['language'] = lang
-        return jsonify({'success': True, 'language': lang})
-    return jsonify({'success': False, 'error': 'Invalid language'})
+    init_session()
 
-@app.route('/draw-card', methods=['POST'])
+    return render_template(
+        "today.html",
+        coins=session.get("coins", 150),
+        streak_days=session.get("streak_days", 7),
+        card_of_day=session.get("card_of_day")
+    )
+
+
+@app.route("/profile")
+def profile():
+    init_session()
+    return render_template(
+        "profile.html",
+        coins=session.get("coins", 150)
+    )
+
+
+@app.route("/settings")
+def settings():
+    return render_template("settings.html")
+
+
+@app.route("/collection")
+def collection():
+    init_session()
+    return render_template(
+        "collection.html",
+        coins=session.get("coins", 150),
+        collected=[],
+        progress=0,
+        total=78
+    )
+
+
+@app.route("/match")
+def match():
+    return render_template("match.html")
+
+@app.route("/birthplace")
+def birthplace():
+    return render_template("birthplace.html")
+@app.route("/birthtime")
+def birthtime():
+    return render_template("birthtime_1to1.html")
+@app.route("/birthdate")
+def birthdate():
+    return render_template("birthdate_1to1.html")
+
+@app.route("/match2")
+def match2():
+    return render_template("match2.html")
+@app.route('/loading1')
+def loading1():
+    return render_template('loading_1to1.html')
+
+@app.route("/quiz1")
+def quiz1():
+    return render_template("quiz1.html")
+
+
+@app.route("/quiz2")
+def quiz2():
+    return render_template("quiz2.html")
+
+@app.route("/result1")
+def result1():
+    return render_template("result_1to1.html")
+
+@app.route("/quiz3")
+def quiz3():
+    return render_template("quiz3.html")
+
+
+@app.route("/quiz4")
+def quiz4():
+    return render_template("quiz4.html")
+
+
+@app.route("/quiz5")
+def quiz5():
+    return render_template("quiz5.html")
+
+
+@app.route("/result")
+def result():
+    return render_template("result.html")
+
+
+# ===== API =====
+
+@app.route("/api/draw-card", methods=["POST"])
 def draw_card():
-    """Вытянуть карту дня"""
-    
-    # Инициализация сессии если нужно
-    if 'collected_cards' not in session:
-        session['collected_cards'] = []
-    if 'coins' not in session:
-        session['coins'] = 50
-    if 'language' not in session:
-        session['language'] = 'ru'
-    
-    lang = session.get('language', 'ru')
-    
-    # Выбираем случайную карту
-    card = random.choice(CARDS)
-    
-    # Создаем карту с переводом
-    translated_card = {
-        'id': card['id'],
-        'name': card['name'].get(lang, card['name']['ru']),
-        'meaning': card['meaning'].get(lang, card['meaning']['ru'])
-    }
-    
-    session['card_of_day'] = translated_card
-    
-    # Добавляем в коллекцию
-    collected = session.get('collected_cards', [])
-    if card['id'] not in collected:
-        collected.append(card['id'])
-        session['collected_cards'] = collected
-        session['coins'] = session.get('coins', 0) + 5
-    
+    init_session()
+
+    card = random.choice(SIMPLE_CARDS)
+    session["card_of_day"] = card
+    session["coins"] = session.get("coins", 150) + 5
+
     return jsonify({
-        'success': True,
-        'card': translated_card,
-        'coins': session['coins']
+        "success": True,
+        "card": card,
+        "coins": session["coins"]
     })
 
-@app.route('/health')
+
+@app.route("/api/compatibility", methods=["POST"])
+def compatibility():
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "")
+
+    return jsonify({
+        "success": True,
+        "name": name,
+        "compatibility": random.randint(60, 100)
+    })
+
+
+@app.route("/health")
 def health():
     return {"status": "ok"}
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
