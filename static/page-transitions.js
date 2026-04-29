@@ -15,7 +15,7 @@
       document.body.classList.add("page-enter-" + type);
       window.setTimeout(() => {
         document.body.classList.remove("page-enter-" + type);
-      }, 340);
+      }, 120);
     });
   }
 

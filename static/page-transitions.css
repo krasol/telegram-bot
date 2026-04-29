@@ -12,27 +12,27 @@ body {
 
 /* обычный переход вперед: следующий экран заезжает справа */
 body.page-enter-forward {
-  animation: pageEnterForward 260ms cubic-bezier(.22, .61, .36, 1) both;
+  animation: pageEnterForward 120ms cubic-bezier(.22, .61, .36, 1) both;
 }
 
 /* назад: экран заезжает слева, ощущение свайпа вправо */
 body.page-enter-back {
-  animation: pageEnterBack 260ms cubic-bezier(.22, .61, .36, 1) both;
+  animation: pageEnterBack 120ms cubic-bezier(.22, .61, .36, 1) both;
 }
 
 /* переход из нижнего меню: экран поднимается снизу */
 body.page-enter-menu {
-  animation: pageEnterMenu 300ms cubic-bezier(.22, .61, .36, 1) both;
+  animation: pageEnterMenu 120ms cubic-bezier(.22, .61, .36, 1) both;
 }
 
 body.page-exit-forward {
   pointer-events: none;
-  animation: pageExitForward 220ms cubic-bezier(.4, 0, .2, 1) both;
+  animation: pageExitForward 120ms cubic-bezier(.4, 0, .2, 1) both;
 }
 
 body.page-exit-back {
   pointer-events: none;
-  animation: pageExitBack 220ms cubic-bezier(.4, 0, .2, 1) both;
+  animation: pageExitBack 120ms cubic-bezier(.4, 0, .2, 1) both;
 }
 
 body.page-exit-menu {

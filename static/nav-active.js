@@ -1,28 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
   var path = window.location.pathname.replace(/\/$/, '') || '/';
-  var links = document.querySelectorAll('.nav a, .bottom-nav a');
 
-  links.forEach(function (link) {
+  document.querySelectorAll('.nav a').forEach(function (link) {
     var href = (link.getAttribute('href') || '').replace(/\/$/, '') || '/';
-    var isActive =
+    var active =
       (path === '/' && href === '/') ||
       (href !== '/' && path === href) ||
       (href === '/birthdate' && path.indexOf('/birthdate') === 0);
 
-    link.classList.toggle('active', isActive);
+    link.classList.toggle('active', active);
 
     var img = link.querySelector('img');
     if (img) {
       var activeSrc = img.getAttribute('data-active-src');
       var inactiveSrc = img.getAttribute('data-inactive-src');
-
-      if (isActive && activeSrc) {
-        img.setAttribute('src', activeSrc);
-      }
-
-      if (!isActive && inactiveSrc) {
-        img.setAttribute('src', inactiveSrc);
-      }
+      if (active && activeSrc) img.src = activeSrc;
+      if (!active && inactiveSrc) img.src = inactiveSrc;
     }
   });
 });
