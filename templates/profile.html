@@ -2,6 +2,7 @@
 
 <html lang="ru">
 <head>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Профиль</title>
@@ -32,8 +33,9 @@ a {
 }
 
 body {
+  padding-bottom: 100px;
   min-height: 100vh;
-  background: #000;
+  background: #131020;
   color: #fff;
   display: flex;
   justify-content: center;
@@ -45,7 +47,7 @@ body {
   min-height: 1519px;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(ellipse 123.87% 54.65% at 50% 50%, #241610 0%, #160C07 100%);
+  background: #131020;
 }
 
 .header {
@@ -117,7 +119,7 @@ body {
   position: absolute;
   left: 80px;
   top: 36px;
-  color: rgba(85, 69, 184, .8);
+  color: rgba(255, 255, 255, .80);
   font-family: 'Liberation Sans', 'Manrope', Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
@@ -131,10 +133,8 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: #2D1B2D;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  background: transparent; /* ❗ убрали квадрат */
 }
 
 .settings-icon {
@@ -249,7 +249,9 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: rgba(85, 69, 184, .10);
+  background: #251C32;
+  outline: 1px solid #5545B8;
+  outline-offset: -1px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -308,7 +310,7 @@ body {
   width: 76px;
   height: 89px;
   text-align: center;
-  color: #5545B8;
+  color: #fff;
   font-size: 10px;
   line-height: 12.5px;
   font-weight: 500;
@@ -321,7 +323,9 @@ body {
   width: 56px;
   height: 56px;
   border-radius: 20px;
-  background: rgba(85, 69, 184, .10);
+  background: #251C32;
+  outline: 1px solid #5545B8;
+  outline-offset: -1px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -470,7 +474,7 @@ body {
   width: 370px;
   height: 179px;
   border-radius: 20px;
-  background: rgba(85, 69, 184, .50);
+  background: #5848BB;
   outline: 1px solid rgba(255, 255, 255, .05);
   outline-offset: -1px;
 }
@@ -524,7 +528,7 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #fff;
+  background: #22C55E;
   flex: 0 0 auto;
 }
 
@@ -542,7 +546,7 @@ body {
   width: 91.33px;
   height: 55px;
   border-radius: 12px;
-  background: #252545;
+  background: #fff;
   text-align: center;
 }
 
@@ -553,18 +557,20 @@ body {
 .zodiac span {
   display: block;
   margin-top: 8px;
-  color: rgba(85, 69, 184, .5);
+  color: rgba(0, 0, 0, .50);
   font-family: 'Liberation Sans', Arial, sans-serif;
   font-size: 10px;
+  font-weight: 400;
   line-height: 15px;
   text-transform: uppercase;
 }
 
 .zodiac b {
   display: block;
-  color: #fff;
+  color: #5545B8;
   font-family: 'Liberation Sans', Arial, sans-serif;
   font-size: 16px;
+  font-weight: 700;
   line-height: 24px;
 }
 
@@ -590,8 +596,8 @@ body {
   width: 370px;
   height: 82px;
   border-radius: 20px;
-  background: rgba(85, 69, 184, .50);
-  outline: 1px solid rgba(255, 255, 255, .05);
+  background: #272029;
+  outline: 1px solid rgba(114, 97, 218, .15);
   outline-offset: -1px;
 }
 
@@ -602,7 +608,7 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #fdf8f4, #5545B8);
+  background: #272029;
   outline: 1px solid rgba(255, 255, 255, .10);
   outline-offset: -1px;
   display: flex;
@@ -652,8 +658,8 @@ body {
   width: 177px;
   height: 110px;
   border-radius: 20px;
-  background: rgba(85, 69, 184, .50);
-  outline: 1px solid rgba(255, 255, 255, .05);
+  background: #272029;
+  outline: 1px solid rgba(114, 97, 218, .15);
   outline-offset: -1px;
 }
 
@@ -706,7 +712,7 @@ body {
   width: 128px;
   height: 128px;
   border-radius: 999px;
-  background: rgba(255, 0, 0, .10);
+  background: rgba(85, 69, 184, .20);
   filter: blur(12px);
   box-shadow: 24px 24px 24px rgba(0, 0, 0, .25);
 }
@@ -743,10 +749,15 @@ body {
   object-fit: contain;
 }
 
+
+
+
 .nav {
-  position: absolute;
-  left: 9px;
-  top: 1338px;
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 9999;
   width: 370px;
   height: 67px;
   border-radius: 999px;
@@ -757,6 +768,12 @@ body {
   backdrop-filter: blur(12px);
 }
 
+
+
+
+
+
+
 .nav a {
   position: absolute;
   top: 14px;
@@ -766,7 +783,27 @@ body {
   font-family: 'Liberation Sans', Arial, sans-serif;
   font-size: 10px;
   line-height: 15px;
+  text-decoration: none;
 }
+
+.nav a:nth-child(1) { left: 22px; width: 40px; }
+.nav a:nth-child(2) { left: 95px; width: 48px; }
+.nav a:nth-child(3) { left: 168px; width: 48px; }
+.nav a:nth-child(4) { left: 241px; width: 48px; }
+.nav a:nth-child(5) { left: 314px; width: 48px; }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .nav-icon {
   display: block;
@@ -777,21 +814,18 @@ body {
   opacity: .4;
 }
 
-.nav a:nth-child(4) .nav-icon {
-  opacity: 1;
-}
 
-.nav a:nth-child(1) { left: 22px; width: 40px; }
-.nav a:nth-child(2) { left: 95px; width: 48px; }
-.nav a:nth-child(3) { left: 176px; width: 36px; }
-.nav a:nth-child(4) { left: 246px; width: 38px; color: #9C8DFF; }
-.nav a:nth-child(5) { left: 302px; width: 48px; font-weight: 700; }
 
-.nav .active-heart {
-  position: absolute;
-  left: 246px;
-  top: 14px;
-}
+
+
+
+
+
+
+
+
+
+
 
 .bottom-pad {
   position: absolute;
@@ -802,14 +836,19 @@ body {
 }
 
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='bottom-nav-fix.css') }}">
 </head>
 <body>
+</div>
+
 <div class="phone">
 <header class="header">
 <div class="user-box">
-<div class="avatar-shell"><img class="avatar" onerror="this.style.display='none'" src="{{ url_for('static', filename='img/avatar.png') }}"/></div>
+<div class="avatar-shell"><img id="tgAvatar" class="avatar" onerror="this.style.display='none'" src="{{ tg_user.photo_url if tg_user and tg_user.photo_url else url_for('static', filename='img/avatar.png') }}"/></div>
 <div class="pro-pill">PRO</div>
-<div class="user-name">Елена</div><div class="user-sub">Искатель пути</div>
+<div id="tgName" class="user-name">{% if tg_user and tg_user.first_name %}{{ (tg_user.first_name ~ " " ~ tg_user.last_name)|trim }}{% else %}Елена{% endif %}</div><div id="tgUsername" class="user-sub">{% if tg_user and tg_user.username %}@{{ tg_user.username }}{% else %}Искатель пути{% endif %}</div>
 </div>
 <a aria-label="Настройки" class="settings-btn" href="/settings"><img alt="Настройки" class="settings-icon" draggable="false" src="{{ url_for('static', filename='img/settings.png') }}"/></a>
 </header>
@@ -831,7 +870,39 @@ body {
 <div class="small-card left"><div class="small-sub">Совместимость</div><div class="small-title">8 проверок</div><a class="small-link" href="/match">История ›</a></div><div class="small-card right"><div class="small-sub">Избранное</div><div class="small-title">15 раскладов</div><a class="small-link" href="#">Открыть ›</a></div>
 <div class="activity"><div class="activity-sub">Продолжить</div><div class="activity-title">Расклад на любовь</div><img alt="Продолжить" class="play" draggable="false" src="{{ url_for('static', filename='img/play.png') }}"/></div>
 </section>
-<nav class="nav"><a href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/home.png') }}"/>Главная</a><a href="#"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/taro4.png') }}"/>Расклады</a><a href="#"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/stars.png') }}"/>Звезды</a><a href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/match.png') }}"/>Мэтч</a><a href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/profile.png') }}"/>Профиль</a></nav>
+<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/birthdate"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
 </main><div class="bottom-pad"></div></div>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
+
+<script>
+const tg = window.Telegram?.WebApp;
+tg?.ready();
+tg?.expand();
+
+const tgUser = tg?.initDataUnsafe?.user;
+
+if (tgUser) {
+  const firstName = tgUser.first_name || '';
+  const lastName = tgUser.last_name || '';
+  const fullName = `${firstName} ${lastName}`.trim();
+  const username = tgUser.username ? '@' + tgUser.username : 'Искатель пути';
+
+  const nameEl = document.getElementById('tgName');
+  const usernameEl = document.getElementById('tgUsername');
+  const avatarEl = document.getElementById('tgAvatar');
+
+  if (nameEl) nameEl.textContent = fullName || 'Пользователь';
+  if (usernameEl) usernameEl.textContent = username;
+  if (avatarEl && tgUser.photo_url) avatarEl.src = tgUser.photo_url;
+
+  fetch('/save-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tgUser)
+  });
+}
+</script>
+
 </body>
 </html>

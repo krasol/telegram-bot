@@ -213,6 +213,8 @@ body{
   font-size:10px;
 }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 
 <body>
@@ -227,7 +229,7 @@ body{
   <div class="progress">
     <span class="small"></span>
     <span class="small"></span>
-    <span class="active"></span>
+    <span></span>
   </div>
 
   <section class="hero">
@@ -276,5 +278,7 @@ body{
   </div>
 
 </div>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

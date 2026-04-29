@@ -283,6 +283,8 @@ body{
   object-fit:contain;
 }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 
 <body>
@@ -291,7 +293,7 @@ body{
   <div class="blur-purple"></div>
   <div class="blur-orange"></div>
 
-  <a href="/profile" class="back">
+  <a href="/" class="back">
     <img src="{{ url_for('static', filename='img/back.png') }}" alt="">
   </a>
 
@@ -348,5 +350,7 @@ body{
   </a>
 
 </div>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

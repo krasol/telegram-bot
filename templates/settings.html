@@ -12,6 +12,8 @@
 body{min-height:100vh;background:#000;color:#fff;display:flex;justify-content:center;font-family:'Manrope','Liberation Sans',Arial,sans-serif}
 a,button{font:inherit;color:inherit;text-decoration:none}button{border:0;background:none;cursor:pointer}.phone{width:390px;min-height:1076px;position:relative;background:#141021;overflow:hidden}.topbar{position:absolute;left:0;top:0;width:390px;height:65px}.back{position:absolute;left:16px;top:16px;width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#F1F5F9;font-size:28px;line-height:48px}.title{position:absolute;left:118px;top:26px;width:153px;height:28px;text-align:center;color:#F1F5F9;font-family:'Liberation Sans','Manrope',Arial,sans-serif;font-size:18px;font-weight:700;line-height:22.5px}.content{position:absolute;left:0;top:65px;width:390px;height:1042px;overflow:hidden}.group{position:absolute;left:0;width:390px;padding-left:16px;padding-right:16px;display:flex;flex-direction:column;gap:8px}.notifications{top:0;padding-top:24px;padding-bottom:8px}.app-settings{top:230px;padding-top:16px;padding-bottom:8px}.section-title{align-self:stretch;opacity:.5;color:#fff;font-size:14px;font-weight:700;text-transform:uppercase;line-height:20px;letter-spacing:.7px}.card{width:358px;background:#1A162E;border-radius:12px;outline:1px solid #1A0F1A;outline-offset:-1px;overflow:hidden;display:flex;flex-direction:column}.card.legal{position:absolute;left:17px;top:520px;width:356px;height:114px;background:#19152D}.card.account{position:absolute;left:17px;top:681px;width:356px;background:#19152D}.row{min-height:56px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1A0F1A}.row:last-child{border-bottom:0}.app-settings .row{padding-top:15.5px;padding-bottom:15.5px}.left{display:flex;align-items:center;gap:12px}.icon{width:22px;height:22px;object-fit:contain;filter:brightness(0) invert(1)}.icon.small{width:18px;height:18px}.icon.bell{width:16px;height:20px}.item-title{color:white;font-size:16px;font-weight:500;line-height:24px}.right{display:flex;align-items:center;gap:8px;color:#9C9C9C;font-family:'Liberation Sans','Manrope',Arial,sans-serif;font-size:14px;font-weight:400;line-height:20px}.chev{width:5px;height:7px;display:block}.external{width:11px;height:11px}.switch{width:51px;height:31px;padding:2px;border-radius:999px;background:#837C98;display:flex;align-items:center;justify-content:flex-start}.switch.active{background:#5643BC;justify-content:flex-end}.knob{width:27px;height:27px;border-radius:999px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}.legal-title{position:absolute;left:16px;top:468px;width:220px;opacity:.5;color:#fff;font-size:14px;font-weight:700;text-transform:uppercase;line-height:20px;letter-spacing:.7px}.account-title{position:absolute;left:16px;top:650px;width:100px;opacity:.5;color:#fff;font-size:14px;font-weight:700;text-transform:uppercase;line-height:20px;letter-spacing:.7px}.logout-block{position:absolute;left:0;top:784px;width:390px;height:162px}.logout-btn{position:absolute;left:16px;top:32px;width:358px;height:58px;border-radius:12px;background:#5545B8;outline:1px solid #7261DA;outline-offset:-1px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:16px;font-weight:800;line-height:24px}.version{position:absolute;left:0;top:106px;width:390px;text-align:center;color:#1A0F1A;font-family:'Public Sans','Manrope',Arial,sans-serif;font-size:12px;font-weight:400;line-height:16px}.bottom-decoration{position:absolute;left:0;top:1008px;width:390px;height:68px}.home-indicator{position:absolute;left:131px;top:32px;width:128px;height:4px;border-radius:999px;background:#5545B8}.row.legal-row{height:56px;padding:15.5px 16px}.row.account-row{padding:15.5px 16px;justify-content:flex-start}.row.account-row .left{gap:12px}
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 <body>
 <div class="phone">
@@ -29,14 +31,14 @@ a,button{font:inherit;color:inherit;text-decoration:none}button{border:0;backgro
             <img src="{{ url_for('static', filename='img/bell.png') }}" class="icon bell" alt="">
             <div class="item-title">Общие уведомления</div>
           </div>
-          <div class="switch active"><div class="knob"></div></div>
+          <div class="switch"><div class="knob"></div></div>
         </div>
         <div class="row">
           <div class="left">
             <img src="{{ url_for('static', filename='img/tarot.png') }}" class="icon" alt="">
             <div class="item-title">Карта дня</div>
           </div>
-          <div class="switch active"><div class="knob"></div></div>
+          <div class="switch"><div class="knob"></div></div>
         </div>
         <div class="row">
           <div class="left">
@@ -114,5 +116,7 @@ a,button{font:inherit;color:inherit;text-decoration:none}button{border:0;backgro
 
   <div class="bottom-decoration"><div class="home-indicator"></div></div>
 </div>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

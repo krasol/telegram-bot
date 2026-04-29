@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Натальная карта</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='bottom-nav-fix.css') }}">
+
+<style>
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-ExtraBold.woff2') }}") format('woff2');font-weight:800;font-display:swap}
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  background:#000;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  font-family:'Manrope','Liberation Sans',Arial,sans-serif;
+}
+a{text-decoration:none;color:inherit}
+button{border:0;font:inherit;color:inherit}
+
+.phone{
+  width:390px;
+  min-height:1745px;
+  position:relative;
+  overflow:hidden;
+  background:#1D141F;
+  padding-bottom:100px;
+}
+
+.header{
+  position:absolute;
+  left:0;
+  top:0;
+  width:390px;
+  height:56px;
+  z-index:3;
+}
+.back{
+  position:absolute;
+  left:16px;
+  top:16px;
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  line-height:24px;
+  color:#fff;
+}
+.header-title{
+  position:absolute;
+  left:119px;
+  top:26px;
+  width:153px;
+  height:28px;
+  text-align:center;
+  color:#F1F5F9;
+  font-size:18px;
+  font-weight:700;
+  line-height:22.5px;
+}
+
+/* HERO / EMPTY PHOTO CIRCLE */
+.main{
+  position:absolute;
+  left:0;
+  top:0;
+  width:390px;
+  height:442px;
+}
+.overlay-blur{
+  position:absolute;
+  width:289px;
+  height:393px;
+  left:-78px;
+  top:141px;
+  background:rgba(145,0,255,.10);
+  border-radius:9999px;
+  filter:blur(74px);
+}
+.chart-wrap{
+  position:absolute;
+  left:35px;
+  top:109px;
+  width:320px;
+  height:320px;
+  border-radius:50%;
+  background:radial-gradient(ellipse 70% 70% at 50% 50%, rgba(114,97,218,.10) 0%, rgba(114,97,218,0) 70%);
+}
+.orbit1,.orbit2,.orbit3{
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+.orbit1{width:320px;height:320px;left:0;top:0;border:2px solid rgba(114,97,218,.20)}
+.orbit2{width:256px;height:256px;left:32px;top:32px;border:1px solid rgba(114,97,218,.10)}
+.orbit3{width:192px;height:192px;left:64px;top:64px;border:1px solid rgba(114,97,218,.05)}
+.photo-slot{
+  position:absolute;
+  left:32px;
+  top:32px;
+  width:256px;
+  height:256px;
+  border-radius:50%;
+  border:2px dashed rgba(255,255,255,.12);
+  background:radial-gradient(circle, rgba(255,255,255,.035), rgba(255,255,255,0));
+  box-shadow:0 25px 50px -12px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+/* Потом просто вставишь сюда img:
+.photo-slot img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+*/
+.planet{
+  position:absolute;
+  left:149px;
+  top:16px;
+  width:22px;
+  height:28px;
+  border-radius:999px;
+  background:#7261DA;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 10px 15px -3px rgba(0,0,0,.15), 0 4px 6px -4px rgba(0,0,0,.15);
+}
+.planet svg{width:14px;height:14px}
+
+/* PROFILE SUMMARY */
+.profile-summary{
+  position:absolute;
+  left:1px;
+  top:442px;
+  width:388px;
+  height:100px;
+}
+.profile-title{
+  position:absolute;
+  left:24px;
+  top:0;
+  width:340px;
+  text-align:center;
+  font-size:26px;
+  font-weight:700;
+  line-height:32px;
+}
+.profile-sub{
+  position:absolute;
+  left:24px;
+  top:36px;
+  width:340px;
+  text-align:center;
+  color:#E1D6F7;
+  font-size:16px;
+  font-weight:400;
+  line-height:24px;
+}
+.badges{
+  position:absolute;
+  left:24px;
+  top:64px;
+  width:340px;
+  height:36px;
+  padding-top:12px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+.badge{
+  padding:4px 12px;
+  border-radius:999px;
+  background:#fff;
+  color:#745DFF;
+  font-size:12px;
+  font-weight:700;
+  line-height:16px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+
+/* BIG THREE */
+.big-three{
+  position:absolute;
+  left:1px;
+  top:554px;
+  width:388px;
+  padding:8px 16px 0;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+}
+.z-card{
+  position:relative;
+  width:110.66px;
+  height:99px;
+  border-radius:12px;
+  background:rgba(114,97,218,.10);
+  outline:1px solid #7261DA;
+  outline-offset:-1px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
+}
+.z-icon{
+  position:absolute;
+  left:44px;
+  top:17px;
+  width:22px;
+  height:30px;
+  color:#7261DA;
+}
+.z-card:nth-child(2) .z-icon{left:46px;top:19px;width:18px;height:26px}
+.z-card:nth-child(3) .z-icon{left:48px;top:20px;width:16px;height:24px}
+.z-label{
+  position:absolute;
+  left:0;
+  top:44px;
+  width:100%;
+  text-align:center;
+  color:#fff;
+  font-size:10px;
+  font-weight:200;
+  line-height:15px;
+  text-transform:uppercase;
+}
+.z-value{
+  position:absolute;
+  left:0;
+  top:59px;
+  width:100%;
+  text-align:center;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  line-height:20px;
+}
+
+/* TEXT INSIGHT PANEL */
+.insight-panel{
+  position:absolute;
+  left:24px;
+  top:713px;
+  width:342px;
+  height:286.75px;
+  border-radius:12px;
+  background:rgba(54,49,57,.40);
+  outline:1px solid rgba(114,97,218,.15);
+  outline-offset:-1px;
+  backdrop-filter:blur(10px);
+  padding:25px 24px 0 51px;
+}
+.insight-item{
+  position:relative;
+  min-height:68px;
+  margin-bottom:16px;
+  color:rgba(255,255,255,.90);
+  font-size:14px;
+  font-weight:400;
+  line-height:22.75px;
+}
+.insight-item:before{
+  content:'';
+  position:absolute;
+  left:-36px;
+  top:10px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#745DFF;
+  box-shadow:0 0 10px #745DFF;
+}
+.insight-fade{
+  position:absolute;
+  left:24px;
+  top:910px;
+  width:342px;
+  height:90px;
+  border-radius:12px;
+  background:linear-gradient(0deg,#3B2667 0%,rgba(63,42,124,0) 100%);
+  pointer-events:none;
+}
+.read-more {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 982px;
+
+  width: auto;              /* ❗ убрали ограничение */
+  white-space: nowrap;      /* ❗ запрет переноса */
+
+  text-align: center;
+  color: rgba(255,255,255,.60);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 15px;
+  text-transform: uppercase;
+}
+
+/* PREMIUM */
+.premium-section{
+  position:absolute;
+  left:1px;
+  top:1036px;
+  width:388px;
+  padding:16px;
+}
+.section-head{
+  width:356px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+.section-head h2{
+  font-size:18px;
+  font-weight:700;
+  line-height:28px;
+}
+.section-head span{
+  color:#8875FF;
+  font-size:12px;
+  font-weight:400;
+  line-height:16px;
+}
+.locked-list{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.lock-card{
+  position:relative;
+  width:356px;
+  height:130px;
+  border-radius:12px;
+  overflow:hidden;
+  outline:1px solid rgba(241,245,249,.30);
+  outline-offset:-1px;
+  background:#1C1E2B;
+}
+.lock-card.love{background:rgba(255,255,255,.02)}
+.lock-content{
+  position:absolute;
+  left:20px;
+  top:20px;
+  width:314px;
+  height:88px;
+  opacity:.40;
+  filter:blur(1px);
+  display:flex;
+  gap:16px;
+}
+.lock-iconbox{
+  flex:0 0 36px;
+  width:36px;
+  height:35px;
+  border-radius:8px;
+  background:rgba(255,255,255,.10);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.lock-card.love .lock-iconbox{background:rgba(117,142,105,.10)}
+.lock-text h3{
+  font-size:16px;
+  font-weight:700;
+  line-height:24px;
+  margin-bottom:4px;
+}
+.lock-text p{
+  color:rgba(255,255,255,.90);
+  font-size:14px;
+  font-weight:400;
+  line-height:22.75px;
+}
+.lock-overlay{
+  position:absolute;
+  left:1px;
+  top:1px;
+  width:354px;
+  height:128px;
+  border-radius:12px;
+  background:rgba(28,30,43,.60);
+  backdrop-filter:blur(.5px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:8px;
+  text-transform:uppercase;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1.2px;
+}
+.lock-card.love .lock-overlay{background:rgba(28,30,43,.60)}
+.lock-overlay svg{width:16px;height:21px}
+
+/* UPSALE */
+.upsell{
+  position:absolute;
+  left:17px;
+  top:1396px;
+  width:356px;
+  height:236.4px;
+  border-radius:16px;
+  overflow:hidden;
+  background:#A413EC;
+  box-shadow:0 4px 6px -4px rgba(164,19,236,.30),0 10px 15px -3px rgba(164,19,236,.30);
+}
+.upsell:after{
+  content:'';
+  position:absolute;
+  right:-64px;
+  top:-56px;
+  width:128px;
+  height:128px;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+}
+.upsell-content{
+  position:absolute;
+  left:24px;
+  top:32px;
+  width:308px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+.upsell h2{
+  width:262px;
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  line-height:28px;
+}
+.upsell p{
+  width:311px;
+  height:46px;
+  text-align:center;
+  color:rgba(255,255,255,.80);
+  font-size:14px;
+  font-weight:400;
+  line-height:20px;
+}
+.premium-btn{
+  margin-top:2px;
+  width:229px;
+  height:44px;
+  border-radius:999px;
+  background:#fff;
+  color:#A413EC;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:800;
+  line-height:20px;
+  box-shadow:0 8px 10px -6px rgba(0,0,0,.10),0 20px 25px -5px rgba(0,0,0,.10);
+}
+.price{
+  width:94px;
+  text-align:center;
+  font-size:10px;
+  font-weight:500;
+  line-height:15px;
+}
+.phone {
+  padding-bottom: 40px; /* чтобы контент не залезал под меню */
+}
+/* BOTTOM NAV */
+
+
+.nav {
+  position: absolute !important;
+  left: 50% !important;
+  top: 1650px !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 99999 !important;
+
+  width: 370px !important;
+  height: 67px !important;
+
+  border-radius: 999px !important;
+  background: #161225 !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,.40) !important;
+
+  outline: 1px solid rgba(255,255,255,.10) !important;
+  outline-offset: -1px !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+
+.nav a{
+  position:absolute !important;
+  top:14px !important;
+  height:41px !important;
+  text-align:center !important;
+  color:rgba(255,255,255,.40) !important;
+  font-family:'Liberation Sans',Arial,sans-serif !important;
+  font-size:10px !important;
+  line-height:15px !important;
+}
+.nav a:nth-child(1){left:20px!important;width:44px!important}
+.nav a:nth-child(2){left:88px!important;width:44px!important}
+.nav a:nth-child(3){left:156px!important;width:44px!important}
+.nav a:nth-child(4){left:224px!important;width:44px!important}
+.nav a:nth-child(5){left:292px!important;width:44px!important}
+.nav-icon{
+  display:block!important;
+  width:22px!important;
+  height:20px!important;
+  margin:0 auto 5px!important;
+  object-fit:contain!important;
+  opacity:.4;
+}
+.nav a.active{color:#9C8DFF!important;font-weight:700!important}
+.nav a.active .nav-icon{opacity:1!important}
+</style>
+
+
+<style id="birthdate-nav-position-fix">
+body .phone .nav {
+  position: absolute !important;
+  left: 50% !important;
+  top: 1650px !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 99999 !important;
+  width: 370px !important;
+  height: 67px !important;
+}
+</style>
+
+</head>
+
+<body>
+<div class="phone">
+
+  <header class="header">
+    <a href="/" class="back" aria-label="Назад">‹</a>
+    <div class="header-title">Натальная карта</div>
+  </header>
+
+  <main class="main">
+    <div class="overlay-blur"></div>
+    <section class="chart-wrap">
+      <div class="orbit1"></div>
+      <div class="orbit2"></div>
+      <div class="orbit3"></div>
+      <div class="photo-slot">
+        <!-- ВСТАВИШЬ СВОЮ ФОТКУ СЮДА:
+        <img src="{{ url_for('static', filename='img/your-chart.png') }}" alt="">
+        -->
+      </div>
+      <div class="planet" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2Z" fill="white"/></svg>
+      </div>
+    </section>
+
+    <section class="profile-summary">
+      <div class="profile-title">Ваш духовный профиль</div>
+      <div class="profile-sub">Восходящий Скорпион • Солнце в Тельце</div>
+      <div class="badges">
+        <span class="badge">Земля</span>
+        <span class="badge">Фиксированный</span>
+      </div>
+    </section>
+  </main>
+
+  <section class="big-three">
+    <div class="z-card">
+      <svg class="z-icon" viewBox="0 0 22 30" fill="none"><path d="M10 3V0H12V3H10ZM10 22V19H12V22H10ZM19 12V10H22V12H19ZM0 12V10H3V12H0ZM17.7 5.7L16.3 4.3L18.05 2.5L19.5 3.95L17.7 5.7ZM3.95 19.5L2.5 18.05L4.3 16.3L5.7 17.7L3.95 19.5ZM18.05 19.5L16.3 17.7L17.7 16.3L19.5 18.05L18.05 19.5ZM4.3 5.7L2.5 3.95L3.95 2.5L5.7 4.3L4.3 5.7ZM11 17C9.333 17 7.917 16.417 6.75 15.25C5.583 14.083 5 12.667 5 11C5 9.333 5.583 7.917 6.75 6.75C7.917 5.583 9.333 5 11 5C12.667 5 14.083 5.583 15.25 6.75C16.417 7.917 17 9.333 17 11C17 12.667 16.417 14.083 15.25 15.25C14.083 16.417 12.667 17 11 17ZM11 15C12.117 15 13.063 14.613 13.838 13.838C14.613 13.063 15 12.117 15 11C15 9.883 14.613 8.938 13.838 8.163C13.063 7.388 12.117 7 11 7C9.883 7 8.938 7.388 8.163 8.163C7.388 8.938 7 9.883 7 11C7 12.117 7.388 13.063 8.163 13.838C8.938 14.613 9.883 15 11 15Z" fill="#7261DA"/></svg>
+      <div class="z-label">Солнце</div>
+      <div class="z-value">Телец</div>
+    </div>
+
+    <div class="z-card">
+      <svg class="z-icon" viewBox="0 0 18 26" fill="none"><path d="M9 18C6.5 18 4.375 17.125 2.625 15.375C.875 13.625 0 11.5 0 9C0 6.5.875 4.375 2.625 2.625C4.375.875 6.5 0 9 0C9.233 0 9.463.008 9.688.025C9.913.042 10.133.067 10.35.1C9.667.583 9.121 1.213 8.713 1.988C8.304 2.763 8.1 3.6 8.1 4.5C8.1 6 8.625 7.275 9.675 8.325C10.725 9.375 12 9.9 13.5 9.9C14.417 9.9 15.258 9.696 16.025 9.288C16.792 8.879 17.417 8.333 17.9 7.65C17.933 7.867 17.958 8.088 17.975 8.313C17.992 8.538 18 8.767 18 9C18 11.5 17.125 13.625 15.375 15.375C13.625 17.125 11.5 18 9 18Z" fill="#7261DA"/></svg>
+      <div class="z-label">Луна</div>
+      <div class="z-value">Рак</div>
+    </div>
+
+    <div class="z-card">
+      <svg class="z-icon" viewBox="0 0 16 24" fill="none"><path d="M7 16V3.825L1.4 9.425L0 8L8 0L16 8L14.6 9.425L9 3.825V16H7Z" fill="#7261DA"/></svg>
+      <div class="z-label">Асцендент</div>
+      <div class="z-value">Скорпион</div>
+    </div>
+  </section>
+
+  <section class="insight-panel">
+    <div class="insight-item">В начале отношений вы создаете<br>атмосферу исключительного доверия<br>и тепла.</div>
+    <div class="insight-item">Вы тонко чувствуете смену настроения<br>партнера и склонны подстраиваться<br>под него.</div>
+    <div class="insight-item">Интимность для вас — это прежде всего<br>эмоциональное слияние и общие<br>смыслы.</div>
+  </section>
+  <div class="insight-fade"></div>
+  <div class="read-more">Нажмите, чтобы прочитать полностью</div>
+
+  <section class="premium-section">
+    <div class="section-head">
+      <h2>Глубокий анализ</h2>
+      <span>Premium</span>
+    </div>
+
+    <div class="locked-list">
+      <div class="lock-card love">
+        <div class="lock-content">
+          <div class="lock-iconbox">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.4-9.5-8.2C.6 9.9 2.2 6 5.7 6c2 0 3.3 1.1 4.3 2.3C11 7.1 12.3 6 14.3 6c3.5 0 5.1 3.9 3.2 6.8C19 16.6 12 21 12 21z" stroke="white" stroke-width="2"/></svg>
+          </div>
+          <div class="lock-text">
+            <h3>Любовь и отношения</h3>
+            <p>Венера в пятом доме указывает на то,<br>что ваши чувства будут проявляться<br>через...</p>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <svg viewBox="0 0 16 21" fill="none"><path d="M2 21C1.45 21 .979 20.804 .588 20.413C.196 20.021 0 19.55 0 19V9C0 8.45 .196 7.979 .588 7.588C.979 7.196 1.45 7 2 7H3V5C3 3.617 3.488 2.438 4.463 1.463C5.438 .488 6.617 0 8 0C9.383 0 10.563 .488 11.538 1.463C12.513 2.438 13 3.617 13 5V7H14C14.55 7 15.021 7.196 15.413 7.588C15.804 7.979 16 8.45 16 9V19C16 19.55 15.804 20.021 15.413 20.413C15.021 20.804 14.55 21 14 21H2ZM2 19H14V9H2V19ZM5 7H11V5C11 4.167 10.708 3.458 10.125 2.875C9.542 2.292 8.833 2 8 2C7.167 2 6.458 2.292 5.875 2.875C5.292 3.458 5 4.167 5 5V7Z" fill="white"/></svg>
+          Заблокировано
+        </div>
+      </div>
+
+      <div class="lock-card">
+        <div class="lock-content">
+          <div class="lock-iconbox">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M5 7h14v13H5V7Z" stroke="white" stroke-width="2"/></svg>
+          </div>
+          <div class="lock-text">
+            <h3>Карьера и финансы</h3>
+            <p>Юпитер в десятом доме обещает<br>значительный рост в<br>профессиональной сфере, если вы...</p>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <svg viewBox="0 0 16 21" fill="none"><path d="M2 21C1.45 21 .979 20.804 .588 20.413C.196 20.021 0 19.55 0 19V9C0 8.45 .196 7.979 .588 7.588C.979 7.196 1.45 7 2 7H3V5C3 3.617 3.488 2.438 4.463 1.463C5.438 .488 6.617 0 8 0C9.383 0 10.563 .488 11.538 1.463C12.513 2.438 13 3.617 13 5V7H14C14.55 7 15.021 7.196 15.413 7.588C15.804 7.979 16 8.45 16 9V19C16 19.55 15.804 20.021 15.413 20.413C15.021 20.804 14.55 21 14 21H2ZM2 19H14V9H2V19ZM5 7H11V5C11 4.167 10.708 3.458 10.125 2.875C9.542 2.292 8.833 2 8 2C7.167 2 6.458 2.292 5.875 2.875C5.292 3.458 5 4.167 5 5V7Z" fill="white"/></svg>
+          Заблокировано
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="upsell">
+    <div class="upsell-content">
+      <h2>Откройте все тайны звезд</h2>
+      <p>Получите персональный отчет на 40+ страниц<br>с глубоким анализом вашей судьбы.</p>
+      <a class="premium-btn" href="/vip">Активировать Premium</a>
+      <div class="price">Всего 299₽ / месяц</div>
+    </div>
+  </section>
+
+  <nav class="nav">
+    <a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a>
+    <a class="nav-item" href="/match"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a>
+    <a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a>
+    <a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a>
+    <a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a>
+  </nav>
+
+</div>
+
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
+</body>
+</html>

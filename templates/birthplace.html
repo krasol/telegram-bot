@@ -404,6 +404,8 @@ a{text-decoration:none}
 }
 .next-arrow{position:absolute;left:192.1px;top:20px;width:16px;height:16px}
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 <body>
 <div class="page">
@@ -491,5 +493,7 @@ document.getElementById('locationBtn').addEventListener('click',()=>{
   );
 });
 </script>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

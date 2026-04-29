@@ -95,6 +95,8 @@ body{display:flex;justify-content:center}
 .bottom{position:absolute;left:0;top:728px;width:390px;padding:0 24px 32px;display:flex;justify-content:center;z-index:5}.next{width:342px;height:56px;position:relative;border-radius:9999px;background:linear-gradient(90deg,#5545B8 0%,#7565DE 100%);box-shadow:0 8px 30px rgba(64,0,255,.28);display:flex;align-items:center;justify-content:center;text-decoration:none;color:white;font-size:16px;font-weight:700;line-height:24px}.next span{position:absolute;left:133.9px;top:16px;width:50.2px;text-align:center}.next svg{position:absolute;left:192.1px;top:20px}
 button,a{-webkit-tap-highlight-color:transparent}
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 <body>
 <div class="page">
@@ -144,5 +146,7 @@ button,a{-webkit-tap-highlight-color:transparent}
   });
 })();
 </script>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

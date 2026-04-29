@@ -154,6 +154,8 @@ body{
   color:#fff;
 }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 
 <body>
@@ -165,7 +167,7 @@ body{
 
 <div class="progress">
   <div></div>
-  <div class="active"></div>
+  <div></div>
   <div></div>
 </div>
 
@@ -216,5 +218,7 @@ body{
 
 </div>
 
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

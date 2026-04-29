@@ -176,14 +176,16 @@ body{
   opacity:.6;
 }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 
 <body>
 
 <div class="screen">
 
-  <img class="avatar one" src="{{ url_for('static', filename='img/profile.png') }}">
-  <img class="avatar two" src="{{ url_for('static', filename='img/profile.png') }}">
+  <img class="avatar one" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}">
+  <img class="avatar two" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}">
 
   <div class="sparkle">
     <img src="{{ url_for('static', filename='img/sparkls4.png') }}">
@@ -199,7 +201,7 @@ body{
 
   <div class="tasks">
 
-    <div class="task active" id="task1">
+    <div class="task" id="task1">
       <div class="task-icon">
         <img src="{{ url_for('static', filename='img/check2.png') }}">
         <div class="loader"></div>
@@ -276,5 +278,7 @@ async function runAnimation(){
 runAnimation();
 </script>
 
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

@@ -737,6 +737,8 @@ body{
   line-height:20px;
 }
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 
 <body>
@@ -933,30 +935,32 @@ body{
   </main>
   <nav class="bottom-nav">
   <a href="#" class="nav-item nav-1">
-    <img src="{{ url_for('static', filename='img/home.png') }}" alt="">
+    <img src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}" alt="">
     Главная
   </a>
 
   <a href="#" class="nav-item nav-2">
-    <img src="{{ url_for('static', filename='img/spreads2.png') }}" alt="">
+    <img src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}" alt="">
     Чат
   </a>
 
-  <a href="#" class="nav-item nav-3">
-    <img src="{{ url_for('static', filename='img/stars.png') }}" alt="">
+  <a href="/birthdate" class="nav-item nav-3">
+    <img src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}" alt="">
     Любовь
   </a>
 
-  <a href="#" class="nav-item nav-4 active">
-    <img src="{{ url_for('static', filename='img/match2.png') }}" alt="">
+  <a href="#" class="nav-item nav-4">
+    <img src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}" alt="">
     VIP
   </a>
 
   <a href="#" class="nav-item nav-5">
-    <img src="{{ url_for('static', filename='img/profile.png') }}" alt="">
+    <img src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}" alt="">
     Профиль
   </a>
 </nav>
 </div>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

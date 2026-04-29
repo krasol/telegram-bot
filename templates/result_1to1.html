@@ -33,6 +33,8 @@ body{display:flex;justify-content:center}
 .bottom-nav{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:370px;height:67px;background:#161225;border:1px solid rgba(255,255,255,.10);border-radius:9999px;box-shadow:0 20px 40px rgba(0,0,0,.40);backdrop-filter:blur(12px);z-index:100}.nav-item{position:absolute;top:14px;width:48px;height:39px;text-align:center;text-decoration:none;color:rgba(255,255,255,.40);font-size:10px;line-height:15px}.nav-item svg{display:block;margin:0 auto 2px}.nav-item.active{color:#9C8DFF}.nav-item:nth-child(1){left:22px}.nav-item:nth-child(2){left:95px}.nav-item:nth-child(3){left:176px}.nav-item:nth-child(4){left:246px}.nav-item:nth-child(5){left:302px}
 button,a{-webkit-tap-highlight-color:transparent}.safe-bottom{position:absolute;left:0;top:1656px;width:390px;height:68px}
 </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
 <body>
 <div class="page">
@@ -94,10 +96,12 @@ button,a{-webkit-tap-highlight-color:transparent}.safe-bottom{position:absolute;
   <nav class="bottom-nav">
     <a class="nav-item" href="/"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>Сегодня</a>
     <a class="nav-item" href="/collection"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h14v18H5zM7 5v14h10V5z"/></svg>Карты</a>
-    <a class="nav-item active" href="/result"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg>Натал</a>
+    <a class="nav-item" href="/result"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg>Натал</a>
     <a class="nav-item" href="/match"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.4-9.5-8.2C.6 9.9 2.2 6 5.7 6c2 0 3.3 1.1 4.3 2.3C11 7.1 12.3 6 14.3 6c3.5 0 5.1 3.9 3.2 6.8C19 16.6 12 21 12 21z"/></svg>Любовь</a>
     <a class="nav-item" href="/profile"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5z"/></svg>Профиль</a>
   </nav>
 </div>
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>
