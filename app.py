@@ -113,7 +113,8 @@ def profile():
     init_session()
     return render_template(
         "profile.html",
-        coins=session.get("coins", 150)
+        coins=session.get("coins", 150),
+        tg_user=session.get("tg_user", {})
     )
 
 
@@ -137,7 +138,9 @@ def collection():
 @app.route("/match")
 def match():
     return render_template("match.html")
-
+@app.route('/birthdateGotovo')
+def birthdate1():
+    return render_template('birthdate.html')
 @app.route("/birthplace")
 def birthplace():
     return render_template("birthplace.html")
@@ -154,6 +157,11 @@ def match2():
 @app.route('/loading1')
 def loading1():
     return render_template('loading_1to1.html')
+
+
+@app.route("/quiz0")
+def quiz0():
+    return redirect(url_for("today"))
 
 @app.route("/quiz1")
 def quiz1():
