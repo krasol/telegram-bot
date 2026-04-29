@@ -1,0 +1,82 @@
+/* Page transition animations */
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* обычный переход вперед: следующий экран заезжает справа */
+body.page-enter-forward {
+  animation: pageEnterForward 260ms cubic-bezier(.22, .61, .36, 1) both;
+}
+
+/* назад: экран заезжает слева, ощущение свайпа вправо */
+body.page-enter-back {
+  animation: pageEnterBack 260ms cubic-bezier(.22, .61, .36, 1) both;
+}
+
+/* переход из нижнего меню: экран поднимается снизу */
+body.page-enter-menu {
+  animation: pageEnterMenu 300ms cubic-bezier(.22, .61, .36, 1) both;
+}
+
+body.page-exit-forward {
+  pointer-events: none;
+  animation: pageExitForward 220ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+body.page-exit-back {
+  pointer-events: none;
+  animation: pageExitBack 220ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+body.page-exit-menu {
+  pointer-events: none;
+  animation: pageExitMenu 240ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+@keyframes pageEnterForward {
+  from { opacity: .96; transform: translate3d(28px, 0, 0); }
+  to   { opacity: 1;   transform: translate3d(0, 0, 0); }
+}
+
+@keyframes pageExitForward {
+  from { opacity: 1;   transform: translate3d(0, 0, 0); }
+  to   { opacity: .96; transform: translate3d(-26px, 0, 0); }
+}
+
+@keyframes pageEnterBack {
+  from { opacity: .96; transform: translate3d(-28px, 0, 0); }
+  to   { opacity: 1;   transform: translate3d(0, 0, 0); }
+}
+
+@keyframes pageExitBack {
+  from { opacity: 1;   transform: translate3d(0, 0, 0); }
+  to   { opacity: .96; transform: translate3d(26px, 0, 0); }
+}
+
+@keyframes pageEnterMenu {
+  from { opacity: .98; transform: translate3d(0, 34px, 0); }
+  to   { opacity: 1;   transform: translate3d(0, 0, 0); }
+}
+
+@keyframes pageExitMenu {
+  from { opacity: 1;   transform: translate3d(0, 0, 0); }
+  to   { opacity: .98; transform: translate3d(0, -18px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.page-enter-forward,
+  body.page-enter-back,
+  body.page-enter-menu,
+  body.page-exit-forward,
+  body.page-exit-back,
+  body.page-exit-menu {
+    animation: none !important;
+  }
+}
