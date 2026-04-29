@@ -129,7 +129,7 @@ body {
 .settings-btn {
   position: absolute;
   left: 324px;
-  top: 36px;
+  top: 52px;
   width: 40px;
   height: 40px;
   border-radius: 12px;
@@ -870,11 +870,9 @@ body {
 <div class="small-card left"><div class="small-sub">Совместимость</div><div class="small-title">8 проверок</div><a class="small-link" href="/match">История ›</a></div><div class="small-card right"><div class="small-sub">Избранное</div><div class="small-title">15 раскладов</div><a class="small-link" href="#">Открыть ›</a></div>
 <div class="activity"><div class="activity-sub">Продолжить</div><div class="activity-title">Расклад на любовь</div><img alt="Продолжить" class="play" draggable="false" src="{{ url_for('static', filename='img/play.png') }}"/></div>
 </section>
-<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/birthdate"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
+<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/match"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
 </main><div class="bottom-pad"></div></div>
 <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
-<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
-
 <script>
 const tg = window.Telegram?.WebApp;
 tg?.ready();
@@ -904,5 +902,6 @@ if (tgUser) {
 }
 </script>
 
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

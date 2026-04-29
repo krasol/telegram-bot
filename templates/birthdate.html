@@ -7,8 +7,6 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='bottom-nav-fix.css') }}">
-
 <style>
 @font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');font-weight:400;font-display:swap}
 @font-face{font-family:'Manrope';src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');font-weight:700;font-display:swap}
@@ -538,6 +536,7 @@ body .phone .nav {
 }
 </style>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='bottom-nav-fix.css') }}">
 </head>
 
 <body>
@@ -652,13 +651,7 @@ body .phone .nav {
     </div>
   </section>
 
-  <nav class="nav">
-    <a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a>
-    <a class="nav-item" href="/match"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a>
-    <a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a>
-    <a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a>
-    <a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a>
-  </nav>
+  <nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
 
 </div>
 
