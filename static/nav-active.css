@@ -1,0 +1,50 @@
+/* Active bottom navigation: safe scoped styles */
+.nav a,
+.bottom-nav a,
+.nav .nav-item,
+.bottom-nav .nav-item {
+  text-decoration: none !important;
+  transition: color .18s ease, opacity .18s ease;
+}
+
+.nav .nav-icon,
+.bottom-nav .nav-icon,
+.nav img,
+.bottom-nav img,
+.nav svg,
+.bottom-nav svg {
+  transition: opacity .18s ease, filter .18s ease;
+}
+
+.nav a.active,
+.bottom-nav a.active,
+.nav .nav-item.active,
+.bottom-nav .nav-item.active {
+  color: #9C8DFF !important;
+  font-weight: 700;
+  text-decoration: none !important;
+}
+
+.nav a.active .nav-icon,
+.bottom-nav a.active .nav-icon,
+.nav .nav-item.active .nav-icon,
+.bottom-nav .nav-item.active .nav-icon,
+.nav a.active img,
+.bottom-nav a.active img,
+.nav a.active svg,
+.bottom-nav a.active svg {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.nav a:not(.active),
+.bottom-nav a:not(.active) {
+  color: rgba(255,255,255,.40);
+}
+
+.nav a:not(.active) .nav-icon,
+.bottom-nav a:not(.active) .nav-icon,
+.nav a:not(.active) img,
+.bottom-nav a:not(.active) img {
+  opacity: .4;
+}
