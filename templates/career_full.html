@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Карьера и деньги — полный разбор</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+html,body{min-height:100%;background:#101010;font-family:Manrope,Arial,sans-serif}
+body{display:flex;justify-content:center;overflow-x:hidden;color:#fff}
+a,button{-webkit-tap-highlight-color:transparent}
+.screen{width:390px;min-width:390px;height:2670px;position:relative;background:#161311;overflow:hidden}
+.screen-image{position:absolute;left:0;top:0;width:390px;height:2670px;display:block;user-select:none;pointer-events:none}
+.hotspot{position:absolute;display:block;z-index:5;text-decoration:none;background:rgba(255,255,255,0);border-radius:999px}
+.back-link{left:16px;top:16px;width:48px;height:48px;border-radius:16px}
+.primary-button{left:24px;top:2349px;width:342px;height:56px}
+.secondary-button{left:24px;top:2421px;width:342px;height:58px}
+.nav{position:absolute;left:10px;top:2553px;width:370px;height:67px;z-index:10}
+.nav a{position:absolute;top:0;height:67px;border-radius:999px;background:rgba(255,255,255,0);display:block;text-decoration:none}
+.nav-home{left:0;width:82px}
+.nav-chat{left:82px;width:78px}
+.nav-love{left:160px;width:70px}
+.nav-vip{left:230px;width:62px}
+.nav-profile{left:292px;width:78px}
+@media(max-width:389px){body{justify-content:flex-start}.screen{transform-origin:top left;transform:scale(calc(100vw / 390));height:2670px}}
+</style>
+</head>
+<body>
+<div class="screen">
+  <img class="screen-image" src="{{ url_for('static', filename='img/career-full-screen.svg') }}?v=10" alt="Полный разбор по карьере и деньгам">
+
+  <a class="hotspot back-link" href="/result1" aria-label="Назад"></a>
+  <a class="hotspot primary-button" href="/today" aria-label="Вернуться на главную"></a>
+  <a class="hotspot secondary-button" href="/result1" aria-label="Сохранить результат"></a>
+
+  <nav class="nav" aria-label="Нижняя навигация">
+    <a class="nav-home" href="/today" aria-label="Главная"></a>
+    <a class="nav-chat" href="/quick-spreads" aria-label="Чат"></a>
+    <a class="nav-love" href="/birthdate" aria-label="Любовь"></a>
+    <a class="nav-vip" href="/career-full" aria-label="VIP"></a>
+    <a class="nav-profile" href="/profile" aria-label="Профиль"></a>
+  </nav>
+</div>
+</body>
+</html>

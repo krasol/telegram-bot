@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Полный разбор совместимости</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; background: #05050a; }
+    body {
+      display: flex;
+      justify-content: center;
+      font-family: Manrope, Arial, Helvetica, sans-serif;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+    a, button { font: inherit; color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+    .page {
+      position: relative;
+      width: 390px;
+      min-width: 390px;
+      min-height: 844px;
+      background: #1d141f;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .page::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 62px;
+      width: 423px;
+      height: 393px;
+      background: rgba(145,0,255,.10);
+      border-radius: 9999px;
+      filter: blur(74px);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .back-btn {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      z-index: 5;
+    }
+    .upsell-card {
+      position: absolute;
+      left: 17px;
+      top: 120px;
+      width: 356px;
+      height: 425px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #5545b8;
+      box-shadow: 0 4px 6px -4px rgba(85,69,184,.30), 0 10px 15px -3px rgba(85,69,184,.30);
+    }
+    .upsell-card::before {
+      content: "";
+      position: absolute;
+      left: 292px;
+      top: -56px;
+      width: 128px;
+      height: 128px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,.10);
+    }
+    .upsell-title-wrap {
+      position: absolute;
+      left: 24px;
+      top: 59px;
+      width: 308px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7.4px;
+    }
+    .upsell-title-spacer { height: 15px; align-self: stretch; }
+    .upsell-title {
+      width: 308px;
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      font-size: 25px;
+      line-height: 30px;
+      font-weight: 700;
+    }
+    .upsell-desc {
+      position: absolute;
+      left: 27px;
+      top: 172px;
+      width: 311px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: rgba(255,255,255,.80);
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+    }
+    .buy-button {
+      position: absolute;
+      left: 41px;
+      top: 340px;
+      width: 274px;
+      height: 44px;
+      border-radius: 9999px;
+      background: #fff;
+      color: #5545b8;
+      box-shadow: 0 8px 10px -6px rgba(0,0,0,.10), 0 20px 25px -5px rgba(0,0,0,.10);
+      display: block;
+    }
+    .buy-label {
+      position: absolute;
+      left: 38.5px;
+      top: 12px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      color: #5545b8;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 800;
+      white-space: nowrap;
+      z-index: 1;
+    }
+    .price-pill {
+      position: absolute;
+      left: 197px;
+      top: 6.6px;
+      width: 61px;
+      height: 30px;
+      border-radius: 15px;
+      background: #5545b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #fff;
+      font-family: "Public Sans", Manrope, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 700;
+      letter-spacing: .35px;
+      z-index: 2;
+    }
+    svg { display: block; }
+  </style>
+</head>
+<body>
+  <main class="page" aria-label="Полный разбор совместимости">
+    <a class="back-btn" href="{{ url_for('result') }}" aria-label="Назад">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M3.825 9 9.425 14.6 8 16 0 8 8 0l1.425 1.4L3.825 7H16v2H3.825Z"/></svg>
+    </a>
+
+    <section class="upsell-card">
+      <div class="upsell-title-wrap">
+        <div class="upsell-title-spacer"></div>
+        <h1 class="upsell-title">Получите полный разбор совместимости</h1>
+      </div>
+      <p class="upsell-desc">Тип и задача вашего союза, энергия и полноценный разбор по 12 пунктам</p>
+      <a class="buy-button" href="{{ url_for('vip_old') }}" aria-label="Купить VIP прогноз за 50">
+        <span class="buy-label">Купить VIP прогноз</span>
+        <span class="price-pill">50
+          <svg width="12" height="15" viewBox="0 0 12 15" aria-hidden="true"><path fill="#fff" d="M6.243 15L5.54313 10.8174L5.11223 14.8953L3.65822 14.1109L5.26881 8.72205L6.61979 10.8696L7.26584 13.7975L6.243 15ZM1.19381 14.8762L0.936903 13.9878L0.0243771 13.7001L0.93894 13.4504L1.23527 12.5642L1.49251 13.4524L2.40527 13.7404L1.49051 13.9898L1.19381 14.8762ZM3.19588 13.1068L2.24413 13.0352L0.136274 9.67368L0 7.02915L2.57775 7.99688L4.25654 10.1648L3.71781 12.1727L1.64462 9.52383L3.19588 13.1068ZM7.98135 12.1895L7.42219 12.1217L7.14268 10.7302L6.67354 9.87625L9.68925 6.94838L10.7126 7.26177L10.2818 9.61457L7.98135 12.1895ZM8.58414 10.8533L9.48004 9.816L9.80791 8.5107L8.98058 9.54797L8.58414 10.8533ZM4.48024 9.62829L3.21451 7.9818L3.94154 4.50429L6.47274 1.47247L8.54593 4.1909L8.33074 7.56347L6.39202 9.49767L5.15346 7.66768L4.48024 9.62829ZM6.03484 8.12118L6.92779 5.10378L7.7405 4.37469L6.81963 4.49749L6.45391 3.11702L6.23846 4.49749L4.74874 4.67343L6.23068 5.1892L6.03484 8.12118ZM2.83995 7.49196L1.92414 6.08L2.24741 3.10046L3.27055 5.08716L2.83995 7.49196ZM10.4703 6.77557L10.1461 5.65361L8.99368 5.29022L10.1486 4.97485L10.5229 3.85606L10.8476 4.97753L12 5.34122L10.8451 5.65604L10.4703 6.77557ZM3.44306 3.65154L3.03753 2.24841L1.59607 1.79389L3.04081 1.39949L3.50887 0L3.91516 1.40268L5.35633 1.85762L3.91184 2.25154L3.44306 3.65154Z"/></svg>
+        </span>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

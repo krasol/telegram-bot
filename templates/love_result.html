@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Любовь и отношения — разбор</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+html,body{min-height:100%;background:#101010;font-family:Manrope,Arial,sans-serif}
+body{display:flex;justify-content:center;overflow-x:hidden;color:#fff}
+a,button{-webkit-tap-highlight-color:transparent;font-family:inherit}
+.screen{width:390px;min-width:390px;height:1200px;position:relative;background:#1d141f;overflow:hidden}
+.screen-image{position:absolute;left:0;top:0;width:390px;height:1200px;display:block;user-select:none;pointer-events:none;z-index:1}
+.hotspot{position:absolute;display:block;z-index:6;text-decoration:none;background:rgba(255,255,255,0);border-radius:999px}
+.back-link{left:16px;top:16px;width:48px;height:48px;border-radius:16px}
+
+/* Нижний блок перерисован HTML/CSS, чтобы убрать кривые точки из SVG и сделать большую кнопку */
+.lower-fix{
+  position:absolute;
+  left:0;
+  top:748px;
+  width:390px;
+  height:384px;
+  z-index:4;
+  background:#1d141f;
+  overflow:hidden;
+}
+.lower-fix:before{
+  content:"";
+  position:absolute;
+  width:423px;
+  height:393px;
+  left:105px;
+  top:-144px;
+  border-radius:9999px;
+  background:rgba(144,0,255,.10);
+  filter:blur(74px);
+  pointer-events:none;
+}
+.learn-section{
+  position:absolute;
+  left:24px;
+  top:28px;
+  width:342px;
+  height:232px;
+  z-index:2;
+}
+.learn-title{
+  position:absolute;
+  left:0;
+  top:0;
+  width:342px;
+  height:28px;
+  color:#eae1dd;
+  font-size:20px;
+  font-weight:700;
+  line-height:28px;
+}
+.learn-list{
+  position:absolute;
+  left:0;
+  top:60px;
+  width:342px;
+  height:172px;
+}
+.learn-item{
+  position:absolute;
+  left:0;
+  width:342px;
+  display:block;
+  color:#eae1dd;
+  font-size:14px;
+  font-weight:400;
+  line-height:20px;
+}
+.learn-item.item-1{top:0;height:48px}
+.learn-item.item-2{top:64px;height:24px}
+.learn-item.item-3{top:104px;height:20px}
+.learn-item.item-4{top:136px;height:24px}
+.learn-dot{
+  position:absolute;
+  left:3px;
+  top:7px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#745dff;
+  box-shadow:0 0 8px rgba(116,93,255,.95), 0 0 18px rgba(116,93,255,.35);
+}
+.learn-item.item-1 .learn-dot{top:8px}
+.learn-text{
+  position:absolute;
+  left:21px;
+  top:0;
+  width:305px;
+  min-height:20px;
+  display:flex;
+  align-items:center;
+}
+.item-1 .learn-text{height:48px;align-items:flex-start;padding-top:0}
+.item-2 .learn-text,.item-4 .learn-text{height:24px}
+.item-3 .learn-text{height:20px}
+.open-full-button{
+  position:absolute;
+  left:24px;
+  top:284px;
+  width:342px;
+  height:56px;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  border-radius:9999px;
+  background:#5545b8;
+  box-shadow:0 8px 30px rgba(63,0,255,.28);
+  color:#fff;
+  text-decoration:none;
+  border:0;
+  cursor:pointer;
+  font-size:16px;
+  font-weight:800;
+  line-height:24px;
+}
+.open-full-button svg{width:16px;height:16px;display:block;flex:0 0 16px}
+.premium-note{
+  position:absolute;
+  left:0;
+  top:360px;
+  width:390px;
+  text-align:center;
+  color:#fff;
+  font-size:12px;
+  font-weight:400;
+  line-height:16px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  z-index:3;
+}
+
+/* Экран апселла любви — точный SVG из Figma */
+.love-upsell-layer{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:#1d141f;
+  overflow:hidden;
+  padding:24px 5px;
+}
+.love-upsell-layer.is-visible{display:flex}
+.love-upsell-layer:before{
+  content:"";
+  position:absolute;
+  width:423px;
+  height:393px;
+  left:calc(50% - 87px);
+  top:604px;
+  background:rgba(144,0,255,.10);
+  border-radius:14819px;
+  filter:blur(74px);
+  pointer-events:none;
+}
+.love-upsell-layer:after{
+  content:"";
+  position:absolute;
+  width:423px;
+  height:393px;
+  left:calc(50% - 187px);
+  top:63px;
+  background:rgba(144,0,255,.10);
+  border-radius:14819px;
+  filter:blur(74px);
+  pointer-events:none;
+}
+.love-upsell-card{
+  position:relative;
+  width:380px;
+  height:449px;
+  z-index:2;
+}
+.love-upsell-card img{
+  display:block;
+  width:380px;
+  height:449px;
+  user-select:none;
+  pointer-events:none;
+}
+.love-upsell-pay-hotspot{
+  position:absolute;
+  left:53px;
+  top:342px;
+  width:274px;
+  height:44px;
+  border:0;
+  border-radius:9999px;
+  background:rgba(255,255,255,0);
+  cursor:pointer;
+}
+.love-upsell-backdrop-close{
+  position:absolute;
+  inset:0;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  z-index:1;
+}
+@media(max-width:389px){.love-upsell-card{transform:scale(calc(100vw / 390));transform-origin:center center}}
+
+@media(max-width:389px){body{justify-content:flex-start}.screen{transform-origin:top left;transform:scale(calc(100vw / 390));height:1200px}}
+</style>
+</head>
+<body>
+<div class="screen">
+  <img class="screen-image" src="{{ url_for('static', filename='img/love-result-screen.svg') }}?v=13" alt="Разбор: любовь и отношения">
+
+  <a class="hotspot back-link" href="/match" aria-label="Назад"></a>
+
+  <section class="lower-fix" aria-label="Что вы узнаете">
+    <div class="learn-section">
+      <h2 class="learn-title">Что вы узнаете:</h2>
+      <div class="learn-list">
+        <div class="learn-item item-1">
+          <span class="learn-dot" aria-hidden="true"></span>
+          <span class="learn-text">Почему вы попадаете в одни<br>и те же отношения</span>
+        </div>
+        <div class="learn-item item-2">
+          <span class="learn-dot" aria-hidden="true"></span>
+          <span class="learn-text">Какие эмоции вы на самом деле ищете</span>
+        </div>
+        <div class="learn-item item-3">
+          <span class="learn-dot" aria-hidden="true"></span>
+          <span class="learn-text">Где вы теряете себя</span>
+        </div>
+        <div class="learn-item item-4">
+          <span class="learn-dot" aria-hidden="true"></span>
+          <span class="learn-text">Как изменить сценарий</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="open-full-button" id="openLoveUpsell" type="button" aria-label="Открыть полный разбор">
+      <span>Открыть полный разбор</span>
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M12.175 9H0V7H12.175L6.575 1.4L8 0L16 8L8 16L6.575 14.6L12.175 9Z" fill="white"/>
+      </svg>
+    </button>
+    <div class="premium-note">Доступно в Premium</div>
+  </section>
+
+  <div class="love-upsell-layer" id="loveUpsellLayer" aria-hidden="true">
+    <button class="love-upsell-backdrop-close" id="closeLoveUpsellBackdrop" type="button" aria-label="Закрыть"></button>
+    <section class="love-upsell-card" aria-label="Premium разбор любви и отношений">
+      <img src="{{ url_for('static', filename='img/love-upsell-banner.svg') }}?v=15" alt="Ваш сценарий в любви и отношениях">
+      <button class="love-upsell-pay-hotspot" type="button" onclick="location.href='/love-full'" aria-label="Открыть полный разбор за 50"></button>
+    </section>
+  </div>
+
+</div>
+<script>
+(function(){
+  var openBtn=document.getElementById('openLoveUpsell');
+  var layer=document.getElementById('loveUpsellLayer');
+  var backdrop=document.getElementById('closeLoveUpsellBackdrop');
+  if(!openBtn||!layer)return;
+  function openLayer(){
+    layer.classList.add('is-visible');
+    layer.setAttribute('aria-hidden','false');
+    document.documentElement.style.overflow='hidden';
+    document.body.style.overflow='hidden';
+  }
+  function closeLayer(){
+    layer.classList.remove('is-visible');
+    layer.setAttribute('aria-hidden','true');
+    document.documentElement.style.overflow='';
+    document.body.style.overflow='';
+  }
+  openBtn.addEventListener('click',openLayer);
+  if(backdrop)backdrop.addEventListener('click',closeLayer);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLayer();});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Полный разбор — любовь и отношения</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+html,body{min-height:100%;background:#101010;font-family:Manrope,Arial,sans-serif}
+body{display:flex;justify-content:center;overflow-x:hidden;color:#fff}
+a,button{-webkit-tap-highlight-color:transparent;font-family:inherit}
+.screen{width:390px;min-width:390px;height:2735px;position:relative;background:#1d141f;overflow:hidden}
+.screen-image{position:absolute;left:0;top:0;width:390px;height:2735px;display:block;user-select:none;pointer-events:none;z-index:1}
+.hotspot{position:absolute;display:block;z-index:5;text-decoration:none;background:rgba(255,255,255,0);border:0;cursor:pointer}
+.back-link{left:16px;top:16px;width:48px;height:48px;border-radius:16px}
+/* прозрачные зоны нижней навигации, чтобы SVG оставался 1-в-1, но кнопки были кликабельны */
+.nav-home{left:32px;top:2638px;width:48px;height:54px;border-radius:20px}
+.nav-cards{left:94px;top:2638px;width:54px;height:54px;border-radius:20px}
+.nav-match{left:169px;top:2638px;width:54px;height:54px;border-radius:20px}
+.nav-stars{left:238px;top:2638px;width:54px;height:54px;border-radius:20px}
+.nav-profile{left:308px;top:2638px;width:54px;height:54px;border-radius:20px}
+@media(max-width:389px){body{justify-content:flex-start}.screen{transform-origin:top left;transform:scale(calc(100vw / 390));height:2735px}}
+</style>
+</head>
+<body>
+<div class="screen">
+  <img class="screen-image" src="{{ url_for('static', filename='img/love-full-screen.svg') }}?v=15" alt="Полный разбор: любовь и отношения">
+  <a class="hotspot back-link" href="/love-result" aria-label="Назад"></a>
+  <a class="hotspot nav-home" href="/today" aria-label="Главная"></a>
+  <a class="hotspot nav-cards" href="/quick-spreads" aria-label="Расклады"></a>
+  <a class="hotspot nav-match" href="/match" aria-label="Совместимость"></a>
+  <a class="hotspot nav-stars" href="/birthdate" aria-label="Астрология"></a>
+  <a class="hotspot nav-profile" href="/profile" aria-label="Профиль"></a>
+</div>
+</body>
+</html>
