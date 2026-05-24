@@ -29,6 +29,9 @@ if (tgUser) {
     fetch('/save-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tgUser)
-    });
+        body: JSON.stringify({
+            user: tgUser,
+            initData: tg?.initData || ''
+        })
+    }).catch(() => {});
 }
