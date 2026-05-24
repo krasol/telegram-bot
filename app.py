@@ -11,12 +11,29 @@ from urllib.parse import parse_qsl
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-key-12345")
 
+# Для Telegram WebApp на Render куки должны нормально жить внутри webview.
+# Локально Secure отключен, иначе 127.0.0.1 не сможет поставить cookie.
+IS_RENDER = bool(os.environ.get("RENDER"))
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=IS_RENDER,
+    SESSION_COOKIE_SAMESITE="None" if IS_RENDER else "Lax",
+)
+
 
 # ===== SQLite DB =====
-# По умолчанию база лежит в telegram-bot-main/data/app.db.
-# На Render/PythonAnywhere можно переопределить путь переменной DATABASE_PATH.
-DATA_DIR = Path(os.environ.get("DATA_DIR", Path(app.root_path) / "data"))
-DB_PATH = Path(os.environ.get("DATABASE_PATH", DATA_DIR / "app.db"))
+# Для продакшена на Render лучше задать DATABASE_PATH=/var/data/app.db
+# и подключить Persistent Disk. Без диска Render может сбрасывать SQLite при деплое.
+def resolve_db_path() -> Path:
+    explicit = os.environ.get("DATABASE_PATH")
+    if explicit:
+        return Path(explicit)
+
+    data_dir = Path(os.environ.get("DATA_DIR", Path(app.root_path) / "data"))
+    return data_dir / "app.db"
+
+
+DB_PATH = resolve_db_path()
 
 
 def get_db_connection():
@@ -51,6 +68,33 @@ def init_db():
             )
             """
         )
+
+        # Миграции для уже существующей app.db из GitHub/Render.
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(telegram_users)").fetchall()}
+        migrations = {
+            "allows_write_to_pm": "ALTER TABLE telegram_users ADD COLUMN allows_write_to_pm INTEGER DEFAULT 0",
+            "is_premium": "ALTER TABLE telegram_users ADD COLUMN is_premium INTEGER DEFAULT 0",
+            "coins": "ALTER TABLE telegram_users ADD COLUMN coins INTEGER NOT NULL DEFAULT 150",
+            "streak_days": "ALTER TABLE telegram_users ADD COLUMN streak_days INTEGER NOT NULL DEFAULT 7",
+            "onboarding_seen": "ALTER TABLE telegram_users ADD COLUMN onboarding_seen INTEGER NOT NULL DEFAULT 0",
+            "card_of_day_json": "ALTER TABLE telegram_users ADD COLUMN card_of_day_json TEXT",
+            "last_init_data_hash": "ALTER TABLE telegram_users ADD COLUMN last_init_data_hash TEXT",
+            "is_verified": "ALTER TABLE telegram_users ADD COLUMN is_verified INTEGER NOT NULL DEFAULT 0",
+            "created_at": "ALTER TABLE telegram_users ADD COLUMN created_at TEXT",
+            "updated_at": "ALTER TABLE telegram_users ADD COLUMN updated_at TEXT",
+            "last_seen_at": "ALTER TABLE telegram_users ADD COLUMN last_seen_at TEXT",
+        }
+        for column, sql in migrations.items():
+            if column not in columns:
+                conn.execute(sql)
+
+        conn.execute("""
+            UPDATE telegram_users
+            SET
+                created_at = COALESCE(created_at, CURRENT_TIMESTAMP),
+                updated_at = COALESCE(updated_at, CURRENT_TIMESTAMP),
+                last_seen_at = COALESCE(last_seen_at, CURRENT_TIMESTAMP)
+        """)
         conn.commit()
 
 
@@ -112,13 +156,68 @@ def row_to_public_user(row):
     }
 
 
-def upsert_telegram_user(tg_user: dict, init_data: str = ""):
+def _clean_text(value):
+    if value is None:
+        return None
+    value = str(value).strip()
+    return value or None
+
+
+def _bool_int(value):
+    return 1 if value in (True, 1, "1", "true", "True", "yes", "on") else 0
+
+
+def apply_client_state(row, state=None):
+    """Мягко переносит состояние из localStorage в SQLite, когда Telegram-аккаунт наконец определился."""
+    if not row or not isinstance(state, dict):
+        return row
+
+    updates = {}
+
+    if state.get("onboarding_seen") is True or state.get("onboardingSeen") is True:
+        updates["onboarding_seen"] = 1
+
+    coins = state.get("coins")
+    try:
+        coins = int(coins)
+        if 0 <= coins <= 1000000:
+            updates["coins"] = coins
+    except (TypeError, ValueError):
+        pass
+
+    streak_days = state.get("streak_days", state.get("streakDays"))
+    try:
+        streak_days = int(streak_days)
+        if 0 <= streak_days <= 100000:
+            updates["streak_days"] = streak_days
+    except (TypeError, ValueError):
+        pass
+
+    card = state.get("card_of_day") or state.get("cardOfDay")
+    if isinstance(card, dict):
+        updates["card_of_day_json"] = json.dumps(card, ensure_ascii=False)
+
+    if updates:
+        session["tg_user_id"] = row["telegram_id"]
+        update_user_state(**updates)
+        return get_user_by_telegram_id(row["telegram_id"])
+
+    return row
+
+
+def upsert_telegram_user(tg_user: dict, init_data: str = "", client_state=None):
     telegram_id = tg_user.get("id")
     if not telegram_id:
         raise ValueError("telegram user id is required")
 
     is_verified = 1 if verify_telegram_init_data(init_data) else 0
     init_data_hash = hashlib.sha256(init_data.encode("utf-8")).hexdigest() if init_data else None
+
+    first_name = _clean_text(tg_user.get("first_name"))
+    last_name = _clean_text(tg_user.get("last_name"))
+    username = _clean_text(tg_user.get("username"))
+    language_code = _clean_text(tg_user.get("language_code"))
+    photo_url = _clean_text(tg_user.get("photo_url"))
 
     with get_db_connection() as conn:
         conn.execute(
@@ -128,13 +227,19 @@ def upsert_telegram_user(tg_user: dict, init_data: str = ""):
                 allows_write_to_pm, is_premium, last_init_data_hash, is_verified
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(telegram_id) DO UPDATE SET
-                first_name = excluded.first_name,
-                last_name = excluded.last_name,
-                username = excluded.username,
-                language_code = excluded.language_code,
-                photo_url = excluded.photo_url,
-                allows_write_to_pm = excluded.allows_write_to_pm,
-                is_premium = excluded.is_premium,
+                first_name = COALESCE(excluded.first_name, telegram_users.first_name),
+                last_name = COALESCE(excluded.last_name, telegram_users.last_name),
+                username = COALESCE(excluded.username, telegram_users.username),
+                language_code = COALESCE(excluded.language_code, telegram_users.language_code),
+                photo_url = COALESCE(excluded.photo_url, telegram_users.photo_url),
+                allows_write_to_pm = CASE
+                    WHEN excluded.allows_write_to_pm = 1 THEN 1
+                    ELSE telegram_users.allows_write_to_pm
+                END,
+                is_premium = CASE
+                    WHEN excluded.is_premium = 1 THEN 1
+                    ELSE telegram_users.is_premium
+                END,
                 last_init_data_hash = COALESCE(excluded.last_init_data_hash, telegram_users.last_init_data_hash),
                 is_verified = CASE WHEN excluded.is_verified = 1 THEN 1 ELSE telegram_users.is_verified END,
                 updated_at = CURRENT_TIMESTAMP,
@@ -142,20 +247,22 @@ def upsert_telegram_user(tg_user: dict, init_data: str = ""):
             """,
             (
                 int(telegram_id),
-                tg_user.get("first_name"),
-                tg_user.get("last_name"),
-                tg_user.get("username"),
-                tg_user.get("language_code"),
-                tg_user.get("photo_url"),
-                1 if tg_user.get("allows_write_to_pm") else 0,
-                1 if tg_user.get("is_premium") else 0,
+                first_name,
+                last_name,
+                username,
+                language_code,
+                photo_url,
+                _bool_int(tg_user.get("allows_write_to_pm")),
+                _bool_int(tg_user.get("is_premium")),
                 init_data_hash,
                 is_verified,
             ),
         )
         conn.commit()
 
-    return get_user_by_telegram_id(telegram_id)
+    row = get_user_by_telegram_id(telegram_id)
+    row = apply_client_state(row, client_state)
+    return row
 
 
 def sync_session_from_db(row):
@@ -239,6 +346,12 @@ def init_session():
     if "streak_days" not in session:
         session["streak_days"] = 7
 
+    if "onboarding_seen" not in session:
+        session["onboarding_seen"] = False
+
+    session.modified = True
+
+
 @app.context_processor
 def inject_tg_user():
     return {
@@ -282,14 +395,16 @@ def onboarding_3():
 @app.route("/onboarding/finish")
 def onboarding_finish():
     session["onboarding_seen"] = True
+    session.modified = True
     update_user_state(onboarding_seen=1)
     return redirect(url_for("today"))
 
 
 @app.route("/reset-onboarding")
 def reset_onboarding():
-    session.pop("onboarding_seen", None)
-    return redirect(url_for("today"))
+    session["onboarding_seen"] = False
+    update_user_state(onboarding_seen=0)
+    return redirect(url_for("onboarding_1"))
 
 
 # ===== MAIN PAGES =====
@@ -297,10 +412,10 @@ def reset_onboarding():
 @app.route("/")
 @app.route("/today")
 def today():
+    init_session()
+
     if not session.get("onboarding_seen"):
         return redirect(url_for("onboarding_1"))
-
-    init_session()
 
     return render_template(
         "today.html",
@@ -470,9 +585,10 @@ def save_user():
     data = request.get_json(silent=True) or {}
     tg_user = normalize_tg_user(data)
     init_data = data.get("initData", "") if isinstance(data, dict) else ""
+    client_state = data.get("state", {}) if isinstance(data, dict) else {}
 
     try:
-        row = upsert_telegram_user(tg_user, init_data=init_data)
+        row = upsert_telegram_user(tg_user, init_data=init_data, client_state=client_state)
     except ValueError as exc:
         return jsonify({"success": False, "error": str(exc)}), 400
 
@@ -481,7 +597,95 @@ def save_user():
     return jsonify({
         "success": True,
         "user": row_to_public_user(row),
+        "state": get_public_state(row),
         "db": str(DB_PATH),
+    })
+
+
+def get_public_state(row=None):
+    if row is None and session.get("tg_user_id"):
+        row = get_user_by_telegram_id(session.get("tg_user_id"))
+    if row:
+        card = None
+        if row["card_of_day_json"]:
+            try:
+                card = json.loads(row["card_of_day_json"])
+            except json.JSONDecodeError:
+                card = None
+        return {
+            "coins": row["coins"],
+            "streak_days": row["streak_days"],
+            "onboarding_seen": bool(row["onboarding_seen"]),
+            "card_of_day": card,
+        }
+    return {
+        "coins": session.get("coins", 150),
+        "streak_days": session.get("streak_days", 7),
+        "onboarding_seen": bool(session.get("onboarding_seen")),
+        "card_of_day": session.get("card_of_day"),
+    }
+
+
+@app.route("/api/state", methods=["GET", "POST"])
+def api_state():
+    init_session()
+
+    if request.method == "POST":
+        data = request.get_json(silent=True) or {}
+
+        # Если клиент одновременно прислал Telegram user, сначала авторизуем/создадим запись.
+        if isinstance(data.get("user"), dict) or data.get("id"):
+            tg_user = normalize_tg_user(data)
+            init_data = data.get("initData", "")
+            try:
+                row = upsert_telegram_user(tg_user, init_data=init_data, client_state=data.get("state", data))
+                sync_session_from_db(row)
+            except ValueError:
+                pass
+
+        updates = {}
+
+        if "coins" in data:
+            try:
+                coins = int(data.get("coins"))
+                if 0 <= coins <= 1000000:
+                    session["coins"] = coins
+                    updates["coins"] = coins
+            except (TypeError, ValueError):
+                pass
+
+        if "streak_days" in data or "streakDays" in data:
+            try:
+                streak_days = int(data.get("streak_days", data.get("streakDays")))
+                if 0 <= streak_days <= 100000:
+                    session["streak_days"] = streak_days
+                    updates["streak_days"] = streak_days
+            except (TypeError, ValueError):
+                pass
+
+        if data.get("onboarding_seen") is True or data.get("onboardingSeen") is True:
+            session["onboarding_seen"] = True
+            updates["onboarding_seen"] = 1
+        elif data.get("onboarding_seen") is False:
+            session["onboarding_seen"] = False
+            updates["onboarding_seen"] = 0
+
+        if isinstance(data.get("card_of_day"), dict):
+            session["card_of_day"] = data["card_of_day"]
+            updates["card_of_day_json"] = json.dumps(data["card_of_day"], ensure_ascii=False)
+
+        if updates:
+            update_user_state(**updates)
+            session.modified = True
+
+    row = get_user_by_telegram_id(session.get("tg_user_id"))
+    if row:
+        sync_session_from_db(row)
+
+    return jsonify({
+        "success": True,
+        "user": row_to_public_user(row) if row else session.get("tg_user", {}),
+        "state": get_public_state(row),
     })
 
 
@@ -492,6 +696,7 @@ def api_me():
     return jsonify({
         "success": bool(row),
         "user": row_to_public_user(row) if row else session.get("tg_user", {}),
+        "state": get_public_state(row),
     })
 
 
