@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var active =
       (path === '/' && href === '/') ||
       (href !== '/' && path === href) ||
+      (href === '/spreads' && path.indexOf('/spreads') === 0) ||
       (href === '/birthdate' && path.indexOf('/birthdate') === 0);
 
     link.classList.toggle('active', active);
