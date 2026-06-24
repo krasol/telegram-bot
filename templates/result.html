@@ -1,656 +1,280 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Совместимость</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100%; background: #05050a; }
-    body {
-      display: flex;
-      justify-content: center;
-      font-family: Manrope, Arial, Helvetica, sans-serif;
-      color: #fff;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-    }
-    a, button { font: inherit; color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
-    .page {
-      position: relative;
-      width: 390px;
-      min-width: 390px;
-      min-height: 1401px;
-      overflow: hidden;
-      background: #131020;
-      isolation: isolate;
-    }
-    .page::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(289px 393px at -57px 49px, rgba(145,0,255,.18), rgba(145,0,255,0) 68%),
-        linear-gradient(#1d141f 0 100%);
-      z-index: -3;
-    }
-    .page::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 390px;
-      height: 1401px;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
-      pointer-events: none;
-      z-index: -1;
-    }
-    .blur-one {
-      position: absolute;
-      left: -57px;
-      top: 49px;
-      width: 289px;
-      height: 393px;
-      background: rgba(145,0,255,.10);
-      border-radius: 9999px;
-      filter: blur(74px);
-      pointer-events: none;
-    }
-    .top-btn {
-      position: absolute;
-      top: 16px;
-      width: 48px;
-      height: 48px;
-      border: 0;
-      background: transparent;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      z-index: 5;
-    }
-    .top-btn.back { left: 16px; }
-    .top-btn.share { right: 16px; }
-    .title {
-      position: absolute;
-      left: 64px;
-      top: 29px;
-      width: 262px;
-      height: 23px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      line-height: 22.5px;
-      font-weight: 700;
-      color: #fff;
-    }
-    .avatars {
-      position: absolute;
-      left: 78.5px;
-      top: 96px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      width: 233px;
-      height: 80px;
-    }
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 999px;
-      background: #1e293b;
-      border: 2px solid #5847ba;
-      box-shadow: 0 0 15px rgba(88,71,186,.30);
-    }
-    .heart-circle {
-      width: 41px;
-      height: 41px;
-      display: grid;
-      place-items: center;
-    }
-    .score-card {
-      position: absolute;
-      left: 16px;
-      top: 200px;
-      width: 358px;
-      height: 153px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 4px 6px -4px rgba(0,0,0,.10), 0 10px 15px -3px rgba(0,0,0,.10);
-      backdrop-filter: blur(6px);
-    }
-    .score-value {
-      position: absolute;
-      left: 98px;
-      top: 16px;
-      width: 162px;
-      height: 75px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 60px;
-      line-height: 75px;
-      font-weight: 700;
-      text-shadow: 0 0 10px #5847ba;
-      letter-spacing: -1px;
-    }
-    .score-label {
-      position: absolute;
-      left: 48px;
-      top: 98px;
-      width: 262px;
-      height: 33px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #e1d6f7;
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 500;
-      letter-spacing: .35px;
-      text-transform: uppercase;
-    }
-    .quote {
-      position: absolute;
-      left: 29px;
-      top: 377px;
-      width: 332px;
-      min-height: 78px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #e1d6f7;
-      font-size: 16px;
-      line-height: 26px;
-      font-weight: 400;
-      text-align: center;
-    }
-    .metrics {
-      position: absolute;
-      left: 16px;
-      top: 479px;
-      width: 358px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .metric-card {
-      position: relative;
-      width: 358px;
-      height: 82px;
-      padding: 17px;
-      border-radius: 24px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 0 10px rgba(88,68,191,.50);
-      backdrop-filter: blur(2px);
-    }
-    .metric-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 28px;
-      color: #fff;
-      font-size: 14px;
-      line-height: 21px;
-      font-weight: 500;
-    }
-    .metric-name {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-    .metric-icon {
-      width: 20px;
-      height: 28px;
-      display: grid;
-      place-items: center;
-      flex: 0 0 20px;
-      font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", sans-serif;
-      font-size: 20px;
-      line-height: 1;
-      color: initial;
-      text-shadow: none;
-    }
-    .metric-value {
-      font-family: "Plus Jakarta Sans", Manrope, Arial, sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 21px;
-    }
-    .bar {
-      position: absolute;
-      left: 17px;
-      right: 17px;
-      bottom: 17px;
-      height: 8px;
-      border-radius: 999px;
-      overflow: hidden;
-      background: rgba(0,0,0,.40);
-      border: 1px solid rgba(255,255,255,.05);
-    }
-    .bar > i {
-      display: block;
-      height: 6px;
-      margin: 1px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, rgba(88,71,186,.60) 0%, #5847ba 100%);
-      box-shadow: 0 0 8px rgba(88,68,191,.75);
-    }
-    .nav-grid {
-      position: absolute;
-      left: 16px;
-      top: 895px;
-      width: 358px;
-      height: 236px;
-      display: grid;
-      grid-template-columns: 173px 173px;
-      grid-template-rows: 112px 112px;
-      gap: 12px;
-    }
-    .nav-tile {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(2px);
-      text-align: center;
-      font-size: 12px;
-      line-height: 15px;
-      font-weight: 500;
-      padding: 16px;
-    }
-    .tile-purple { background: #5545b8; color: #fff; }
-    .tile-light { background: #ebe0ff; color: #28274b; }
-    .upsell {
-      position: absolute;
-      left: 17px;
-      top: 1155px;
-      width: 356px;
-      height: 236px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #5545b8;
-      box-shadow: 0 4px 6px -4px rgba(85,69,184,.30), 0 10px 15px -3px rgba(85,69,184,.30);
-      display: block;
-      cursor: pointer;
-      border: 0;
-      padding: 0;
-      text-align: inherit;
-    }
-    .upsell::before {
-      content: "";
-      position: absolute;
-      left: 292px;
-      top: -56px;
-      width: 128px;
-      height: 128px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.10);
-    }
-    .upsell-title {
-      position: absolute;
-      left: 36px;
-      top: 32px;
-      width: 284px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-size: 18px;
-      line-height: 20px;
-      font-weight: 700;
-    }
-    .upsell-text {
-      position: absolute;
-      left: 23px;
-      top: 75px;
-      width: 311px;
-      height: 46px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: rgba(255,255,255,.80);
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 400;
-    }
-    .vip-button {
-      position: absolute;
-      left: 41px;
-      top: 144px;
-      width: 274px;
-      height: 44px;
-      border-radius: 999px;
-      background: #fff;
-      color: #5545b8;
-      box-shadow: 0 8px 10px -6px rgba(0,0,0,.10), 0 20px 25px -5px rgba(0,0,0,.10);
-      display: block;
-    }
-    .vip-label {
-      position: absolute;
-      left: 38.5px;
-      top: 12px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 800;
-      white-space: nowrap;
-      z-index: 1;
-    }
-    .price-pill {
-      position: absolute;
-      left: 197px;
-      top: 6.6px;
-      width: 61px;
-      height: 30px;
-      border-radius: 15px;
-      background: #5545b8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      color: #fff;
-      font-family: "Public Sans", Manrope, Arial, sans-serif;
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 700;
-      letter-spacing: .35px;
-      z-index: 2;
-    }
-    .compat-upsell-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: none;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 120px 17px 24px;
-      background: #1d141f;
-      overflow: hidden;
-    }
-    .compat-upsell-layer.is-visible { display: flex; }
-    .compat-upsell-layer::before {
-      content: "";
-      position: absolute;
-      left: calc(50% - 189px);
-      top: 62px;
-      width: 423px;
-      height: 393px;
-      border-radius: 9999px;
-      background: rgba(145,0,255,.10);
-      filter: blur(74px);
-      pointer-events: none;
-    }
-    .compat-upsell-back {
-      position: absolute;
-      left: calc(50% - 179px);
-      top: 16px;
-      width: 48px;
-      height: 48px;
-      border: 0;
-      background: transparent;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      z-index: 3;
-    }
-    .compat-upsell-card {
-      position: relative;
-      width: 356px;
-      height: 425px;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #5545b8;
-      box-shadow: 0 4px 6px -4px rgba(85,69,184,.30), 0 10px 15px -3px rgba(85,69,184,.30);
-      z-index: 2;
-    }
-    .compat-upsell-card::before {
-      content: "";
-      position: absolute;
-      left: 292px;
-      top: -56px;
-      width: 128px;
-      height: 128px;
-      border-radius: 9999px;
-      background: rgba(255,255,255,.10);
-    }
-    .compat-upsell-title-wrap {
-      position: absolute;
-      left: 24px;
-      top: 59px;
-      width: 308px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 7.4px;
-    }
-    .compat-upsell-title-spacer { height: 15px; align-self: stretch; }
-    .compat-upsell-title {
-      width: 308px;
-      height: 84px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #fff;
-      font-size: 25px;
-      line-height: 30px;
-      font-weight: 700;
-    }
-    .compat-upsell-desc {
-      position: absolute;
-      left: 27px;
-      top: 172px;
-      width: 311px;
-      height: 46px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: rgba(255,255,255,.80);
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 400;
-    }
-    .compat-buy-button {
-      position: absolute;
-      left: 41px;
-      top: 340px;
-      width: 274px;
-      height: 44px;
-      border-radius: 9999px;
-      background: #fff;
-      color: #5545b8;
-      box-shadow: 0 8px 10px -6px rgba(0,0,0,.10), 0 20px 25px -5px rgba(0,0,0,.10);
-      display: block;
-    }
-    .compat-buy-label {
-      position: absolute;
-      left: 38.5px;
-      top: 12px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      color: #5545b8;
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 800;
-      white-space: nowrap;
-      z-index: 1;
-    }
-    .compat-price-pill {
-      position: absolute;
-      left: 197px;
-      top: 6.6px;
-      width: 61px;
-      height: 30px;
-      border-radius: 15px;
-      background: #5545b8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      color: #fff;
-      font-family: "Public Sans", Manrope, Arial, sans-serif;
-      font-size: 14px;
-      line-height: 20px;
-      font-weight: 700;
-      letter-spacing: .35px;
-      z-index: 2;
-    }
-    svg { display: block; }
-    .white { fill: #fff; }
-    .dark { fill: #28274b; }
-    .tile-purple svg path { fill: #fff; }
-    .tile-light svg path { fill: #28274b; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Совместимость</title>
+
+<style>
+@font-face{
+  font-family:'Manrope';
+  src:url("{{ url_for('static', filename='fonts/Manrope-Regular.woff2') }}") format('woff2');
+  font-weight:400;
+}
+@font-face{
+  font-family:'Manrope';
+  src:url("{{ url_for('static', filename='fonts/Manrope-Bold.woff2') }}") format('woff2');
+  font-weight:700;
+}
+@font-face{
+  font-family:'Manrope';
+  src:url("{{ url_for('static', filename='fonts/Manrope-ExtraBold.woff2') }}") format('woff2');
+  font-weight:800;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:#000;
+  display:flex;
+  justify-content:center;
+  color:#fff;
+  font-family:'Manrope',sans-serif;
+}
+
+.page{
+  width:390px;
+  min-height:1401px;
+  position:relative;
+  background:linear-gradient(180deg,#3A1A15 0%,#23170F 45%,#1A0F0A 100%);
+}
+
+/* HEADER */
+.header{position:absolute;width:100%;height:80px;}
+.back{
+  position:absolute;left:16px;top:16px;
+  font-size:28px;text-decoration:none;color:#fff;
+}
+.title{
+  position:absolute;left:64px;top:28px;width:262px;
+  text-align:center;font-weight:700;
+}
+.share{
+  position:absolute;right:16px;top:16px;
+}
+.share img{width:20px}
+
+/* AVATARS */
+.avatars{
+  position:absolute;top:96px;left:78px;
+  display:flex;gap:16px;align-items:center;
+}
+.avatar{
+  width:80px;height:80px;border-radius:50%;
+  border:2px solid #5847BA;
+  overflow:hidden;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+
+.heart img{width:25px}
+
+/* SCORE */
+.score-card{
+  position:absolute;top:200px;left:16px;
+  width:358px;height:153px;
+  border-radius:16px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+}
+.percent{
+  position:absolute;top:23px;width:100%;
+  text-align:center;font-size:60px;
+  font-weight:700;
+}
+.score-label{
+  position:absolute;top:98px;width:100%;
+  text-align:center;font-size:14px;
+}
+
+/* QUOTE */
+.quote{
+  position:absolute;top:377px;width:100%;
+  text-align:center;font-size:16px;
+  line-height:24px;
+}
+
+/* METRICS */
+.metrics{
+  position:absolute;top:487px;left:16px;
+  width:358px;display:flex;
+  flex-direction:column;gap:16px;
+}
+
+.metric{
+  padding:16px;border-radius:20px;
+  background:rgba(255,255,255,.05);
+}
+
+.metric-top{
+  display:flex;justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.progress{
+  height:8px;border-radius:999px;
+  background:#111;overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:#5847BA;
+}
+
+.w92{width:92%}
+.w85{width:85%}
+.w78{width:78%}
+.w81{width:81%}
+
+/* CARDS */
+.links{
+  position:absolute;top:895px;left:16px;
+  width:358px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.link-card{
+  height:112px;border-radius:24px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:10px;text-decoration:none;
+  font-size:12px;text-align:center;
+}
+
+.purple{background:#A413EC;color:#fff;}
+.light{background:#EBE0FF;color:#28274B;}
+
+.link-icon{width:24px;height:24px}
+
+/* VIP */
+.vip{
+  position:absolute;top:1155px;left:17px;
+  width:356px;height:236px;
+  border-radius:16px;
+  background:#A413EC;
+  text-align:center;
+  padding-top:30px;
+}
+
+.vip-btn{
+  display:inline-block;margin-top:15px;
+  padding:12px 30px;
+  background:#fff;color:#A413EC;
+  border-radius:30px;
+  text-decoration:none;
+  font-weight:700;
+}
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='page-transitions.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='nav-active.css') }}">
 </head>
+
 <body>
-  <main class="page" aria-label="Совместимость">
-    <div class="blur-one" aria-hidden="true"></div>
 
-    <a class="top-btn back" href="{{ url_for('match') }}" aria-label="Назад">
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M3.825 9 9.425 14.6 8 16 0 8 8 0l1.425 1.4L3.825 7H16v2H3.825Z"/></svg>
-    </a>
-    <button class="top-btn share" type="button" aria-label="Поделиться">
-      <svg width="18" height="20" viewBox="0 0 18 20" aria-hidden="true"><path fill="#fff" d="M15 20c-.833 0-1.542-.292-2.125-.875A2.893 2.893 0 0 1 12 17c0-.1.025-.333.075-.7l-7.025-4.1a3.04 3.04 0 0 1-.925.588A2.98 2.98 0 0 1 3 13c-.833 0-1.542-.292-2.125-.875A2.893 2.893 0 0 1 0 10c0-.833.292-1.542.875-2.125A2.893 2.893 0 0 1 3 7c.4 0 .775.071 1.125.213.35.141.658.337.925.587l7.025-4.1A2.88 2.88 0 0 1 12 3c0-.833.292-1.542.875-2.125A2.893 2.893 0 0 1 15 0c.833 0 1.542.292 2.125.875C17.708 1.458 18 2.167 18 3s-.292 1.542-.875 2.125A2.893 2.893 0 0 1 15 6c-.4 0-.775-.071-1.125-.213a3.04 3.04 0 0 1-.925-.587l-7.025 4.1c.033.117.054.23.063.338C5.996 9.746 6 9.867 6 10s-.004.254-.012.363c-.009.108-.03.22-.063.337l7.025 4.1c.267-.25.575-.446.925-.588A2.98 2.98 0 0 1 15 14c.833 0 1.542.292 2.125.875.583.583.875 1.292.875 2.125s-.292 1.542-.875 2.125A2.893 2.893 0 0 1 15 20Zm0-2c.283 0 .52-.096.713-.288A.968.968 0 0 0 16 17a.968.968 0 0 0-.287-.713A.968.968 0 0 0 15 16a.968.968 0 0 0-.713.287A.968.968 0 0 0 14 17c0 .283.096.52.287.712A.968.968 0 0 0 15 18ZM3 11c.283 0 .52-.096.713-.288A.968.968 0 0 0 4 10a.968.968 0 0 0-.287-.713A.968.968 0 0 0 3 9a.968.968 0 0 0-.713.287A.968.968 0 0 0 2 10c0 .283.096.52.287.712A.968.968 0 0 0 3 11Zm12-7c.283 0 .52-.096.713-.288A.968.968 0 0 0 16 3a.968.968 0 0 0-.287-.713A.968.968 0 0 0 15 2a.968.968 0 0 0-.713.287A.968.968 0 0 0 14 3c0 .283.096.52.287.712A.968.968 0 0 0 15 4Z"/></svg>
-    </button>
-    <div class="title">Совместимость</div>
+<div class="page">
 
-    <section class="avatars" aria-hidden="true">
-      <div class="avatar"></div>
-      <div class="heart-circle">
-        <svg width="25" height="23" viewBox="0 0 25 23"><path fill="#fff" d="M12.5 22.938 10.688 21.313c-2.105-1.896-3.844-3.532-5.22-4.907-1.374-1.375-2.468-2.61-3.28-3.703-.813-1.094-1.38-2.099-1.704-3.016C.161 8.77 0 7.833 0 6.875c0-1.958.656-3.594 1.969-4.906C3.281.656 4.917 0 6.875 0c1.083 0 2.115.229 3.094.688.979.458 1.823 1.104 2.531 1.937.708-.833 1.552-1.479 2.531-1.938A7.268 7.268 0 0 1 18.125 0c1.958 0 3.594.656 4.906 1.969C24.344 3.28 25 4.917 25 6.875c0 .958-.161 1.896-.484 2.813-.323.916-.891 1.921-1.704 3.015-.812 1.094-1.906 2.328-3.28 3.703-1.376 1.375-3.115 3.011-5.22 4.907L12.5 22.938Z"/></svg>
-      </div>
-      <div class="avatar"></div>
-    </section>
+<header class="header">
+  <a href="/" class="back">←</a>
+  <div class="title">Совместимость</div>
+  <a href="#" class="share">
+    <img src="{{ url_for('static', filename='img/share.png') }}">
+  </a>
+</header>
 
-    <section class="score-card" aria-label="Общая совместимость">
-      <div class="score-value">92%</div>
-      <div class="score-label">Очень высокая совместимость</div>
-    </section>
+<section class="avatars">
+  <div class="avatar">
+    <img src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}">
+  </div>
 
-    <p class="quote">“Ваш союз строится на глубокой<br>эмоциональной связи и сильном взаимном<br>притяжении.”</p>
+  <div class="heart">
+    <img src="{{ url_for('static', filename='img/heart.png') }}">
+  </div>
 
-    <section class="metrics" aria-label="Метрики совместимости">
-      <article class="metric-card">
-        <div class="metric-head">
-          <div class="metric-name"><span class="metric-icon" aria-hidden="true">❤️</span>Эмоциональная</div>
-          <div class="metric-value">92%</div>
-        </div>
-        <div class="bar"><i style="width:92%"></i></div>
-      </article>
-      <article class="metric-card">
-        <div class="metric-head">
-          <div class="metric-name"><span class="metric-icon" aria-hidden="true">🧠</span>Интеллектуальная</div>
-          <div class="metric-value">85%</div>
-        </div>
-        <div class="bar"><i style="width:85%"></i></div>
-      </article>
-      <article class="metric-card">
-        <div class="metric-head">
-          <div class="metric-name"><span class="metric-icon" aria-hidden="true">⚡</span>Физическая</div>
-          <div class="metric-value">78%</div>
-        </div>
-        <div class="bar"><i style="width:78%"></i></div>
-      </article>
-      <article class="metric-card">
-        <div class="metric-head">
-          <div class="metric-name"><span class="metric-icon" aria-hidden="true">⭐</span>Потенциал союза</div>
-          <div class="metric-value">81%</div>
-        </div>
-        <div class="bar"><i style="width:81%"></i></div>
-      </article>
-    </section>
+  <div class="avatar">
+    <img src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}">
+  </div>
+</section>
 
-    <nav class="nav-grid" aria-label="Разделы совместимости">
-      <a class="nav-tile tile-purple" href="#">
-        <svg width="20" height="12" viewBox="0 0 20 12"><path d="M1.4 12 0 10.6l7.4-7.45 4 4L16.6 2H14V0h6v6h-2V3.4L11.4 10l-4-4-6 6Z"/></svg>
-        <span>Сильные стороны союза</span>
-      </a>
-      <a class="nav-tile tile-light" href="#">
-        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 20v-4.3A9.203 9.203 0 0 1 .788 12.663 8.948 8.948 0 0 1 0 9c0-2.5.875-4.375 2.625-6.125C4.375 1.125 6.5 0 9 0c2.083 0 3.929.613 5.538 1.838 1.608 1.225 2.654 2.82 3.137 4.787l1.3 5.125c.083.317.025.604-.175.863A.964.964 0 0 1 18 13h-2v3c0 .55-.196 1.02-.587 1.413A1.928 1.928 0 0 1 14 18h-2v2h-2v-4h4v-5h2.7l-.95-3.875c-.383-1.517-1.2-2.75-2.45-3.7C12.05 2.475 10.617 2 9 2 7.067 2 5.417 2.675 4.05 4.025 2.683 5.375 2 7.017 2 8.95c0 1 .204 1.95.613 2.85.408.9.987 1.7 1.737 2.4l.65.6V20H3Z"/></svg>
-        <span>Зоны роста</span>
-      </a>
-      <a class="nav-tile tile-light" href="#">
-        <svg width="23" height="22" viewBox="0 0 23 22"><path d="M20.5 10 19.875 8.625 18.5 8l1.375-.625L20.5 6l.625 1.375L22.5 8l-1.375.625L20.5 10ZM17.5 6l-.95-2.05L14.5 3l2.05-.95L17.5 0l.95 2.05 2.05.95-2.05.95L17.5 6ZM7.5 22c-.55 0-1.02-.196-1.413-.588A1.928 1.928 0 0 1 5.5 20h4c0 .55-.196 1.02-.588 1.412A1.928 1.928 0 0 1 7.5 22ZM3.5 19v-2h8v2h-8Zm.25-3a7.502 7.502 0 0 1-2.738-2.75A7.283 7.283 0 0 1 0 9.5c0-2.083.729-3.854 2.188-5.312C3.645 2.729 5.416 2 7.5 2s3.854.729 5.313 2.188C14.27 5.645 15 7.416 15 9.5c0 1.35-.338 2.6-1.013 3.75A7.503 7.503 0 0 1 11.25 16h-7.5Z"/></svg>
-        <span>Советы для пары</span>
-      </a>
-      <a class="nav-tile tile-purple" href="#">
-        <svg width="22" height="22" viewBox="0 0 22 22"><path d="M18 8 16.75 5.25 14 4l2.75-1.25L18 0l1.25 2.75L22 4l-2.75 1.25L18 8Zm0 14-1.25-2.75L14 18l2.75-1.25L18 14l1.25 2.75L22 18l-2.75 1.25L18 22ZM8 19l-2.5-5.5L0 11l5.5-2.5L8 3l2.5 5.5L16 11l-5.5 2.5L8 19Z"/></svg>
-        <span>Кармический разбор</span>
-      </a>
-    </nav>
+<section class="score-card">
+  <div class="percent">92%</div>
+  <div class="score-label">Очень высокая совместимость</div>
+</section>
 
-    <button class="upsell" id="openCompatibilityUpsell" type="button" aria-label="Открыть полный разбор совместимости">
-      <h2 class="upsell-title">Полный разбор совместимости</h2>
-      <p class="upsell-text">Откройте скрытые тайны ваших отношений<br>и узнайте будущее</p>
-      <span class="vip-button" aria-hidden="true">
-        <span class="vip-label">Купить VIP прогноз</span>
-        <span class="price-pill">50
-          <svg width="12" height="15" viewBox="0 0 12 15" aria-hidden="true"><path fill="#fff" d="m6.243 15-.7-4.183-.431 4.078-1.454-.784 1.611-5.389 1.35 2.148.647 2.927L6.243 15Zm-5.049-.124-.257-.888-.913-.288.915-.25.296-.886.258.888.912.288-.914.25-.297.886Zm2.002-1.769-.952-.072L.136 9.674 0 7.029l2.578.968 1.679 2.168-.539 2.008-2.073-2.649 1.551 3.583Zm4.785-.918-.559-.067-.28-1.392-.468-.854 3.015-2.928 1.024.314-.431 2.353-2.3 2.574Zm.603-1.336.896-1.037.328-1.305-.827 1.037-.397 1.305Zm-4.104-1.225L3.215 7.982l.727-3.478 2.53-3.032 2.074 2.719-.215 3.372-1.939 1.935-1.238-1.83-.674 1.96ZM6.035 8.12l.893-3.017.812-.729-.92.123-.366-1.38-.215 1.38-1.49.176 1.482.516-.196 2.932ZM2.84 7.492 1.924 6.08l.323-2.98 1.024 1.987-.431 2.405ZM10.47 6.776l-.324-1.122-1.152-.364 1.155-.315.374-1.119.325 1.122 1.152.363-1.155.315-.375 1.12ZM3.443 3.652l-.405-1.403-1.442-.455 1.445-.394L3.509 0l.406 1.403 1.441.455-1.444.394-.469 1.4Z"/></svg>
-        </span>
-      </span>
-    </button>
+<div class="quote">
+  “Ваш союз строится на глубокой<br>
+  эмоциональной связи и сильном<br>
+  взаимном притяжении.”
+</div>
 
-    <div class="compat-upsell-layer" id="compatUpsellLayer" aria-hidden="true">
-      <button class="compat-upsell-back" id="closeCompatibilityUpsell" type="button" aria-label="Назад">
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M3.825 9 9.425 14.6 8 16 0 8 8 0l1.425 1.4L3.825 7H16v2H3.825Z"/></svg>
-      </button>
-      <section class="compat-upsell-card" aria-label="VIP прогноз совместимости">
-        <div class="compat-upsell-title-wrap">
-          <div class="compat-upsell-title-spacer" aria-hidden="true"></div>
-          <h2 class="compat-upsell-title">Получите полный разбор совместимости</h2>
-        </div>
-        <p class="compat-upsell-desc">Тип и задача вашего союза, энергия и полноценный разбор по 12 пунктам</p>
-        <a class="compat-buy-button" href="{{ url_for('vip_old') }}" aria-label="Купить VIP прогноз за 50">
-          <span class="compat-buy-label">Купить VIP прогноз</span>
-          <span class="compat-price-pill">50
-            <svg width="12" height="15" viewBox="0 0 12 15" aria-hidden="true"><path fill="#fff" d="M6.243 15L5.54313 10.8174L5.11223 14.8953L3.65822 14.1109L5.26881 8.72205L6.61979 10.8696L7.26584 13.7975L6.243 15ZM1.19381 14.8762L0.936903 13.9878L0.0243771 13.7001L0.93894 13.4504L1.23527 12.5642L1.49251 13.4524L2.40527 13.7404L1.49051 13.9898L1.19381 14.8762ZM3.19588 13.1068L2.24413 13.0352L0.136274 9.67368L0 7.02915L2.57775 7.99688L4.25654 10.1648L3.71781 12.1727L1.64462 9.52383L3.19588 13.1068ZM7.98135 12.1895L7.42219 12.1217L7.14268 10.7302L6.67354 9.87625L9.68925 6.94838L10.7126 7.26177L10.2818 9.61457L7.98135 12.1895ZM8.58414 10.8533L9.48004 9.816L9.80791 8.5107L8.98058 9.54797L8.58414 10.8533ZM4.48024 9.62829L3.21451 7.9818L3.94154 4.50429L6.47274 1.47247L8.54593 4.1909L8.33074 7.56347L6.39202 9.49767L5.15346 7.66768L4.48024 9.62829ZM6.03484 8.12118L6.92779 5.10378L7.7405 4.37469L6.81963 4.49749L6.45391 3.11702L6.23846 4.49749L4.74874 4.67343L6.23068 5.1892L6.03484 8.12118ZM2.83995 7.49196L1.92414 6.08L2.24741 3.10046L3.27055 5.08716L2.83995 7.49196ZM10.4703 6.77557L10.1461 5.65361L8.99368 5.29022L10.1486 4.97485L10.5229 3.85606L10.8476 4.97753L12 5.34122L10.8451 5.65604L10.4703 6.77557ZM3.44306 3.65154L3.03753 2.24841L1.59607 1.79389L3.04081 1.39949L3.50887 0L3.91516 1.40268L5.35633 1.85762L3.91184 2.25154L3.44306 3.65154Z"/></svg>
-          </span>
-        </a>
-      </section>
-    </div>
-  </main>
+<section class="metrics">
 
-  <script>
-  (function(){
-    var openBtn = document.getElementById('openCompatibilityUpsell');
-    var layer = document.getElementById('compatUpsellLayer');
-    var closeBtn = document.getElementById('closeCompatibilityUpsell');
-    if (!openBtn || !layer) return;
-    function openLayer(){
-      layer.classList.add('is-visible');
-      layer.setAttribute('aria-hidden', 'false');
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLayer(){
-      layer.classList.remove('is-visible');
-      layer.setAttribute('aria-hidden', 'true');
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    }
-    openBtn.addEventListener('click', openLayer);
-    if (closeBtn) closeBtn.addEventListener('click', closeLayer);
-    layer.addEventListener('click', function(e){ if (e.target === layer) closeLayer(); });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLayer(); });
-  })();
-  </script>
+<div class="metric">
+  <div class="metric-top">
+    <div>❤️ Эмоциональная</div>
+    <div>92%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w92"></div></div>
+</div>
+
+<div class="metric">
+  <div class="metric-top">
+    <div>🧠 Интеллектуальная</div>
+    <div>85%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w85"></div></div>
+</div>
+
+<div class="metric">
+  <div class="metric-top">
+    <div>⚡ Физическая</div>
+    <div>78%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w78"></div></div>
+</div>
+
+<div class="metric">
+  <div class="metric-top">
+    <div>⭐ Потенциал союза</div>
+    <div>81%</div>
+  </div>
+  <div class="progress"><div class="progress-fill w81"></div></div>
+</div>
+
+</section>
+
+<section class="links">
+
+<a href="#" class="link-card purple">
+  <img class="link-icon" src="{{ url_for('static', filename='img/strong.png') }}">
+  <div>Сильные стороны союза</div>
+</a>
+
+<a href="#" class="link-card light">
+  <img class="link-icon" src="{{ url_for('static', filename='img/brain.png') }}">
+  <div>Зоны роста</div>
+</a>
+
+<a href="#" class="link-card light">
+  <img class="link-icon" src="{{ url_for('static', filename='img/tips.png') }}">
+  <div>Советы для пары</div>
+</a>
+
+<a href="#" class="link-card purple">
+  <img class="link-icon" src="{{ url_for('static', filename='img/karma.png') }}">
+  <div>Кармический разбор</div>
+</a>
+
+</section>
+
+<section class="vip">
+  <div>Полный разбор совместимости</div>
+  <div>Откройте тайны ваших отношений</div>
+  <a href="/vip" class="vip-btn">Получить VIP прогноз</a>
+</section>
+
+</div>
+
+<script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
+<script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>
 </html>

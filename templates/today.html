@@ -58,7 +58,6 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:ce
     <div class="avatar-wrap">
       <img
         id="tgAvatar"
-        data-tg-avatar
         class="avatar"
         onerror="this.src='{{ url_for('static', filename='img/avatar.png') }}'"
         src="{{ tg_user.photo_url if tg_user and tg_user.photo_url else url_for('static', filename='img/avatar.png') }}"
@@ -69,7 +68,7 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:ce
     </div>
 
     <div>
-      <div id="tgName" data-tg-name class="name">
+      <div id="tgName" class="name">
         {% if tg_user and tg_user.first_name %}
           {{ (tg_user.first_name ~ ' ' ~ tg_user.last_name)|trim }}
         {% else %}
@@ -77,7 +76,7 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:ce
         {% endif %}
       </div>
 
-      <div id="tgUsername" data-tg-username class="sub">
+      <div id="tgUsername" class="sub">
         {% if tg_user and tg_user.username %}
           @{{ tg_user.username }}
         {% else %}
@@ -88,12 +87,12 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:ce
   </div>
 
   <div class="coins">
-    <span id="coinCount" data-coins-count>{{ coins|default(150) }}</span>
+    {{ coins|default(150) }}
     <img alt="coins" class="coin-icon" draggable="false" src="{{ url_for('static', filename='img/crystal.png') }}"/>
   </div>
 </header>
 
-<section class="streak"><div class="streak-left"><div class="streak-icon"><img alt="sparkles" class="streak-img" draggable="false" src="{{ url_for('static', filename='img/sparkles.png') }}"/></div><div><div class="streak-label">Ваш мистический путь</div><div class="streak-days" data-streak-days>{{ streak_days|default(7) }} дней в потоке</div></div></div><div class="dots"><span></span><span></span><span></span><span></span><span></span></div></section>
+<section class="streak"><div class="streak-left"><div class="streak-icon"><img alt="sparkles" class="streak-img" draggable="false" src="{{ url_for('static', filename='img/sparkles.png') }}"/></div><div><div class="streak-label">Ваш мистический путь</div><div class="streak-days">{{ streak_days|default(7) }} дней в потоке</div></div></div><div class="dots"><span></span><span></span><span></span><span></span><span></span></div></section>
 
 <div class="section-title">Практики</div>
 
@@ -127,12 +126,38 @@ body{background:#000;color:#fff;min-height:100vh;display:flex;justify-content:ce
   </div>
 </section>
 
-<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/match"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
+<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/spreads"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
 
 </div></div>
 
-<script src="{{ url_for('static', filename='telegram-user.js') }}"></script>
+<script>
+const tg = window.Telegram?.WebApp;
 
+tg?.ready();
+tg?.expand();
+
+const tgUser = tg?.initDataUnsafe?.user;
+
+if (tgUser) {
+    const firstName = tgUser.first_name || '';
+    const lastName = tgUser.last_name || '';
+    const fullName = `${firstName} ${lastName}`.trim();
+    const username = tgUser.username ? '@' + tgUser.username : 'Луна в Скорпионе';
+
+    document.getElementById('tgName').textContent = fullName || 'Пользователь';
+    document.getElementById('tgUsername').textContent = username;
+
+    if (tgUser.photo_url) {
+        document.getElementById('tgAvatar').src = tgUser.photo_url;
+    }
+
+    fetch('/save-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tgUser)
+    });
+}
+</script>
 
 <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
 <script src="{{ url_for('static', filename='nav-active.js') }}"></script>

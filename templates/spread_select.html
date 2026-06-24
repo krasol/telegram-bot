@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ screen.title }} — выберите 3 карты</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/spread_select.css') }}">
+</head>
+<body>
+    <main class="select-screen select-{{ screen.slug }}" data-page="spread-select" data-slug="{{ screen.slug }}" data-next-url="{{ screen.result_url }}">
+        <header class="select-header">
+            <a class="back-btn" href="{{ screen.start_url }}" aria-label="Назад">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M8.25 10L13.85 15.6L12.5 17L5.5 10L12.5 3L13.85 4.4L8.25 10Z" fill="#F1F5F9"/>
+                </svg>
+            </a>
+            <div class="select-title">Выберите 3 карты</div>
+        </header>
+
+        <div class="step-block" aria-hidden="true">
+            <div class="step-line"></div>
+            <div class="step-text">Шаг 2 из 3</div>
+        </div>
+
+        <section class="cards-grid" aria-label="Выбор карт">
+            {% for i in range(1, 10) %}
+            <button class="select-card" type="button" data-card="{{ i }}" aria-label="Выбрать карту {{ i }}">
+                <img src="{{ url_for('static', filename='img/love-spread-card.jpg') }}" alt="">
+                <span class="card-order"></span>
+            </button>
+            {% endfor %}
+        </section>
+
+        <section class="choice-list" aria-label="Позиции расклада">
+            {% for option in screen.select_options %}
+            <div class="choice-item" data-slot="{{ loop.index }}">
+                <span class="choice-dot"></span>
+                <span class="choice-label">{{ option }}</span>
+                <span class="choice-state">Ожидаем выбора...</span>
+            </div>
+            {% endfor %}
+        </section>
+
+        <p class="select-hint">{{ screen.select_hint }}</p>
+
+        <div class="bottom-symbol" aria-hidden="true">
+            <span>∞</span>
+            <i></i>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/spread_select.js') }}"></script>
+</body>
+</html>

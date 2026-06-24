@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Онбординг 1</title>
@@ -174,7 +173,7 @@ body{
 <body>
 <div class="onboarding">
 
-  <a href="/onboarding/finish" data-finish-onboarding class="skip">Пропустить</a>
+  <a href="/onboarding/finish" class="skip">Пропустить</a>
 
   <div class="blur-left"></div>
   <div class="blur-right"></div>
@@ -211,6 +210,5 @@ body{
 </div>
 <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
 <script src="{{ url_for('static', filename='nav-active.js') }}"></script>
-<script src="{{ url_for('static', filename='telegram-user.js') }}"></script>
 </body>
 </html>

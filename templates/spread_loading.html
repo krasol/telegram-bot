@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Загрузка расклада</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/spread_loading.css') }}">
+</head>
+<body>
+    <main class="loading-screen" data-page="spread-loading" data-next-url="{{ screen.final_result_url }}">
+        <img class="loading-bg" src="{{ url_for('static', filename='img/spread-results/loading-bg.png') }}" alt="" aria-hidden="true">
+
+        <section class="loading-card">
+            <div class="loading-orbit" aria-hidden="true">
+                <span></span><span></span><span></span>
+            </div>
+            <h1>Считываю карты</h1>
+            <p>Система соединяет выбранные карты и готовит ваш расклад.</p>
+            <div class="loading-progress" aria-hidden="true"><i></i></div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/spread_loading.js') }}"></script>
+</body>
+</html>

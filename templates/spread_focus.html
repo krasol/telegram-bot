@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ screen.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/spread_focus.css') }}">
+</head>
+<body>
+    <main class="focus-screen focus-{{ screen.slug }}" data-page="spread-focus" data-slug="{{ screen.slug }}">
+        <img class="focus-bg" src="{{ url_for('static', filename='img/spread-focus-bg/focus-bg.svg') }}" alt="" aria-hidden="true">
+
+        <a class="back-hit" href="{{ screen.back_url }}" aria-label="Назад"></a>
+
+        <section class="focus-content">
+            <h1>{{ screen.focus_title }}</h1>
+            <p>{{ screen.focus_description }}</p>
+            <img class="tarot-card" src="{{ url_for('static', filename='img/love-spread-card.jpg') }}" alt="Карта таро">
+        </section>
+
+        <a class="shuffle-hit" href="{{ screen.shuffle_url }}" aria-label="Перемешать карты"></a>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/spread_focus.js') }}"></script>
+</body>
+</html>

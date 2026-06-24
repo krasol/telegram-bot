@@ -846,20 +846,20 @@ body {
 <div class="phone">
 <header class="header">
 <div class="user-box">
-<div class="avatar-shell"><img id="tgAvatar" data-tg-avatar class="avatar" onerror="this.style.display='none'" src="{{ tg_user.photo_url if tg_user and tg_user.photo_url else url_for('static', filename='img/avatar.png') }}"/></div>
+<div class="avatar-shell"><img id="tgAvatar" class="avatar" onerror="this.style.display='none'" src="{{ tg_user.photo_url if tg_user and tg_user.photo_url else url_for('static', filename='img/avatar.png') }}"/></div>
 <div class="pro-pill">PRO</div>
-<div id="tgName" data-tg-name class="user-name">{% if tg_user and tg_user.first_name %}{{ (tg_user.first_name ~ " " ~ tg_user.last_name)|trim }}{% else %}Елена{% endif %}</div><div id="tgUsername" data-tg-username class="user-sub">{% if tg_user and tg_user.username %}@{{ tg_user.username }}{% else %}Искатель пути{% endif %}</div>
+<div id="tgName" class="user-name">{% if tg_user and tg_user.first_name %}{{ (tg_user.first_name ~ " " ~ tg_user.last_name)|trim }}{% else %}Елена{% endif %}</div><div id="tgUsername" class="user-sub">{% if tg_user and tg_user.username %}@{{ tg_user.username }}{% else %}Искатель пути{% endif %}</div>
 </div>
 <a aria-label="Настройки" class="settings-btn" href="/settings"><img alt="Настройки" class="settings-icon" draggable="false" src="{{ url_for('static', filename='img/settings.png') }}"/></a>
 </header>
 <main class="main">
 <section class="premium-card"><div class="premium-title"><b>Premium</b><span> Активен</span></div><div class="premium-sub">15 дней осталось до продления</div><img alt="Premium" class="sparkle" draggable="false" src="{{ url_for('static', filename='img/sparkles2.png') }}"/><div class="decor"></div><button class="manage">Управлять подпиской</button></section>
-<section class="wallet"><div class="wallet-icon"><img alt="Кристаллы" class="wallet-icon-img" draggable="false" src="{{ url_for('static', filename='img/crystal2.png') }}"/></div><div id="walletCoins" data-coins-label class="wallet-title">{{ coins|default(150) }} Кристаллов</div><div class="wallet-sub">Ваш баланс</div><button class="topup">Пополнить</button></section>
+<section class="wallet"><div class="wallet-icon"><img alt="Кристаллы" class="wallet-icon-img" draggable="false" src="{{ url_for('static', filename='img/crystal2.png') }}"/></div><div class="wallet-title">150 Кристаллов</div><div class="wallet-sub">Ваш баланс</div><button class="topup">Пополнить</button></section>
 <section class="shortcuts">
 <a class="shortcut s1" href="#"><span class="box"><img alt="Натальная карта" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/natal2.png') }}"/></span><span class="label">Натальная<br/>карта</span></a>
 <a class="shortcut s2" href="/"><span class="box"><img alt="Архив карт дня" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/archive2.png') }}"/></span><span class="label">Архив карт дня</span></a>
 <a class="shortcut s3" href="/match"><span class="box"><img alt="Мэтч" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/match3.png') }}"/></span><span class="label">Мэтч</span></a>
-<a class="shortcut s4" href="#"><span class="box"><img alt="Расклады" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/spreads3.png') }}"/></span><span class="label">Расклады</span></a>
+<a class="shortcut s4" href="/spreads"><span class="box"><img alt="Расклады" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/spreads3.png') }}"/></span><span class="label">Расклады</span></a>
 <a class="shortcut s5" href="#"><span class="box"><img alt="Премиум" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/premium.png') }}"/></span><span class="label">Премиум</span></a>
 <a class="shortcut s6" href="#"><span class="box"><img alt="Кошелек" class="shortcut-icon" draggable="false" src="{{ url_for('static', filename='img/wallet.png') }}"/></span><span class="label">Кошелек</span></a>
 </section>
@@ -870,11 +870,37 @@ body {
 <div class="small-card left"><div class="small-sub">Совместимость</div><div class="small-title">8 проверок</div><a class="small-link" href="/match">История ›</a></div><div class="small-card right"><div class="small-sub">Избранное</div><div class="small-title">15 раскладов</div><a class="small-link" href="#">Открыть ›</a></div>
 <div class="activity"><div class="activity-sub">Продолжить</div><div class="activity-title">Расклад на любовь</div><img alt="Продолжить" class="play" draggable="false" src="{{ url_for('static', filename='img/play.png') }}"/></div>
 </section>
-<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/match"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
+<nav class="nav"><a class="nav-item" href="/"><img alt="Главная" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_home.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_home.png') }}" data-active-src="{{ url_for('static', filename='img/main_home_active.png') }}"/>Главная</a><a class="nav-item" href="/spreads"><img alt="Расклады" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_spreads.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_spreads.png') }}" data-active-src="{{ url_for('static', filename='img/main_spreads_active.png') }}"/>Расклады</a><a class="nav-item" href="/birthdate"><img alt="Звезды" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_stars.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_stars.png') }}" data-active-src="{{ url_for('static', filename='img/main_stars_active.png') }}"/>Звезды</a><a class="nav-item" href="/match"><img alt="Мэтч" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_match.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_match.png') }}" data-active-src="{{ url_for('static', filename='img/main_match_active.png') }}"/>Мэтч</a><a class="nav-item" href="/profile"><img alt="Профиль" class="nav-icon" draggable="false" src="{{ url_for('static', filename='img/main_profile.png') }}" data-inactive-src="{{ url_for('static', filename='img/main_profile.png') }}" data-active-src="{{ url_for('static', filename='img/main_profile_active.png') }}"/>Профиль</a></nav>
 </main><div class="bottom-pad"></div></div>
 <script src="{{ url_for('static', filename='page-transitions.js') }}"></script>
-<script src="{{ url_for('static', filename='telegram-user.js') }}"></script>
+<script>
+const tg = window.Telegram?.WebApp;
+tg?.ready();
+tg?.expand();
 
+const tgUser = tg?.initDataUnsafe?.user;
+
+if (tgUser) {
+  const firstName = tgUser.first_name || '';
+  const lastName = tgUser.last_name || '';
+  const fullName = `${firstName} ${lastName}`.trim();
+  const username = tgUser.username ? '@' + tgUser.username : 'Искатель пути';
+
+  const nameEl = document.getElementById('tgName');
+  const usernameEl = document.getElementById('tgUsername');
+  const avatarEl = document.getElementById('tgAvatar');
+
+  if (nameEl) nameEl.textContent = fullName || 'Пользователь';
+  if (usernameEl) usernameEl.textContent = username;
+  if (avatarEl && tgUser.photo_url) avatarEl.src = tgUser.photo_url;
+
+  fetch('/save-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tgUser)
+  });
+}
+</script>
 
 <script src="{{ url_for('static', filename='nav-active.js') }}"></script>
 </body>

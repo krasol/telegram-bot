@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ваш расклад</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/spread_result.css') }}">
+</head>
+<body>
+  <main class="page">
+    <div class="header-icons">
+      <a class="logo-link" href="{{ url_for('spreads') }}">
+        <img src="{{ url_for('static', filename='img/result-icons/sparkles.svg') }}" alt="">
+      </a>
+      <a class="profile-link" href="{{ url_for('profile') }}">
+        <img src="{{ url_for('static', filename='img/result-icons/profile.svg') }}" alt="">
+      </a>
+    </div>
+
+    <header class="header">
+      <div class="header-title">Ваш Расклад</div>
+      <div class="header-step">ШАГ 3 ИЗ 3</div>
+    </header>
+    <div class="header-line"></div>
+
+    <section class="cards" aria-label="Три карты расклада">
+      <img class="card-left" src="{{ url_for('static', filename=cards[0]) }}" alt="Карта 1">
+      <img class="card-center" src="{{ url_for('static', filename=cards[1]) }}" alt="Карта 2">
+      <img class="card-right" src="{{ url_for('static', filename=cards[2]) }}" alt="Карта 3">
+    </section>
+
+    <section class="result-list">
+      {% for item in spread['items'] %}
+      <article class="result-card">
+        <h2 class="item-title" style="color: {{ item.color }};">
+          <img class="item-icon" src="{{ url_for('static', filename='img/result-icons/' ~ item.icon) }}" alt="">
+          <span>{{ item.title }}</span>
+        </h2>
+        <p class="item-text">{{ item.text }}</p>
+      </article>
+      {% endfor %}
+    </section>
+
+    <div class="finish-wrap">
+      <a class="finish-btn" href="{{ url_for('spreads') }}">
+        <span>Завершить чтение</span>
+        <img src="{{ url_for('static', filename='img/result-icons/check-circle.svg') }}" alt="">
+      </a>
+    </div>
+  </main>
+</body>
+</html>
