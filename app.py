@@ -1,305 +1,9 @@
 from flask import Flask, render_template, session, jsonify, request, redirect, url_for
 import os
 import random
-import sqlite3
-import json
-import hmac
-import hashlib
-from pathlib import Path
-from urllib.parse import parse_qsl
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-key-12345")
-
-# Для Telegram WebApp на Render куки должны нормально жить внутри webview.
-# Локально Secure отключен, иначе 127.0.0.1 не сможет поставить cookie.
-IS_RENDER = bool(os.environ.get("RENDER"))
-app.config.update(
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=IS_RENDER,
-    SESSION_COOKIE_SAMESITE="None" if IS_RENDER else "Lax",
-)
-
-
-# ===== SQLite DB =====
-# Для продакшена на Render лучше задать DATABASE_PATH=/var/data/app.db
-# и подключить Persistent Disk. Без диска Render может сбрасывать SQLite при деплое.
-def resolve_db_path() -> Path:
-    explicit = os.environ.get("DATABASE_PATH")
-    if explicit:
-        return Path(explicit)
-
-    data_dir = Path(os.environ.get("DATA_DIR", Path(app.root_path) / "data"))
-    return data_dir / "app.db"
-
-
-DB_PATH = resolve_db_path()
-
-
-def get_db_connection():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-def init_db():
-    with get_db_connection() as conn:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS telegram_users (
-                telegram_id INTEGER PRIMARY KEY,
-                first_name TEXT,
-                last_name TEXT,
-                username TEXT,
-                language_code TEXT,
-                photo_url TEXT,
-                allows_write_to_pm INTEGER DEFAULT 0,
-                is_premium INTEGER DEFAULT 0,
-                coins INTEGER NOT NULL DEFAULT 150,
-                streak_days INTEGER NOT NULL DEFAULT 7,
-                onboarding_seen INTEGER NOT NULL DEFAULT 0,
-                card_of_day_json TEXT,
-                last_init_data_hash TEXT,
-                is_verified INTEGER NOT NULL DEFAULT 0,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                last_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-            """
-        )
-
-        # Миграции для уже существующей app.db из GitHub/Render.
-        columns = {row[1] for row in conn.execute("PRAGMA table_info(telegram_users)").fetchall()}
-        migrations = {
-            "allows_write_to_pm": "ALTER TABLE telegram_users ADD COLUMN allows_write_to_pm INTEGER DEFAULT 0",
-            "is_premium": "ALTER TABLE telegram_users ADD COLUMN is_premium INTEGER DEFAULT 0",
-            "coins": "ALTER TABLE telegram_users ADD COLUMN coins INTEGER NOT NULL DEFAULT 150",
-            "streak_days": "ALTER TABLE telegram_users ADD COLUMN streak_days INTEGER NOT NULL DEFAULT 7",
-            "onboarding_seen": "ALTER TABLE telegram_users ADD COLUMN onboarding_seen INTEGER NOT NULL DEFAULT 0",
-            "card_of_day_json": "ALTER TABLE telegram_users ADD COLUMN card_of_day_json TEXT",
-            "last_init_data_hash": "ALTER TABLE telegram_users ADD COLUMN last_init_data_hash TEXT",
-            "is_verified": "ALTER TABLE telegram_users ADD COLUMN is_verified INTEGER NOT NULL DEFAULT 0",
-            "created_at": "ALTER TABLE telegram_users ADD COLUMN created_at TEXT",
-            "updated_at": "ALTER TABLE telegram_users ADD COLUMN updated_at TEXT",
-            "last_seen_at": "ALTER TABLE telegram_users ADD COLUMN last_seen_at TEXT",
-        }
-        for column, sql in migrations.items():
-            if column not in columns:
-                conn.execute(sql)
-
-        conn.execute("""
-            UPDATE telegram_users
-            SET
-                created_at = COALESCE(created_at, CURRENT_TIMESTAMP),
-                updated_at = COALESCE(updated_at, CURRENT_TIMESTAMP),
-                last_seen_at = COALESCE(last_seen_at, CURRENT_TIMESTAMP)
-        """)
-        conn.commit()
-
-
-def verify_telegram_init_data(init_data: str) -> bool:
-    """Проверка подписи Telegram WebApp. Если BOT_TOKEN не задан, возвращаем False.
-    Данные всё равно можно сохранить для локальной разработки, но is_verified будет 0.
-    """
-    bot_token = os.environ.get("BOT_TOKEN", "").strip()
-    if not bot_token or not init_data:
-        return False
-
-    parsed = dict(parse_qsl(init_data, keep_blank_values=True))
-    received_hash = parsed.pop("hash", None)
-    if not received_hash:
-        return False
-
-    data_check_string = "\n".join(f"{key}={value}" for key, value in sorted(parsed.items()))
-    secret_key = hmac.new(b"WebAppData", bot_token.encode("utf-8"), hashlib.sha256).digest()
-    calculated_hash = hmac.new(secret_key, data_check_string.encode("utf-8"), hashlib.sha256).hexdigest()
-    return hmac.compare_digest(calculated_hash, received_hash)
-
-
-def normalize_tg_user(payload: dict) -> dict:
-    """Принимает старый формат tgUser напрямую или новый {user, initData}."""
-    if not isinstance(payload, dict):
-        return {}
-    user = payload.get("user") if isinstance(payload.get("user"), dict) else payload
-    return user or {}
-
-
-def get_user_by_telegram_id(telegram_id):
-    if not telegram_id:
-        return None
-    with get_db_connection() as conn:
-        return conn.execute(
-            "SELECT * FROM telegram_users WHERE telegram_id = ?",
-            (int(telegram_id),),
-        ).fetchone()
-
-
-def row_to_public_user(row):
-    if not row:
-        return {}
-    return {
-        "id": row["telegram_id"],
-        "first_name": row["first_name"],
-        "last_name": row["last_name"],
-        "username": row["username"],
-        "language_code": row["language_code"],
-        "photo_url": row["photo_url"],
-        "is_premium": bool(row["is_premium"]),
-        "coins": row["coins"],
-        "streak_days": row["streak_days"],
-        "onboarding_seen": bool(row["onboarding_seen"]),
-        "is_verified": bool(row["is_verified"]),
-        "created_at": row["created_at"],
-        "updated_at": row["updated_at"],
-        "last_seen_at": row["last_seen_at"],
-    }
-
-
-def _clean_text(value):
-    if value is None:
-        return None
-    value = str(value).strip()
-    return value or None
-
-
-def _bool_int(value):
-    return 1 if value in (True, 1, "1", "true", "True", "yes", "on") else 0
-
-
-def apply_client_state(row, state=None):
-    """Мягко переносит состояние из localStorage в SQLite, когда Telegram-аккаунт наконец определился."""
-    if not row or not isinstance(state, dict):
-        return row
-
-    updates = {}
-
-    if state.get("onboarding_seen") is True or state.get("onboardingSeen") is True:
-        updates["onboarding_seen"] = 1
-
-    coins = state.get("coins")
-    try:
-        coins = int(coins)
-        if 0 <= coins <= 1000000:
-            updates["coins"] = coins
-    except (TypeError, ValueError):
-        pass
-
-    streak_days = state.get("streak_days", state.get("streakDays"))
-    try:
-        streak_days = int(streak_days)
-        if 0 <= streak_days <= 100000:
-            updates["streak_days"] = streak_days
-    except (TypeError, ValueError):
-        pass
-
-    card = state.get("card_of_day") or state.get("cardOfDay")
-    if isinstance(card, dict):
-        updates["card_of_day_json"] = json.dumps(card, ensure_ascii=False)
-
-    if updates:
-        session["tg_user_id"] = row["telegram_id"]
-        update_user_state(**updates)
-        return get_user_by_telegram_id(row["telegram_id"])
-
-    return row
-
-
-def upsert_telegram_user(tg_user: dict, init_data: str = "", client_state=None):
-    telegram_id = tg_user.get("id")
-    if not telegram_id:
-        raise ValueError("telegram user id is required")
-
-    is_verified = 1 if verify_telegram_init_data(init_data) else 0
-    init_data_hash = hashlib.sha256(init_data.encode("utf-8")).hexdigest() if init_data else None
-
-    first_name = _clean_text(tg_user.get("first_name"))
-    last_name = _clean_text(tg_user.get("last_name"))
-    username = _clean_text(tg_user.get("username"))
-    language_code = _clean_text(tg_user.get("language_code"))
-    photo_url = _clean_text(tg_user.get("photo_url"))
-
-    with get_db_connection() as conn:
-        conn.execute(
-            """
-            INSERT INTO telegram_users (
-                telegram_id, first_name, last_name, username, language_code, photo_url,
-                allows_write_to_pm, is_premium, last_init_data_hash, is_verified
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(telegram_id) DO UPDATE SET
-                first_name = COALESCE(excluded.first_name, telegram_users.first_name),
-                last_name = COALESCE(excluded.last_name, telegram_users.last_name),
-                username = COALESCE(excluded.username, telegram_users.username),
-                language_code = COALESCE(excluded.language_code, telegram_users.language_code),
-                photo_url = COALESCE(excluded.photo_url, telegram_users.photo_url),
-                allows_write_to_pm = CASE
-                    WHEN excluded.allows_write_to_pm = 1 THEN 1
-                    ELSE telegram_users.allows_write_to_pm
-                END,
-                is_premium = CASE
-                    WHEN excluded.is_premium = 1 THEN 1
-                    ELSE telegram_users.is_premium
-                END,
-                last_init_data_hash = COALESCE(excluded.last_init_data_hash, telegram_users.last_init_data_hash),
-                is_verified = CASE WHEN excluded.is_verified = 1 THEN 1 ELSE telegram_users.is_verified END,
-                updated_at = CURRENT_TIMESTAMP,
-                last_seen_at = CURRENT_TIMESTAMP
-            """,
-            (
-                int(telegram_id),
-                first_name,
-                last_name,
-                username,
-                language_code,
-                photo_url,
-                _bool_int(tg_user.get("allows_write_to_pm")),
-                _bool_int(tg_user.get("is_premium")),
-                init_data_hash,
-                is_verified,
-            ),
-        )
-        conn.commit()
-
-    row = get_user_by_telegram_id(telegram_id)
-    row = apply_client_state(row, client_state)
-    return row
-
-
-def sync_session_from_db(row):
-    if not row:
-        return
-    session["tg_user_id"] = row["telegram_id"]
-    session["tg_user"] = row_to_public_user(row)
-    session["coins"] = row["coins"]
-    session["streak_days"] = row["streak_days"]
-    session["onboarding_seen"] = bool(row["onboarding_seen"])
-    if row["card_of_day_json"]:
-        try:
-            session["card_of_day"] = json.loads(row["card_of_day_json"])
-        except json.JSONDecodeError:
-            session.pop("card_of_day", None)
-
-
-def update_user_state(**fields):
-    telegram_id = session.get("tg_user_id")
-    if not telegram_id or not fields:
-        return
-
-    allowed = {"coins", "streak_days", "onboarding_seen", "card_of_day_json"}
-    updates = {key: value for key, value in fields.items() if key in allowed}
-    if not updates:
-        return
-
-    set_clause = ", ".join(f"{key} = ?" for key in updates)
-    values = list(updates.values()) + [int(telegram_id)]
-    with get_db_connection() as conn:
-        conn.execute(
-            f"UPDATE telegram_users SET {set_clause}, updated_at = CURRENT_TIMESTAMP WHERE telegram_id = ?",
-            values,
-        )
-        conn.commit()
-
-init_db()
 
 
 # ===== МИНИМАЛЬНЫЕ ДАННЫЕ =====
@@ -333,30 +37,138 @@ SIMPLE_CARDS = [
 ]
 
 
-def init_session():
-    # Если пользователь уже сохранен в SQLite, подтягиваем его состояние по Telegram ID.
-    if session.get("tg_user_id"):
-        row = get_user_by_telegram_id(session.get("tg_user_id"))
-        if row:
-            sync_session_from_db(row)
 
+
+SPREAD_READY_SCREENS = {'love': {'slug': 'love',
+          'title': 'Расклад на любовь',
+          'heading': 'Расклад на\nлюбовь',
+          'description': 'Карты помогут понять скрытые чувства,\n'
+                         'эмоциональную связь и возможное будущее\n'
+                         'ваших отношений.',
+          'options': ['Чувства', 'Истинные намерения', 'Будущее'],
+          'back_url': '/spreads',
+          'start_url': '/spread/love/focus',
+          'focus_title': 'Сконцентрируйся\nна человеке',
+          'focus_description': 'Подумайте о ваших отношениях, пока карты считывают энергию вашей связи.',
+          'shuffle_url': '/loading'},
+ 'breakup': {'slug': 'breakup',
+             'title': 'Расклад после расставания',
+             'heading': 'Расклад после\nрасставания',
+             'description': 'Карты покажут, почему отношения\n'
+                            'завершились, какие чувства остались\n'
+                            'и что ждёт вас дальше.',
+             'options': ['Причины', 'Чувства', 'Будущее'],
+             'back_url': '/spreads',
+             'start_url': '/spread/breakup/focus',
+             'focus_title': 'Отпусти лишние\nэмоции',
+             'focus_description': 'Сделай глубокий вдох и отпусти обиду. Карты покажут истинные причины и что важно понять после разрыва.',
+             'shuffle_url': '/loading'},
+ 'career': {'slug': 'career',
+            'title': 'Расклад на карьеру',
+            'heading': 'Расклад\nна карьеру',
+            'description': 'Карты помогут увидеть направление\n'
+                           'карьерного пути, точки роста\n'
+                           'и ваш профессиональный результат.',
+            'options': ['Текущий карьерный фокус', 'Точка максимального роста', 'Ваш профессиональный результат'],
+            'back_url': '/spreads',
+            'start_url': '/spread/career/focus',
+            'focus_title': 'Настройтесь\nна свой успех',
+            'focus_description': 'Вспомните вашу текущую ситуацию, цели и сомнения. Карты помогут увидеть, что мешает развитию и куда стоит двигаться дальше.',
+            'shuffle_url': '/loading'},
+ 'finance': {'slug': 'finance',
+             'title': 'Финансовый путь',
+             'heading': 'Финансовый путь',
+             'description': 'Этот расклад поможет понять, откуда\n'
+                            'может прийти финансовый поток, где\n'
+                            'скрыты возможности и сложности.',
+             'options': ['Источники дохода', 'Текущие финансовые сложности', 'Ваш профессиональный результат'],
+             'back_url': '/spreads',
+             'start_url': '/spread/finance/focus',
+             'focus_title': 'Настройтесь\nна энергию\nизобилия',
+             'focus_description': 'Закройте глаза на несколько секунд и подумайте о своём финпотоке. Представьте желаемый уровень дохода, свои цели и то, чего вы хотите достичь.',
+             'shuffle_url': '/loading'},
+ 'future': {'slug': 'future',
+            'title': 'Что ждёт впереди',
+            'heading': 'Что ждёт впереди',
+            'description': 'Карты покажут скрытые шансы,\nближайший поворот судьбы\nи вероятный исход событий.',
+            'options': ['Скрытые возможности', 'Ближайший поворот судьбы', 'Вероятный исход событий'],
+            'back_url': '/spreads',
+            'start_url': '/spread/future/focus',
+            'focus_title': 'Откройтесь\nбудущему',
+            'focus_description': 'Не пытайтесь контролировать ответ или представить желаемый результат. Просто доверьтесь потоку событий и позвольте картам показать то, что готовит для вас судьба.',
+            'shuffle_url': '/loading'},
+ 'purpose': {'slug': 'purpose',
+             'title': 'Ваше предназначение',
+             'heading': 'Ваше\nпредназначение',
+             'description': 'Этот расклад поможет понять, какие таланты\n'
+                            'заложены в вас от природы, что мешает\n'
+                            'раскрыться и куда ведёт ваша душа.',
+             'options': ['Дар, которым стоит служить', 'Что блокирует мою реализацию', 'Путь моей души'],
+             'back_url': '/spreads',
+             'start_url': '/spread/purpose/focus',
+             'focus_title': 'Услышьте свой\nвнутренний голос',
+             'focus_description': 'Подумайте о том, чем вам действительно нравится заниматься, что вдохновляет вас и приносит ощущение смысла.',
+             'shuffle_url': '/loading'}}
+
+
+SPREAD_SELECT_DATA = {
+    "love": {
+        "select_options": ["Мысли", "Чувства", "Будущее"],
+        "select_hint": "Каждая карта раскроет скрытый\nаспект вашей ситуации",
+        "result_url": "/loading",
+    },
+    "breakup": {
+        "select_options": ["Причины разрыва", "Его чувства сейчас", "Возможность возвращения"],
+        "select_hint": "Каждая карта даст ответ\nо прошлом и чувствах",
+        "result_url": "/loading",
+    },
+    "career": {
+        "select_options": ["Главный карьерный барьер", "Точка максимального роста", "Ваш результат"],
+        "select_hint": "Каждая карта откроет\nважную часть карьерного пути",
+        "result_url": "/loading",
+    },
+    "finance": {
+        "select_options": ["Что перекрывает поток", "Где скрыта возможность", "Истинный путь"],
+        "select_hint": "Каждая карта покажет\nчасть вашего финансового пути",
+        "result_url": "/loading",
+    },
+    "future": {
+        "select_options": ["Скрытые силы ситуации", "Ближайший поворот судьбы", "Вероятный исход событий"],
+        "select_hint": "Каждая карта откроет шанс, путь\nи вероятный финал событий",
+        "result_url": "/loading",
+    },
+    "purpose": {
+        "select_options": ["Дар, данный вам от рождения", "Что блокирует вашу реализацию", "Путь вашей души"],
+        "select_hint": "Каждая карта поможет услышать\nчасть вашего истинного предназначения",
+        "result_url": "/loading",
+    },
+}
+
+for _slug, _select_data in SPREAD_SELECT_DATA.items():
+    if _slug in SPREAD_READY_SCREENS:
+        SPREAD_READY_SCREENS[_slug].update(_select_data)
+        SPREAD_READY_SCREENS[_slug]["select_url"] = f"/spread/{_slug}/select"
+        SPREAD_READY_SCREENS[_slug]["loading_url"] = f"/spread/{_slug}/loading"
+        SPREAD_READY_SCREENS[_slug]["final_result_url"] = f"/spread/{_slug}/result"
+        SPREAD_READY_SCREENS[_slug]["result_url"] = SPREAD_READY_SCREENS[_slug]["loading_url"]
+        SPREAD_READY_SCREENS[_slug]["finish_url"] = "/spreads"
+        SPREAD_READY_SCREENS[_slug]["result_image"] = f"img/spread-results/{_slug}.png"
+        SPREAD_READY_SCREENS[_slug]["shuffle_url"] = SPREAD_READY_SCREENS[_slug]["select_url"]
+
+
+
+
+def init_session():
     if "coins" not in session:
         session["coins"] = 150
 
     if "streak_days" not in session:
         session["streak_days"] = 7
 
-    if "onboarding_seen" not in session:
-        session["onboarding_seen"] = False
-
-    session.modified = True
-
-
 @app.context_processor
 def inject_tg_user():
     return {
-        "tg_user": session.get("tg_user", {}),
-        "db_path": str(DB_PATH),
+        "tg_user": session.get("tg_user", {})
     }
 # ===== ONBOARDING =====
 
@@ -380,11 +192,6 @@ def loading():
 
 @app.route("/vip")
 def vip():
-    return redirect(url_for("career_full"))
-
-
-@app.route("/vip-old")
-def vip_old():
     return render_template("vip.html")
 
 @app.route("/onboarding/3")
@@ -395,27 +202,23 @@ def onboarding_3():
 @app.route("/onboarding/finish")
 def onboarding_finish():
     session["onboarding_seen"] = True
-    session.modified = True
-    update_user_state(onboarding_seen=1)
     return redirect(url_for("today"))
 
 
 @app.route("/reset-onboarding")
 def reset_onboarding():
-    session["onboarding_seen"] = False
-    update_user_state(onboarding_seen=0)
-    return redirect(url_for("onboarding_1"))
+    session.pop("onboarding_seen", None)
+    return redirect(url_for("today"))
 
 
 # ===== MAIN PAGES =====
 
 @app.route("/")
-@app.route("/today")
 def today():
-    init_session()
-
     if not session.get("onboarding_seen"):
         return redirect(url_for("onboarding_1"))
+
+    init_session()
 
     return render_template(
         "today.html",
@@ -456,6 +259,14 @@ def collection():
 @app.route("/match")
 def match():
     return render_template("match.html")
+
+
+@app.route("/spreads")
+def spreads():
+    init_session()
+    return render_template("spreads.html")
+
+
 @app.route('/birthdateGotovo')
 def birthdate1():
     return render_template('birthdate.html')
@@ -494,28 +305,6 @@ def quiz2():
 def result1():
     return render_template("result_1to1.html")
 
-
-@app.route("/career-full")
-@app.route("/career-money-full")
-@app.route("/vip-result")
-def career_full():
-    return render_template("career_full.html")
-
-
-@app.route("/love-result")
-@app.route("/love-relationships")
-@app.route("/relationship-result")
-def love_result():
-    return render_template("love_result.html")
-
-
-@app.route("/love-full")
-@app.route("/love-relationships-full")
-@app.route("/relationship-full")
-@app.route("/love-vip-result")
-def love_full():
-    return render_template("love_full.html")
-
 @app.route("/quiz3")
 def quiz3():
     return render_template("quiz3.html")
@@ -535,19 +324,126 @@ def quiz5():
 def result():
     return render_template("result.html")
 
+SPREAD_RESULTS = {
+    "love": {
+        "items": [
+            {"icon": "brain.svg", "color": "#F0C533", "title": "Мысли: Рациональное начало", "text": "Ваш партнёр сейчас погружён в раздумья о стабильности ваших отношений. В его голове выстраивается чёткий план будущего, где доверие является фундаментом."},
+            {"icon": "heart.svg", "color": "#F3B8FF", "title": "Чувства: Глубина души", "text": "На эмоциональном уровне царит гармония, изображённая картой «Влюблённые». Это время сильного притяжения и искреннего желания разделить свой путь с вами."},
+            {"icon": "sparkle.svg", "color": "#F0C533", "title": "Будущее: Звездный путь", "text": "Карта «Звезда» обещает исцеление прошлых обид и новый светлый этап. Ваши совместные мечты начнут обретать форму в реальности в ближайшие три лунных цикла."},
+        ]
+    },
+    "breakup": {
+        "items": [
+            {"icon": "brain.svg", "color": "#F0C533", "title": "Причина разрыва", "text": "Ваш партнёр сейчас погружён в раздумья о стабильности ваших отношений. В его голове выстраивается чёткий план будущего, где доверие является фундаментом."},
+            {"icon": "heart.svg", "color": "#F3B8FF", "title": "Его чувства сейчас", "text": "На эмоциональном уровне царит гармония, изображённая картой «Влюблённые». Это время сильного притяжения и искреннего желания разделить свой путь с вами."},
+            {"icon": "key.svg", "color": "#F0C533", "title": "Возможность возвращения", "text": "Карта «Звезда» обещает исцеление прошлых обид и новый светлый этап. Ваши совместные мечты начнут обретать форму в реальности в ближайшие три лунных цикла."},
+        ]
+    },
+    "career": {
+        "items": [
+            {"icon": "warning.svg", "color": "#F0C533", "title": "Главный карьерный барьер", "text": "Вы достигли точки, где привычные методы больше не дают прежнего результата. Карта показывает, что главным препятствием становится нежелание выйти из зоны комфорта."},
+            {"icon": "target.svg", "color": "#E2B2FF", "title": "Точка максимального роста", "text": "Сейчас наиболее перспективным направлением является развитие навыков и расширение профессиональных связей. Возможность, которую вы ищете, придёт через людей вокруг вас."},
+            {"icon": "trophy.svg", "color": "#F0C533", "title": "Профессиональный результат", "text": "Если вы продолжите двигаться вперёд и не свернёте с выбранного пути, впереди вас ждёт признание ваших заслуг и заметный карьерный рост."},
+        ]
+    },
+    "finance": {
+        "items": [
+            {"icon": "warning.svg", "color": "#F0C533", "title": "Что тормозит развитие", "text": "Вы достигли точки, где привычные методы больше не дают прежнего результата. Карта показывает, что главным препятствием становится нежелание выйти из зоны комфорта."},
+            {"icon": "target.svg", "color": "#E2B2FF", "title": "Куда направить усилия", "text": "Сейчас наиболее перспективным направлением является развитие навыков и расширение профессиональных связей. Возможность, которую вы ищете, придёт через людей вокруг вас."},
+            {"icon": "trophy.svg", "color": "#F0C533", "title": "Итог ваших действий", "text": "Если вы продолжите двигаться вперёд и не свернёте с выбранного пути, впереди вас ждёт признание ваших заслуг и заметный карьерный рост."},
+        ]
+    },
+    "future": {
+        "items": [
+            {"icon": "moon.svg", "color": "#F0C533", "title": "Скрытые силы ситуации", "text": "Эта карта показывает процессы и обстоятельства, которые уже влияют на вашу жизнь, но пока остаются незаметными. Именно здесь скрываются причины многих будущих событий."},
+            {"icon": "sparkle.svg", "color": "#E2B2FF", "title": "Ближайший поворот судьбы", "text": "Здесь раскрывается событие или встреча, способная изменить ход текущей ситуации. Карта указывает на возможность, решение или знак, который появится в ближайшее время."},
+            {"icon": "crystal.svg", "color": "#F0C533", "title": "Вероятный исход событий", "text": "Эта карта показывает наиболее вероятное развитие ситуации при сохранении текущего курса. Она помогает увидеть перспективу и подготовиться к будущим переменам."},
+        ]
+    },
+    "purpose": {
+        "items": [
+            {"icon": "compass.svg", "color": "#F0C533", "title": "Дар, данный вам от рождения", "text": "Эта карта раскрывает качества и способности, которые являются вашей природной силой. Именно через них вы способны достигать наибольших результатов и чувствовать внутреннюю гармонию."},
+            {"icon": "flame.svg", "color": "#F3B8FF", "title": "Что блокирует реализацию", "text": "Здесь карты показывают препятствие, которое не позволяет вам полностью раскрыть свой потенциал. Это может быть страх, внутренняя неуверенность или ситуация, требующая переосмысления."},
+            {"icon": "star.svg", "color": "#F0C533", "title": "Путь вашей души", "text": "Эта карта показывает направление, в котором вы сможете наиболее полно реализовать себя. Она помогает понять, куда стоит направить свою энергию, чтобы почувствовать удовлетворение, уверенность и смысл."},
+        ]
+    },
+}
 
-@app.route("/compatibility-upsell")
-@app.route("/result-upsell")
-@app.route("/compatibility-vip")
-def compatibility_upsell():
-    return render_template("compatibility_upsell.html")
+def get_tarot_card_files():
+    card_dir = os.path.join(app.static_folder, "img", "tarot-cards")
+    if not os.path.isdir(card_dir):
+        return []
+    files = []
+    for name in sorted(os.listdir(card_dir)):
+        if name.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+            files.append(f"img/tarot-cards/{name}")
+    return files
 
 
-@app.route("/quick-spreads")
-def quick_spreads():
-    return render_template("quick.html")
+
+def prepare_spread_screen(slug):
+    screen = SPREAD_READY_SCREENS.get(slug)
+    if not screen:
+        return None
+    screen = dict(screen)
+    screen["back_url"] = "/spreads"
+    screen["start_url"] = f"/spread/{slug}/focus"
+    screen["shuffle_url"] = f"/spread/{slug}/select"
+    screen["result_url"] = f"/spread/{slug}/loading"
+    screen["final_result_url"] = f"/spread/{slug}/result"
+    return screen
 
 
+@app.route("/spread/<slug>")
+def spread_ready(slug):
+    screen = prepare_spread_screen(slug)
+    if not screen:
+        return redirect(url_for("spreads"))
+    return render_template("spread_ready.html", screen=screen)
+
+
+@app.route("/spread/<slug>/focus")
+def spread_focus(slug):
+    screen = prepare_spread_screen(slug)
+    if not screen:
+        return redirect(url_for("spreads"))
+    return render_template("spread_focus.html", screen=screen)
+
+
+@app.route("/spread/<slug>/select")
+def spread_select(slug):
+    screen = prepare_spread_screen(slug)
+    if not screen:
+        return redirect(url_for("spreads"))
+    return render_template("spread_select.html", screen=screen)
+
+
+@app.route("/spread/<slug>/loading")
+def spread_loading(slug):
+    screen = prepare_spread_screen(slug)
+    if not screen:
+        return redirect(url_for("spreads"))
+    return render_template("spread_loading.html", screen=screen)
+
+
+@app.route("/spread/<slug>/result")
+def spread_result(slug):
+    spread = SPREAD_RESULTS.get(slug)
+    if not spread:
+        return redirect(url_for("spreads"))
+
+    cards = get_tarot_card_files()
+    if len(cards) >= 3:
+        random_cards = random.sample(cards, 3)
+    else:
+        random_cards = ["img/tarot-card.png", "img/tarot-card.png", "img/tarot-card.png"]
+
+    return render_template("spread_result.html", spread=spread, cards=random_cards, spread_key=slug)
+
+
+@app.route("/compatibility")
+def compatibility_page():
+    return render_template("compatibility.html")
 # ===== API =====
 
 @app.route("/api/draw-card", methods=["POST"])
@@ -557,10 +453,6 @@ def draw_card():
     card = random.choice(SIMPLE_CARDS)
     session["card_of_day"] = card
     session["coins"] = session.get("coins", 150) + 5
-    update_user_state(
-        coins=session["coins"],
-        card_of_day_json=json.dumps(card, ensure_ascii=False)
-    )
 
     return jsonify({
         "success": True,
@@ -583,121 +475,16 @@ def compatibility():
 @app.route("/save-user", methods=["POST"])
 def save_user():
     data = request.get_json(silent=True) or {}
-    tg_user = normalize_tg_user(data)
-    init_data = data.get("initData", "") if isinstance(data, dict) else ""
-    client_state = data.get("state", {}) if isinstance(data, dict) else {}
 
-    try:
-        row = upsert_telegram_user(tg_user, init_data=init_data, client_state=client_state)
-    except ValueError as exc:
-        return jsonify({"success": False, "error": str(exc)}), 400
-
-    sync_session_from_db(row)
-
-    return jsonify({
-        "success": True,
-        "user": row_to_public_user(row),
-        "state": get_public_state(row),
-        "db": str(DB_PATH),
-    })
-
-
-def get_public_state(row=None):
-    if row is None and session.get("tg_user_id"):
-        row = get_user_by_telegram_id(session.get("tg_user_id"))
-    if row:
-        card = None
-        if row["card_of_day_json"]:
-            try:
-                card = json.loads(row["card_of_day_json"])
-            except json.JSONDecodeError:
-                card = None
-        return {
-            "coins": row["coins"],
-            "streak_days": row["streak_days"],
-            "onboarding_seen": bool(row["onboarding_seen"]),
-            "card_of_day": card,
-        }
-    return {
-        "coins": session.get("coins", 150),
-        "streak_days": session.get("streak_days", 7),
-        "onboarding_seen": bool(session.get("onboarding_seen")),
-        "card_of_day": session.get("card_of_day"),
+    session["tg_user"] = {
+        "id": data.get("id"),
+        "first_name": data.get("first_name"),
+        "last_name": data.get("last_name"),
+        "username": data.get("username"),
+        "photo_url": data.get("photo_url")
     }
 
-
-@app.route("/api/state", methods=["GET", "POST"])
-def api_state():
-    init_session()
-
-    if request.method == "POST":
-        data = request.get_json(silent=True) or {}
-
-        # Если клиент одновременно прислал Telegram user, сначала авторизуем/создадим запись.
-        if isinstance(data.get("user"), dict) or data.get("id"):
-            tg_user = normalize_tg_user(data)
-            init_data = data.get("initData", "")
-            try:
-                row = upsert_telegram_user(tg_user, init_data=init_data, client_state=data.get("state", data))
-                sync_session_from_db(row)
-            except ValueError:
-                pass
-
-        updates = {}
-
-        if "coins" in data:
-            try:
-                coins = int(data.get("coins"))
-                if 0 <= coins <= 1000000:
-                    session["coins"] = coins
-                    updates["coins"] = coins
-            except (TypeError, ValueError):
-                pass
-
-        if "streak_days" in data or "streakDays" in data:
-            try:
-                streak_days = int(data.get("streak_days", data.get("streakDays")))
-                if 0 <= streak_days <= 100000:
-                    session["streak_days"] = streak_days
-                    updates["streak_days"] = streak_days
-            except (TypeError, ValueError):
-                pass
-
-        if data.get("onboarding_seen") is True or data.get("onboardingSeen") is True:
-            session["onboarding_seen"] = True
-            updates["onboarding_seen"] = 1
-        elif data.get("onboarding_seen") is False:
-            session["onboarding_seen"] = False
-            updates["onboarding_seen"] = 0
-
-        if isinstance(data.get("card_of_day"), dict):
-            session["card_of_day"] = data["card_of_day"]
-            updates["card_of_day_json"] = json.dumps(data["card_of_day"], ensure_ascii=False)
-
-        if updates:
-            update_user_state(**updates)
-            session.modified = True
-
-    row = get_user_by_telegram_id(session.get("tg_user_id"))
-    if row:
-        sync_session_from_db(row)
-
-    return jsonify({
-        "success": True,
-        "user": row_to_public_user(row) if row else session.get("tg_user", {}),
-        "state": get_public_state(row),
-    })
-
-
-@app.route("/api/me")
-def api_me():
-    init_session()
-    row = get_user_by_telegram_id(session.get("tg_user_id"))
-    return jsonify({
-        "success": bool(row),
-        "user": row_to_public_user(row) if row else session.get("tg_user", {}),
-        "state": get_public_state(row),
-    })
+    return jsonify({"success": True})
 
 
 @app.route("/health")
@@ -705,7 +492,5 @@ def health():
     return {"status": "ok"}
 
 
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
